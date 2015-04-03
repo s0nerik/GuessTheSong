@@ -9,19 +9,23 @@ import android.widget.ImageView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.joanzapata.android.asyncservice.api.annotation.InjectService;
 import com.joanzapata.android.asyncservice.api.annotation.OnMessage;
+import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
-import org.fairytail.guessthesong.model.Song;
-
-import java.util.List;
+import org.fairytail.guessthesong.db.Order;
+import org.fairytail.guessthesong.db.SongsGetterService;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
 public class MainActivity extends FragmentActivity {
+
+    @InjectService
+    SongsGetterService songsGetterService;
 
     @InjectView(R.id.btn_single_player)
     Button btnSinglePlayer;
@@ -35,6 +39,13 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+        AsyncService.inject(this);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        songsGetterService.loadAllSongs(Order.RANDOM);
     }
 
     @Override
@@ -62,8 +73,8 @@ public class MainActivity extends FragmentActivity {
     }
 
     @OnMessage
-    public void onSongsAvailable(List<Song> songs) {
-        Log.d(App.TAG, songs.toString());
+    public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
+        Log.d(App.TAG, e.getSongs().toString());
     }
 
 }

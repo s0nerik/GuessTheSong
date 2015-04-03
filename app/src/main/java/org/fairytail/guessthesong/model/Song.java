@@ -3,9 +3,9 @@ package org.fairytail.guessthesong.model;
 import android.content.ContentUris;
 import android.net.Uri;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Builder;
 
 @Data
 @Builder

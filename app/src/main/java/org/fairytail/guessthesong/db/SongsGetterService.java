@@ -9,10 +9,12 @@ import org.fairytail.guessthesong.model.Song;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Data;
+
 @AsyncService
 public class SongsGetterService {
 
-    public List<Song> getAllSongs(Order order) {
+    public SongsListLoadedEvent loadAllSongs(Order order) {
         Cursor cursor = new SongsCursorGetter().getSongsCursor(order);
         List<Song> songs = new ArrayList<>();
         if (cursor != null) {
@@ -35,6 +37,12 @@ public class SongsGetterService {
             cursor.close();
         }
 
-        return songs;
+        return new SongsListLoadedEvent(songs);
     }
+
+    @Data
+    public static class SongsListLoadedEvent {
+        public final List<Song> songs;
+    }
+
 }
