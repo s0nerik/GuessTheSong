@@ -45,6 +45,7 @@ dependencies {
 
     /* Others */
     compile 'com.github.talenguyen:prettysharedpreferences:1.0.2'
+    compile('com.joanzapata.android.asyncservice:android-asyncservice:0.0.5@aar') { transitive = true }
 
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.easing:library:1.0.1@aar'
