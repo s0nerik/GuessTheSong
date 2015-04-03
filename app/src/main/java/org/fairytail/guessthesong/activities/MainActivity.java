@@ -2,20 +2,31 @@ package org.fairytail.guessthesong.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
 import org.fairytail.guessthesong.R;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class MainActivity extends FragmentActivity {
+
+    @InjectView(R.id.singlePlayerButton)
+    Button singlePlayerButton;
+    @InjectView(R.id.multiPlayerButton)
+    Button multiPlayerButton;
+    @InjectView(R.id.imageView)
+    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        ButterKnife.inject(this);
     }
 
     @Override
@@ -24,15 +35,15 @@ public class MainActivity extends FragmentActivity {
 
         YoYo.with(Techniques.FadeIn)
                 .duration(800)
-                .playOn(findViewById(R.id.imageView));
+                .playOn(imageView);
 
         YoYo.with(Techniques.SlideInRight)
                 .duration(500)
-                .playOn(findViewById(R.id.singlePlayerButton));
+                .playOn(singlePlayerButton);
 
         YoYo.with(Techniques.SlideInRight)
                 .delay(50)
                 .duration(500)
-                .playOn(findViewById(R.id.multiPlayerButton));
+                .playOn(multiPlayerButton);
     }
 }
