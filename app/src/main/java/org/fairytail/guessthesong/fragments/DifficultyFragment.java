@@ -21,12 +21,12 @@ public class DifficultyFragment extends Fragment {
 
     @InjectView(R.id.difficultyTextView)
     TextView difficultyTextView;
-    @InjectView(R.id.easyButton)
-    Button easyButton;
-    @InjectView(R.id.normalButton)
-    Button normalButton;
-    @InjectView(R.id.hardButton)
-    Button hardButton;
+    @InjectView(R.id.btn_easy)
+    Button btnEasy;
+    @InjectView(R.id.btn_normal)
+    Button btnNormal;
+    @InjectView(R.id.btn_hard)
+    Button btnHard;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,18 +41,36 @@ public class DifficultyFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        YoYo.with(Techniques.DropOut)
-                .duration(1000)
-                .playOn(difficultyTextView);
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                view.setVisibility(View.VISIBLE);
 
-        YoYo.with(Techniques.BounceIn)
-                .duration(1000)
-                .playOn(easyButton);
+                //Tada
+                //BounceIn
+                YoYo.with(Techniques.SlideInLeft)
+                        .duration(1000)
+                        .playOn(difficultyTextView);
 
+                //Landing
+                YoYo.with(Techniques.BounceIn)
+                        .duration(2000)
+                        .playOn(btnEasy);
 
+                YoYo.with(Techniques.BounceIn)
+                        .delay(250)
+                        .duration(2000)
+                        .playOn(btnNormal);
+
+                YoYo.with(Techniques.BounceIn)
+                        .delay(500)
+                        .duration(2000)
+                        .playOn(btnHard);
+            }
+        }, 1000);
     }
 
     @Override

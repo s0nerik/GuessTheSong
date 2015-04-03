@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -52,18 +53,25 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
-        YoYo.with(Techniques.FadeIn)
-                .duration(800)
-                .playOn(img);
+        img.postDelayed(new Runnable() {
+            @Override
+            public void run() {
 
-        YoYo.with(Techniques.SlideInRight)
-                .duration(500)
-                .playOn(btnSinglePlayer);
+            YoYo.with(Techniques.FadeIn)
+                    .duration(800)
+                    .playOn(img);
 
-        YoYo.with(Techniques.SlideInRight)
-                .delay(50)
-                .duration(500)
-                .playOn(btnMultiPlayer);
+            YoYo.with(Techniques.SlideInRight)
+                    .duration(500)
+                    .playOn(btnSinglePlayer);
+
+            YoYo.with(Techniques.SlideInRight)
+                    .delay(50)
+                    .duration(500)
+                    .playOn(btnMultiPlayer);
+            }
+        }, 500);
+
     }
 
     @OnClick(R.id.btn_single_player)
