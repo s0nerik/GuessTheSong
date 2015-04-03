@@ -5,9 +5,36 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:text="@string/app_name"
+    <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/single_player"
+        android:id="@+id/singlePlayerButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="onSingleButtonClick"
+        android:layout_marginBottom="160dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/multi_player"
+        android:id="@+id/multiPlayerButton"
+        android:layout_marginTop="65dp"
+        android:layout_alignTop="@+id/singlePlayerButton"
+        android:layout_alignLeft="@+id/singlePlayerButton"
+        android:layout_alignStart="@+id/singlePlayerButton"
+        android:layout_alignRight="@+id/singlePlayerButton"
+        android:layout_alignEnd="@+id/singlePlayerButton" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:scaleType="fitStart"
+        android:src="@drawable/guess_the_song"
+        android:paddingTop="50dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp" />
 
 </RelativeLayout>
