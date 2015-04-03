@@ -22,7 +22,7 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
 
         YoYo.with(Techniques.FadeIn)
-                .duration(1500)
+                .duration(800)
                 .playOn(findViewById(R.id.imageView));
 
         YoYo.with(Techniques.SlideInRight)
@@ -30,16 +30,8 @@ public class MainActivity extends FragmentActivity {
                 .playOn(findViewById(R.id.singlePlayerButton));
 
         YoYo.with(Techniques.SlideInRight)
-                .delay(100)
+                .delay(50)
                 .duration(500)
                 .playOn(findViewById(R.id.multiPlayerButton));
-    }
-
-    public void onSingleButtonClick(View view) {
-
-        //Landing
-        //BounceIn
-        //SlideInRight
-
     }
 }

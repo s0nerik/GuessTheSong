@@ -12,7 +12,6 @@
         android:id="@+id/singlePlayerButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:onClick="onSingleButtonClick"
         android:layout_marginBottom="160dp" />
 
     <Button
