@@ -3,13 +3,19 @@ package org.fairytail.guessthesong.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.joanzapata.android.asyncservice.api.annotation.OnMessage;
 
+import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
+import org.fairytail.guessthesong.model.Song;
+
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -55,9 +61,9 @@ public class MainActivity extends FragmentActivity {
         startActivity(intent);
     }
 
-    /*@OnMessage
+    @OnMessage
     public void onSongsAvailable(List<Song> songs) {
         Log.d(App.TAG, songs.toString());
-    }*/
+    }
 
 }

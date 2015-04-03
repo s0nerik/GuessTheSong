@@ -1,6 +1,7 @@
 package org.fairytail.guessthesong.db;
 
 import android.content.ContentResolver;
+import android.database.Cursor;
 import android.provider.MediaStore;
 
 import org.fairytail.guessthesong.dagger.Daggered;
@@ -43,32 +44,32 @@ public class SongsCursorGetter extends Daggered {
 //    public static final int ALBUM_KEY    = 11;
 //    public static final int ALBUM_KEY    = 10;
 
-//    public Cursor getSongsCursor(Order order){
-//        String orderString = "";
-//        switch (order) {
-//            case ASCENDING:
-//                orderString = "ASC";
-//                break;
-//            case DESCENDING:
-//                orderString = "DESC";
-//                break;
-//            case RANDOM:
-//                orderString = "random()";
-//                break;
-//        }
-//
-//        return contentResolver.query(
-//                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-//                projection,
-//                selection,
-//                null,
-//                order == Order.RANDOM ? orderString :
-//                        MediaStore.Audio.Media.ARTIST + " "+orderString+", "
-//                        + MediaStore.Audio.Media.ALBUM_ID + " "+orderString+", "
-//                        + MediaStore.Audio.Media.TRACK + " "+orderString+", "
-//                        + MediaStore.Audio.Media.DISPLAY_NAME + " "+orderString
-//        );
-//
-//    }
+    public Cursor getSongsCursor(Order order){
+        String orderString = "";
+        switch (order) {
+            case ASCENDING:
+                orderString = "ASC";
+                break;
+            case DESCENDING:
+                orderString = "DESC";
+                break;
+            case RANDOM:
+                orderString = "random()";
+                break;
+        }
+
+        return contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                null,
+                order == Order.RANDOM ? orderString :
+                        MediaStore.Audio.Media.ARTIST + " "+orderString+", "
+                        + MediaStore.Audio.Media.ALBUM_ID + " "+orderString+", "
+                        + MediaStore.Audio.Media.TRACK + " "+orderString+", "
+                        + MediaStore.Audio.Media.DISPLAY_NAME + " "+orderString
+        );
+
+    }
 
 }
