@@ -16,6 +16,7 @@ import com.squareup.otto.ThreadEnforcer;
 
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.bus.MainThreadBus;
+import org.fairytail.guessthesong.db.SongsCursorGetter;
 import org.fairytail.guessthesong.prefs.PrefManager;
 
 import javax.inject.Singleton;
@@ -28,9 +29,12 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.WIFI_SERVICE;
 
-@Module(injects = {
-
-}, library = true)
+@Module(
+        injects = {
+            SongsCursorGetter.class
+        },
+        library = true
+)
 public class AndroidModule {
     private final App application;
 
