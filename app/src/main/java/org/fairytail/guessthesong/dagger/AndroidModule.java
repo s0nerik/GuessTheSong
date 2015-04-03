@@ -28,7 +28,9 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.WIFI_SERVICE;
 
-@Module(injects = {}, library = true)
+@Module(injects = {
+
+}, library = true)
 public class AndroidModule {
     private final App application;
 
