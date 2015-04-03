@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/single_player"
-        android:id="@+id/singlePlayerButton"
+        android:id="@+id/btn_single_player"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="160dp" />
@@ -18,18 +18,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/multi_player"
-        android:id="@+id/multiPlayerButton"
+        android:id="@+id/btn_multi_player"
         android:layout_marginTop="65dp"
-        android:layout_alignTop="@+id/singlePlayerButton"
-        android:layout_alignLeft="@+id/singlePlayerButton"
-        android:layout_alignStart="@+id/singlePlayerButton"
-        android:layout_alignRight="@+id/singlePlayerButton"
-        android:layout_alignEnd="@+id/singlePlayerButton" />
+        android:layout_alignTop="@+id/btn_single_player"
+        android:layout_alignLeft="@+id/btn_single_player"
+        android:layout_alignStart="@+id/btn_single_player"
+        android:layout_alignRight="@+id/btn_single_player"
+        android:layout_alignEnd="@+id/btn_single_player" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
+        android:id="@+id/img"
         android:scaleType="fitStart"
         android:src="@drawable/guess_the_song"
         android:paddingTop="50dp"

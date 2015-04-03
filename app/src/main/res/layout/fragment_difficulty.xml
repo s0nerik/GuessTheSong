@@ -1,0 +1,39 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.fairytail.guessthesong.fragments.DifficultyFragment">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/choose_difficulty"
+        android:id="@+id/difficultyTextView"
+        android:layout_gravity="center_horizontal|top" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/easyButton"
+        android:layout_gravity="center"
+        android:text="@string/difficulty_easy" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/normalButton"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
+        android:text="@string/difficulty_hard" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/hardButton"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        android:text="@string/difficulty_insane" />
+
+</FrameLayout>

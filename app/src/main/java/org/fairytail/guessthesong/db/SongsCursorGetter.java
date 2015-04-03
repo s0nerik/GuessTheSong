@@ -1,11 +1,8 @@
 package org.fairytail.guessthesong.db;
 
 import android.content.ContentResolver;
-import android.database.Cursor;
 import android.provider.MediaStore;
-import android.util.Log;
 
-import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Daggered;
 
 import javax.inject.Inject;
@@ -46,47 +43,32 @@ public class SongsCursorGetter extends Daggered {
 //    public static final int ALBUM_KEY    = 11;
 //    public static final int ALBUM_KEY    = 10;
 
-    public Cursor getSongsCursor(){
+//    public Cursor getSongsCursor(Order order){
+//        String orderString = "";
+//        switch (order) {
+//            case ASCENDING:
+//                orderString = "ASC";
+//                break;
+//            case DESCENDING:
+//                orderString = "DESC";
+//                break;
+//            case RANDOM:
+//                orderString = "random()";
+//                break;
+//        }
+//
+//        return contentResolver.query(
+//                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+//                projection,
+//                selection,
+//                null,
+//                order == Order.RANDOM ? orderString :
+//                        MediaStore.Audio.Media.ARTIST + " "+orderString+", "
+//                        + MediaStore.Audio.Media.ALBUM_ID + " "+orderString+", "
+//                        + MediaStore.Audio.Media.TRACK + " "+orderString+", "
+//                        + MediaStore.Audio.Media.DISPLAY_NAME + " "+orderString
+//        );
+//
+//    }
 
-        return contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection,
-                selection,
-                null,
-                MediaStore.Audio.Media.ARTIST + " ASC, "
-                        + MediaStore.Audio.Media.ALBUM_ID + " ASC, "
-                        + MediaStore.Audio.Media.TRACK + " ASC, "
-                        + MediaStore.Audio.Media.DISPLAY_NAME + " ASC"
-        );
-
-    }
-
-    public Cursor getSongsCursor(long albumId){
-        Log.d(App.TAG, "album: "+albumId);
-        String selection = this.selection+" AND "+ MediaStore.Audio.AudioColumns.ALBUM_ID+" = ?";
-        String[] selectionArgs = {String.valueOf(albumId)};
-
-        return contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection,
-                selection,
-                selectionArgs,
-                MediaStore.Audio.Media.ARTIST + " ASC, "
-                        + MediaStore.Audio.Media.ALBUM_ID + " ASC, "
-                        + MediaStore.Audio.Media.TRACK + " ASC, "
-                        + MediaStore.Audio.Media.DISPLAY_NAME + " ASC"
-        );
-    }
-
-    public Cursor getSongsRandomOrder(){
-
-        return contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection,
-                selection,
-                null,
-                "random()"
-        );
-
-    }
 }

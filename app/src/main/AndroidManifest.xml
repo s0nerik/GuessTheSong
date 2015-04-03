@@ -17,6 +17,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.DifficultyActivity"
+            android:label="@string/title_activity_difficulty" >
+        </activity>
     </application>
 
 </manifest>

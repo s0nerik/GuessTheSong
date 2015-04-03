@@ -1,5 +1,6 @@
 package org.fairytail.guessthesong.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Button;
@@ -12,15 +13,16 @@ import org.fairytail.guessthesong.R;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class MainActivity extends FragmentActivity {
 
-    @InjectView(R.id.singlePlayerButton)
-    Button singlePlayerButton;
-    @InjectView(R.id.multiPlayerButton)
-    Button multiPlayerButton;
-    @InjectView(R.id.imageView)
-    ImageView imageView;
+    @InjectView(R.id.btn_single_player)
+    Button btnSinglePlayer;
+    @InjectView(R.id.btn_multi_player)
+    Button btnMultiPlayer;
+    @InjectView(R.id.img)
+    ImageView img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +37,27 @@ public class MainActivity extends FragmentActivity {
 
         YoYo.with(Techniques.FadeIn)
                 .duration(800)
-                .playOn(imageView);
+                .playOn(img);
 
         YoYo.with(Techniques.SlideInRight)
                 .duration(500)
-                .playOn(singlePlayerButton);
+                .playOn(btnSinglePlayer);
 
         YoYo.with(Techniques.SlideInRight)
                 .delay(50)
                 .duration(500)
-                .playOn(multiPlayerButton);
+                .playOn(btnMultiPlayer);
     }
+
+    @OnClick(R.id.btn_single_player)
+    public void onSinglePlayerClicked() {
+        Intent intent = new Intent(this, DifficultyActivity.class);
+        startActivity(intent);
+    }
+
+    /*@OnMessage
+    public void onSongsAvailable(List<Song> songs) {
+        Log.d(App.TAG, songs.toString());
+    }*/
+
 }
