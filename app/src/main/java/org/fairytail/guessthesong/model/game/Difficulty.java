@@ -7,9 +7,9 @@ import lombok.Data;
 @Builder
 public class Difficulty {
 
-    String name;
+    private String name;
 
-    long songDuration;
-    int variants;
-    boolean proposeSimilarStyles;
+    private long songDuration;
+    private int variants;
+    private boolean proposeSimilarStyles;
 }
