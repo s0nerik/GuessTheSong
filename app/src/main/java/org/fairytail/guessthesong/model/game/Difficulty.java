@@ -6,7 +6,10 @@ import lombok.Data;
 @Data
 @Builder
 public class Difficulty {
-    long duration;
+
+    String name;
+
+    long songDuration;
     int variants;
     boolean proposeSimilarStyles;
 }
