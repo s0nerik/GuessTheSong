@@ -2,14 +2,21 @@ package org.fairytail.guessthesong.model.game;
 
 import org.fairytail.guessthesong.model.Song;
 
-import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 
-@Builder
+@RequiredArgsConstructor
 public class Quiz {
 
     private final Song song;
 
-    private int start;
-    private int end;
+    private final int duration;
+
+    private long startTime;
+    private long endTime;
+
+    public void start() {
+        startTime = System.currentTimeMillis();
+        endTime = startTime + duration;
+    }
 
 }
