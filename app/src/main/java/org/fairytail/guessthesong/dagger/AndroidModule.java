@@ -11,14 +11,9 @@ import android.net.wifi.WifiManager;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.ThreadEnforcer;
-
 import org.fairytail.guessthesong.App;
-import org.fairytail.guessthesong.bus.MainThreadBus;
 import org.fairytail.guessthesong.db.SongsCursorGetter;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
-import org.fairytail.guessthesong.prefs.PrefManager;
 
 import javax.inject.Singleton;
 
@@ -33,7 +28,7 @@ import static android.content.Context.WIFI_SERVICE;
 @Module(
         injects = {
             SongsCursorGetter.class,
-                DifficultyFragment.class
+            DifficultyFragment.class
         },
         library = true
 )
@@ -94,12 +89,6 @@ public class AndroidModule {
 
     @Provides
     @Singleton
-    Bus provideBus() {
-        return new MainThreadBus(ThreadEnforcer.ANY);
-    }
-
-    @Provides
-    @Singleton
     ConnectivityManager provideConnectivityManager() {
         return (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
@@ -108,12 +97,6 @@ public class AndroidModule {
     @Singleton
     WindowManager provideWindowManager() {
         return (WindowManager) application.getSystemService(Context.WINDOW_SERVICE);
-    }
-
-    @Provides
-    @Singleton
-    PrefManager providePrefManager() {
-        return new PrefManager(application);
     }
 
 }
