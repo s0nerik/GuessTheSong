@@ -55,10 +55,12 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
+        final float width = getWindowManager().getDefaultDisplay().getWidth();
+        Handler handler = new Handler();
+
         img.setVisibility(View.INVISIBLE);
         btnSinglePlayer.setVisibility(View.INVISIBLE);
         btnMultiPlayer.setVisibility(View.INVISIBLE);
-        Handler handler = new Handler();
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -81,10 +83,8 @@ public class MainActivity extends FragmentActivity {
                         // state by asking its current value in onSpringUpdate.
 
                         float value = (float) spring.getCurrentValue();
-                        //float scale = 1f + (value * 0.5f);
                         float scale = 0f + (value);
-                        float width = getWindowManager().getDefaultDisplay().getWidth();
-                        float translation = value * -(width / 2) + (width - width / 6);
+                        float translation = value * -width + 3*(width / 2) - (btnSinglePlayer.getWidth() / 2);
 
                         img.setScaleX(scale);
                         img.setScaleY(scale);
@@ -96,7 +96,7 @@ public class MainActivity extends FragmentActivity {
                 // Set the spring in motion; moving from 0 to 1
                 spring.setEndValue(1);
             }
-        }, 1000);
+        }, 500);
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -118,8 +118,9 @@ public class MainActivity extends FragmentActivity {
                         // state by asking its current value in onSpringUpdate.
 
                         float value = (float) spring.getCurrentValue();
-                        float width = getWindowManager().getDefaultDisplay().getWidth();
-                        float translation = value * -(width / 2) + (width - width / 6);
+                        //float width = getWindowManager().getDefaultDisplay().getWidth();
+                        //float translation = value * -(width / 2) + 2*(width / 2) - (btnMultiPlayer.getWidth() / 2);
+                        float translation = value * -width + 3*(width / 2) - (btnMultiPlayer.getWidth() / 2);
 
                         btnMultiPlayer.setX(translation);
                     }
@@ -128,7 +129,7 @@ public class MainActivity extends FragmentActivity {
                 // Set the spring in motion; moving from 0 to 1
                 spring.setEndValue(1);
             }
-        }, 1100);
+        }, 600);
     }
 
     @OnClick(R.id.btn_single_player)
