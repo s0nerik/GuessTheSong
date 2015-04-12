@@ -1,4 +1,4 @@
-package org.fairytail.guessthesong.dagger;
+package org.fairytail.guessthesong.dagger.modules;
 
 import android.app.NotificationManager;
 import android.content.ContentResolver;

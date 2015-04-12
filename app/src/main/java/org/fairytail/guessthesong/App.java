@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 
-import org.fairytail.guessthesong.dagger.AndroidModule;
+import org.fairytail.guessthesong.dagger.modules.AndroidModule;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.dagger.modules.MainModule;
 
