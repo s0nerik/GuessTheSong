@@ -1,9 +1,11 @@
-package org.fairytail.guessthesong.db;
+package org.fairytail.guessthesong.async;
 
 import android.database.Cursor;
 
 import com.joanzapata.android.asyncservice.api.annotation.AsyncService;
 
+import org.fairytail.guessthesong.db.Order;
+import org.fairytail.guessthesong.db.SongsCursorGetter;
 import org.fairytail.guessthesong.model.Song;
 
 import java.util.ArrayList;

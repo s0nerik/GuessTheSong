@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Builder
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"source"})
 public class Song {
 
     private static final Uri artworkUri = Uri.parse("content://media/external/audio/albumart");

@@ -18,8 +18,12 @@ import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
+import org.fairytail.guessthesong.async.SongsGetterService;
+import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
-import org.fairytail.guessthesong.db.SongsGetterService;
+import org.fairytail.guessthesong.player.Player;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -37,12 +41,16 @@ public class MainActivity extends FragmentActivity {
     @InjectView(R.id.img)
     ImageView img;
 
+    @Inject
+    Player player;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
         AsyncService.inject(this);
+        Injector.inject(this);
     }
 
     @Override
@@ -141,6 +149,7 @@ public class MainActivity extends FragmentActivity {
     @OnMessage
     public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
         Log.d(App.TAG, e.getSongs().toString());
+//        player.play(e.getSongs().get(0));
     }
 
 }
