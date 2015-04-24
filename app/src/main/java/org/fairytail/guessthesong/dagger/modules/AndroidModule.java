@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.db.SongsCursorGetter;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
+import org.fairytail.guessthesong.fragments.GameFragment;
 
 import javax.inject.Singleton;
 
@@ -28,7 +29,8 @@ import static android.content.Context.WIFI_SERVICE;
 @Module(
         injects = {
             SongsCursorGetter.class,
-            DifficultyFragment.class
+            DifficultyFragment.class,
+            GameFragment.class
         },
         library = true
 )

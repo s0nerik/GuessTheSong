@@ -1,5 +1,6 @@
 package org.fairytail.guessthesong.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -16,12 +17,15 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
 
 import org.fairytail.guessthesong.R;
+import org.fairytail.guessthesong.activities.DifficultyActivity;
+import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class DifficultyFragment extends Fragment {
 
@@ -102,6 +106,12 @@ public class DifficultyFragment extends Fragment {
                 spring.setEndValue(1);
             }
         }, 500);
+    }
+
+    @OnClick({R.id.btn_easy, R.id.btn_normal, R.id.btn_hard})
+    public void onDifficultyClicked() {
+        Intent intent = new Intent(getActivity(), GameActivity.class);
+        startActivity(intent);
     }
 
     @Override

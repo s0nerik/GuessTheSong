@@ -24,6 +24,10 @@
             android:name=".activities.DifficultyActivity"
             android:label="@string/title_activity_difficulty" >
         </activity>
+        <activity
+            android:name=".activities.GameActivity"
+            android:label="@string/title_activity_game" >
+        </activity>
     </application>
 
 </manifest>

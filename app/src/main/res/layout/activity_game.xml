@@ -1,14 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.fairytail.guessthesong.activities.DifficultyActivity">
+    tools:context="org.fairytail.guessthesong.activities.GameActivity">
 
     <fragment
-        android:name="org.fairytail.guessthesong.fragments.DifficultyFragment"
+        android:name="org.fairytail.guessthesong.fragments.GameFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_difficulty"
-        android:id="@+id/fragment_diff" />
+        tools:layout="@layout/fragment_game"
+        android:id="@+id/fragment_game" />
 
 </RelativeLayout>

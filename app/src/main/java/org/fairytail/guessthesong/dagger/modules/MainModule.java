@@ -4,6 +4,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
 import org.fairytail.guessthesong.App;
+import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.activities.MainActivity;
 import org.fairytail.guessthesong.bus.MainThreadBus;
 import org.fairytail.guessthesong.player.MusicPlayer;
@@ -17,7 +18,8 @@ import dagger.Provides;
 
 @Module(
         injects = {
-                MainActivity.class
+                MainActivity.class,
+                GameActivity.class
         },
         library = true
 )
