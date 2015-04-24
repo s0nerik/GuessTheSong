@@ -43,4 +43,8 @@ public class Quiz {
                 bus.post(new QuizTimeOverEvent(this)), difficulty.getSongDuration());
     }
 
+    public boolean check(Song chosen) {
+        return new SongsMatcher(correctSong, chosen).areSimilar();
+    }
+
 }
