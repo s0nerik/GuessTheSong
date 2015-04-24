@@ -27,6 +27,7 @@ public class Quiz {
 
     private long startTime;
     private long endTime;
+    private boolean correct = false;
 
     public Quiz(Song correctSong, List<Song> variants, Difficulty difficulty) {
         Injector.inject(this);
@@ -44,7 +45,8 @@ public class Quiz {
     }
 
     public boolean check(Song chosen) {
-        return new SongsMatcher(correctSong, chosen).areSimilar();
+        correct = new SongsMatcher(correctSong, chosen).areSimilar();
+        return correct;
     }
 
 }

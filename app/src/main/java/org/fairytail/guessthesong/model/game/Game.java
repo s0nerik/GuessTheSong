@@ -15,6 +15,15 @@ public class Game {
     private final Difficulty difficulty;
     private final List<Quiz> quizzes;
 
+    public int countCorrectQuizzes() {
+        int cnt = 0;
+        for (Quiz q : quizzes) {
+            cnt += q.isCorrect() ? 1 : 0;
+        }
+
+        return cnt;
+    }
+
     public static class Creator {
 
         public Game create(Difficulty.Level level, List<Song> correctSongs, List<Song> allSongs) {
