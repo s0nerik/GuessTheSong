@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
+apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
@@ -25,16 +26,20 @@ android {
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
     /* Support libs */
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.android.support:support-annotations:22.0.0'
-    compile 'com.android.support:support-v4:22.0.0'
-    compile 'com.android.support:support-v13:22.0.0'
+    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile 'com.android.support:support-annotations:22.1.0'
+    compile 'com.android.support:support-v4:22.1.0'
+    compile 'com.android.support:support-v13:22.1.0'
 
     /* Annotation processing */
     compile 'com.squareup.dagger:dagger:1.2.2'
