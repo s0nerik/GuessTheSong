@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.jakewharton.hugo'
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
@@ -59,4 +60,5 @@ dependencies {
 
     compile 'com.facebook.rebound:rebound:0.3.7'
     compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'ru.noties:debug:1.1.3'
 }

@@ -1,6 +1,7 @@
 package org.fairytail.guessthesong.activities;
 
 import android.content.Intent;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
@@ -44,6 +45,9 @@ public class MainActivity extends FragmentActivity {
     @Inject
     Player player;
 
+    @Inject
+    WifiP2pManager wifiP2pManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +55,9 @@ public class MainActivity extends FragmentActivity {
         ButterKnife.inject(this);
         AsyncService.inject(this);
         Injector.inject(this);
+
+        WifiP2pManager.Channel c = wifiP2pManager.initialize(this, getMainLooper(), null);
+        wifiP2pManager.discoverPeers(c, null);
     }
 
     @Override
