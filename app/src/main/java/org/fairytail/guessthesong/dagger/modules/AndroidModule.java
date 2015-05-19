@@ -12,6 +12,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
@@ -24,9 +25,11 @@ import org.fairytail.guessthesong.db.SongsCursorGetter;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
 import org.fairytail.guessthesong.fragments.GameFragment;
 import org.fairytail.guessthesong.model.game.Quiz;
+import org.fairytail.guessthesong.networking.ws.WebSocketMessageClient;
+import org.fairytail.guessthesong.networking.ws.WebSocketMessageServer;
 import org.fairytail.guessthesong.player.MusicPlayer;
 import org.fairytail.guessthesong.player.Player;
-import org.fairytail.guessthesong.prefs.PrefManager;
+import org.fairytail.guessthesong.prefs.Prefs;
 
 import javax.inject.Singleton;
 
@@ -52,7 +55,9 @@ import static android.content.Context.WIFI_SERVICE;
                 // Others
                 SongsCursorGetter.class,
                 WiFiDirectBroadcastReceiver.class,
-                Quiz.class
+                Quiz.class,
+                WebSocketMessageServer.class,
+                WebSocketMessageClient.class
         },
         library = true
 )
@@ -131,8 +136,8 @@ public class AndroidModule {
 
     @Provides
     @Singleton
-    PrefManager providePrefManager() {
-        return new PrefManager(application);
+    Prefs providePrefs() {
+        return new Prefs(application);
     }
 
     @Provides
@@ -145,6 +150,12 @@ public class AndroidModule {
     @Singleton
     Player providePlayer() {
         return new MusicPlayer();
+    }
+
+    @Provides
+    @Singleton
+    Gson provideGson() {
+        return new Gson();
     }
 
 }
