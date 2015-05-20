@@ -6,7 +6,9 @@ import android.util.Log;
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.model.Song;
 
-public class MusicPlayer extends BaseMusicPlayer implements MediaPlayer.OnPreparedListener {
+import ru.noties.debug.Debug;
+
+public class MusicPlayer extends BaseMusicPlayer {
 
     @Override
     protected void handleDataSourceError(Song song) {
@@ -15,11 +17,11 @@ public class MusicPlayer extends BaseMusicPlayer implements MediaPlayer.OnPrepar
 
     @Override
     protected MediaPlayer.OnPreparedListener getOnPreparedListener() {
-        return this;
+        return MediaPlayer::start;
     }
 
     @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mediaPlayer.start();
+    protected MediaPlayer.OnSeekCompleteListener getOnSeekCompleteListener() {
+        return mp -> Debug.d("OnSeekCompleteListener");
     }
 }

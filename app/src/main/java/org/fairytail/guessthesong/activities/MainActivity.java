@@ -151,7 +151,7 @@ public class MainActivity extends FragmentActivity {
     @OnMessage
     public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
         Log.d(App.TAG, e.getSongs().toString());
-        //player.play(e.getSongs().get(0));
+//        player.prepare(e.getSongs().get(0), Player::start);
     }
 
 }
