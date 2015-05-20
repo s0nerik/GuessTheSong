@@ -58,5 +58,8 @@ dependencies {
     compile('com.joanzapata.android.asyncservice:android-asyncservice:0.0.5@aar') { transitive = true }
 
     compile 'com.facebook.rebound:rebound:0.3.7'
+    compile 'com.eftimoff:androidplayer:1.0.2@aar'
+    compile 'com.nineoldandroids:library:2.4.0'
     compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'info.hoang8f:fbutton:1.0.5'
 }

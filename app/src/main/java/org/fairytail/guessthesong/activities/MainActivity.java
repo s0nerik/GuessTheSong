@@ -6,9 +6,12 @@ import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.eftimoff.androidplayer.actions.property.*;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
@@ -40,9 +43,16 @@ public class MainActivity extends FragmentActivity {
     Button btnMultiPlayer;
     @InjectView(R.id.img)
     ImageView img;
+    @InjectView(R.id.imageView)
+    ImageView imgName;
 
     @Inject
     Player player;
+
+    PropertyAction imgAction;
+    PropertyAction btnSingleAction;
+    PropertyAction btnMultiAction;
+    float width;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +61,74 @@ public class MainActivity extends FragmentActivity {
         ButterKnife.inject(this);
         AsyncService.inject(this);
         Injector.inject(this);
+
+        imgName.setVisibility(View.INVISIBLE);
+        width = getWindowManager().getDefaultDisplay().getWidth();
+
+        imgAction = PropertyAction.newPropertyAction(img)
+                .interpolator(new AccelerateDecelerateInterpolator())
+                .scaleX(0)
+                .scaleY(0)
+                .rotation(-540)
+                .duration(800)
+                .alpha(0f)
+                .build();
+
+        btnSingleAction = PropertyAction.newPropertyAction(btnSinglePlayer)
+                .interpolator(new DecelerateInterpolator())
+                .translationY(500)
+                .duration(700)
+                .alpha(0f)
+                .build();
+
+        btnMultiAction = PropertyAction.newPropertyAction(btnMultiPlayer)
+                .interpolator(new DecelerateInterpolator())
+                .translationY(500)
+                .delay(100)
+                .duration(700)
+                .alpha(0f)
+                .build();
+
+        com.eftimoff.androidplayer.Player.init()
+                .animate(imgAction)
+                .animate(btnSingleAction)
+                .animate(btnMultiAction)
+                .play();
+
+        Handler handler = new Handler();
+
+        handler.postDelayed(() -> {
+            imgName.setVisibility(View.VISIBLE);
+
+            // Create a system to run the physics loop for a set of springs.
+            SpringSystem springSystem = SpringSystem.create();
+
+            // Add a spring to the system.
+            Spring spring = springSystem.createSpring();
+
+            // Add a listener to observe the motion of the spring.
+            spring.addListener(new SimpleSpringListener() {
+
+                @Override
+                public void onSpringUpdate(Spring spring) {
+                    // You can observe the updates in the spring
+                    // state by asking its current value in onSpringUpdate.
+                    spring.setVelocity(0.01);
+
+                    float value = (float) spring.getCurrentValue();
+                    float rotate = value*150;
+                    float translation = value * (width / 2) + 30;
+                    float translation2 = value*(-(getResources().getDimension(R.dimen.name_left_margin)));
+
+                    img.setRotation(rotate);
+                    img.setTranslationX(translation);
+                    imgName.setTranslationX(translation2);
+                }
+            });
+
+            // Set the spring in motion; moving from 0 to 1
+            spring.setEndValue(1);
+        }, 1500);
     }
 
     @Override
@@ -62,82 +140,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        final float width = getWindowManager().getDefaultDisplay().getWidth();
-        Handler handler = new Handler();
-
-        img.setVisibility(View.INVISIBLE);
-        btnSinglePlayer.setVisibility(View.INVISIBLE);
-        btnMultiPlayer.setVisibility(View.INVISIBLE);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                img.setVisibility(View.VISIBLE);
-                btnSinglePlayer.setVisibility(View.VISIBLE);
-
-                // Create a system to run the physics loop for a set of springs.
-                SpringSystem springSystem = SpringSystem.create();
-
-                // Add a spring to the system.
-                Spring spring = springSystem.createSpring();
-
-                // Add a listener to observe the motion of the spring.
-                spring.addListener(new SimpleSpringListener() {
-
-                    @Override
-                    public void onSpringUpdate(Spring spring) {
-                        // You can observe the updates in the spring
-                        // state by asking its current value in onSpringUpdate.
-
-                        float value = (float) spring.getCurrentValue();
-                        float scale = 0f + (value);
-                        float translation = value * -width + 3*(width / 2) - (btnSinglePlayer.getWidth() / 2);
-
-                        img.setScaleX(scale);
-                        img.setScaleY(scale);
-
-                        btnSinglePlayer.setX(translation);
-                    }
-                });
-
-                // Set the spring in motion; moving from 0 to 1
-                spring.setEndValue(1);
-            }
-        }, 500);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                btnMultiPlayer.setVisibility(View.VISIBLE);
-
-                // Create a system to run the physics loop for a set of springs.
-                SpringSystem springSystem = SpringSystem.create();
-
-                // Add a spring to the system.
-                Spring spring = springSystem.createSpring();
-
-                // Add a listener to observe the motion of the spring.
-                spring.addListener(new SimpleSpringListener() {
-
-                    @Override
-                    public void onSpringUpdate(Spring spring) {
-                        // You can observe the updates in the spring
-                        // state by asking its current value in onSpringUpdate.
-
-                        float value = (float) spring.getCurrentValue();
-                        //float width = getWindowManager().getDefaultDisplay().getWidth();
-                        //float translation = value * -(width / 2) + 2*(width / 2) - (btnMultiPlayer.getWidth() / 2);
-                        float translation = value * -width + 3*(width / 2) - (btnMultiPlayer.getWidth() / 2);
-
-                        btnMultiPlayer.setX(translation);
-                    }
-                });
-
-                // Set the spring in motion; moving from 0 to 1
-                spring.setEndValue(1);
-            }
-        }, 600);
     }
 
     @OnClick(R.id.btn_single_player)

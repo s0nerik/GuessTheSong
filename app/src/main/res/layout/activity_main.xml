@@ -1,37 +1,62 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/bg">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/single_player"
+
+    <info.hoang8f.widget.FButton
         android:id="@+id/btn_single_player"
+        android:layout_width="@dimen/btn_size"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="160dp" />
+        android:layout_marginBottom="@dimen/btn_bottom_margin"
+        android:text="@string/single_player"
+        android:textColor="@android:color/black"
+        fbutton:buttonColor="@color/fbutton_color_clouds"
+        fbutton:shadowEnabled="true" />
 
-    <Button
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/btn_multi_player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/multi_player"
-        android:id="@+id/btn_multi_player"
-        android:layout_marginTop="65dp"
+        android:layout_marginTop="@dimen/btn_top_margin"
         android:layout_alignTop="@+id/btn_single_player"
         android:layout_alignLeft="@+id/btn_single_player"
         android:layout_alignStart="@+id/btn_single_player"
         android:layout_alignRight="@+id/btn_single_player"
-        android:layout_alignEnd="@+id/btn_single_player" />
+        android:layout_alignEnd="@+id/btn_single_player"
+        android:text="@string/multi_player"
+        android:textColor="@android:color/black"
+        fbutton:buttonColor="@color/fbutton_color_sun_flower"
+        fbutton:shadowEnabled="true" />
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:id="@+id/img"
-        android:scaleType="centerInside"
-        android:src="@drawable/guess_the_song"
-        android:layout_centerHorizontal="true" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/name_height"
+            android:id="@+id/imageView"
+            android:src="@drawable/name"
+            android:scaleType="centerInside"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/vinyl_size"
+            android:id="@+id/img"
+            android:scaleType="centerInside"
+            android:src="@drawable/vinyl2"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
 
 </RelativeLayout>

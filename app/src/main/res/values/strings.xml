@@ -2,8 +2,8 @@
     <string name="app_name">Guess The Song!</string>
 
     <string name="action_settings">Settings</string>
-    <string name="single_player">Single player</string>
-    <string name="multi_player">Multi player</string>
+    <string name="single_player">SINGLE PLAYER</string>
+    <string name="multi_player">MULTI PLAYER</string>
     <string name="choose_difficulty">Choose difficulty</string>
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_normal">Normal</string>
@@ -13,7 +13,5 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="whats_that_song">What\'s that song?</string>
-    <string name="option1">Option 1</string>
-    <string name="option2">Option 2</string>
-    <string name="option3">Option 3</string>
+
 </resources>
