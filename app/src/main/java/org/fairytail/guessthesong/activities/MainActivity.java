@@ -77,73 +77,67 @@ public class MainActivity extends FragmentActivity {
         btnSinglePlayer.setVisibility(View.INVISIBLE);
         btnMultiPlayer.setVisibility(View.INVISIBLE);
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                img.setVisibility(View.VISIBLE);
-                btnSinglePlayer.setVisibility(View.VISIBLE);
+        handler.postDelayed(() -> {
+            img.setVisibility(View.VISIBLE);
+            btnSinglePlayer.setVisibility(View.VISIBLE);
 
-                // Create a system to run the physics loop for a set of springs.
-                SpringSystem springSystem = SpringSystem.create();
+            // Create a system to run the physics loop for a set of springs.
+            SpringSystem springSystem = SpringSystem.create();
 
-                // Add a spring to the system.
-                Spring spring = springSystem.createSpring();
+            // Add a spring to the system.
+            Spring spring = springSystem.createSpring();
 
-                // Add a listener to observe the motion of the spring.
-                spring.addListener(new SimpleSpringListener() {
+            // Add a listener to observe the motion of the spring.
+            spring.addListener(new SimpleSpringListener() {
 
-                    @Override
-                    public void onSpringUpdate(Spring spring) {
-                        // You can observe the updates in the spring
-                        // state by asking its current value in onSpringUpdate.
+                @Override
+                public void onSpringUpdate(Spring spring) {
+                    // You can observe the updates in the spring
+                    // state by asking its current value in onSpringUpdate.
 
-                        float value = (float) spring.getCurrentValue();
-                        float scale = 0f + (value);
-                        float translation = value * -width + 3*(width / 2) - (btnSinglePlayer.getWidth() / 2);
+                    float value = (float) spring.getCurrentValue();
+                    float scale = 0f + (value);
+                    float translation = value * -width + 3 * (width / 2) - (btnSinglePlayer.getWidth() / 2);
 
-                        img.setScaleX(scale);
-                        img.setScaleY(scale);
+                    img.setScaleX(scale);
+                    img.setScaleY(scale);
 
-                        btnSinglePlayer.setX(translation);
-                    }
-                });
+                    btnSinglePlayer.setX(translation);
+                }
+            });
 
-                // Set the spring in motion; moving from 0 to 1
-                spring.setEndValue(1);
-            }
+            // Set the spring in motion; moving from 0 to 1
+            spring.setEndValue(1);
         }, 500);
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                btnMultiPlayer.setVisibility(View.VISIBLE);
+        handler.postDelayed(() -> {
+            btnMultiPlayer.setVisibility(View.VISIBLE);
 
-                // Create a system to run the physics loop for a set of springs.
-                SpringSystem springSystem = SpringSystem.create();
+            // Create a system to run the physics loop for a set of springs.
+            SpringSystem springSystem = SpringSystem.create();
 
-                // Add a spring to the system.
-                Spring spring = springSystem.createSpring();
+            // Add a spring to the system.
+            Spring spring = springSystem.createSpring();
 
-                // Add a listener to observe the motion of the spring.
-                spring.addListener(new SimpleSpringListener() {
+            // Add a listener to observe the motion of the spring.
+            spring.addListener(new SimpleSpringListener() {
 
-                    @Override
-                    public void onSpringUpdate(Spring spring) {
-                        // You can observe the updates in the spring
-                        // state by asking its current value in onSpringUpdate.
+                @Override
+                public void onSpringUpdate(Spring spring) {
+                    // You can observe the updates in the spring
+                    // state by asking its current value in onSpringUpdate.
 
-                        float value = (float) spring.getCurrentValue();
-                        //float width = getWindowManager().getDefaultDisplay().getWidth();
-                        //float translation = value * -(width / 2) + 2*(width / 2) - (btnMultiPlayer.getWidth() / 2);
-                        float translation = value * -width + 3*(width / 2) - (btnMultiPlayer.getWidth() / 2);
+                    float value = (float) spring.getCurrentValue();
+                    //float width = getWindowManager().getDefaultDisplay().getWidth();
+                    //float translation = value * -(width / 2) + 2*(width / 2) - (btnMultiPlayer.getWidth() / 2);
+                    float translation = value * -width + 3 * (width / 2) - (btnMultiPlayer.getWidth() / 2);
 
-                        btnMultiPlayer.setX(translation);
-                    }
-                });
+                    btnMultiPlayer.setX(translation);
+                }
+            });
 
-                // Set the spring in motion; moving from 0 to 1
-                spring.setEndValue(1);
-            }
+            // Set the spring in motion; moving from 0 to 1
+            spring.setEndValue(1);
         }, 600);
     }
 
@@ -156,7 +150,7 @@ public class MainActivity extends FragmentActivity {
     @OnMessage
     public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
         Log.d(App.TAG, e.getSongs().toString());
-        //player.play(e.getSongs().get(0));
+//        player.prepare(e.getSongs().get(0), Player::start);
     }
 
 }
