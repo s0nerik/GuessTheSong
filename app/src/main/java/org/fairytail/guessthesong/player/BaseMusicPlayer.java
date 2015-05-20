@@ -7,9 +7,13 @@ import org.fairytail.guessthesong.model.Song;
 
 import java.io.IOException;
 
+import lombok.Getter;
 import lombok.experimental.Delegate;
 
 public abstract class BaseMusicPlayer implements Player {
+
+    @Getter
+    private Song currentSong;
 
     private interface PlayerDelegate {
         void start();
@@ -33,6 +37,7 @@ public abstract class BaseMusicPlayer implements Player {
     protected abstract MediaPlayer.OnSeekCompleteListener getOnSeekCompleteListener();
 
     private void prepareWithListener(Song song, MediaPlayer.OnPreparedListener listener) {
+        currentSong = song;
         resetPlayer();
         player.setOnPreparedListener(mp -> {
             listener.onPrepared(mp);
