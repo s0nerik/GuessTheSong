@@ -27,6 +27,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Debug.d(action);
-        bus.post(new P2PBroadcastReceivedEvent(action));
+        bus.post(new P2PBroadcastReceivedEvent(intent));
     }
 }

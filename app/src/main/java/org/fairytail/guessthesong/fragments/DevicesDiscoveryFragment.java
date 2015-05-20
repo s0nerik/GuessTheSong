@@ -1,10 +1,14 @@
 package org.fairytail.guessthesong.fragments;
 
 import android.content.IntentFilter;
+import android.net.NetworkInfo;
+import android.net.wifi.WpsInfo;
+import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -13,6 +17,7 @@ import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.p2p.P2PBroadcastReceivedEvent;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +83,7 @@ public class DevicesDiscoveryFragment extends Fragment {
     @Subscribe
     public void onP2PBroadcastReceived(P2PBroadcastReceivedEvent event) {
         Debug.d("onP2PBroadcastReceived");
-        switch (event.action) {
+        switch (event.intent.getAction()) {
             case WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION: break;
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
                 if (manager != null) {
@@ -95,9 +100,57 @@ public class DevicesDiscoveryFragment extends Fragment {
                 }
                 Debug.d("P2P peers changed");
                 break;
-            case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION: break;
+            case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
+                NetworkInfo networkInfo = event.intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+                if (networkInfo.isConnected()) {
+
+                    // We are connected with the other device, request connection
+                    // info to find group owner IP
+
+                    manager.requestConnectionInfo(channel, info -> {
+
+                        // InetAddress from WifiP2pInfo struct.
+                        InetAddress groupOwnerAddress = info.groupOwnerAddress;
+
+                        // After the group negotiation, we can determine the group owner.
+                        if (info.groupFormed && info.isGroupOwner) {
+                            // Do whatever tasks are specific to the group owner.
+                            // One common case is creating a server thread and accepting
+                            // incoming connections.
+                        } else if (info.groupFormed) {
+                            // The other device acts as the client. In this case,
+                            // you'll want to create a client thread that connects to the group
+                            // owner.
+                        }
+                    });
+                }
+
+                break;
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION: break;
         }
+    }
+
+    private void connect(int index) {
+        // Picking the first device found on the network.
+        WifiP2pDevice device = peers.get(index);
+
+        WifiP2pConfig config = new WifiP2pConfig();
+        config.deviceAddress = device.deviceAddress;
+        config.wps.setup = WpsInfo.PBC;
+
+        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Toast.makeText(getActivity(), "Connect failed. Retry.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initIntentFilter() {
