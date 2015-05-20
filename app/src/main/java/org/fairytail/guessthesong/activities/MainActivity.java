@@ -1,6 +1,7 @@
 package org.fairytail.guessthesong.activities;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,15 +21,20 @@ import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.async.SongsGetterService;
+import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
 import org.fairytail.guessthesong.player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import ru.noties.debug.Debug;
 
 public class MainActivity extends FragmentActivity {
 
@@ -48,6 +54,12 @@ public class MainActivity extends FragmentActivity {
     @Inject
     WifiP2pManager wifiP2pManager;
 
+    private final IntentFilter intentFilter = new IntentFilter();
+
+    private WifiP2pManager.Channel channel;
+    private WiFiDirectBroadcastReceiver receiver;
+    private List peers = new ArrayList();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +68,30 @@ public class MainActivity extends FragmentActivity {
         AsyncService.inject(this);
         Injector.inject(this);
 
-        WifiP2pManager.Channel c = wifiP2pManager.initialize(this, getMainLooper(), null);
-        wifiP2pManager.discoverPeers(c, null);
+        //  Indicates a change in the Wi-Fi P2P status.
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+
+        // Indicates a change in the list of available peers.
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+
+        // Indicates the state of Wi-Fi P2P connectivity has changed.
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+
+        // Indicates this device's details have changed.
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+        channel = wifiP2pManager.initialize(this, getMainLooper(), null);
+        wifiP2pManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Debug.d("discoverPeers onSuccess");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Debug.d("discoverPeers onFailure");
+            }
+        });
     }
 
     @Override
@@ -69,6 +103,9 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        receiver = new WiFiDirectBroadcastReceiver(channel);
+        registerReceiver(receiver, intentFilter);
 
         final float width = getWindowManager().getDefaultDisplay().getWidth();
         Handler handler = new Handler();
@@ -139,6 +176,12 @@ public class MainActivity extends FragmentActivity {
             // Set the spring in motion; moving from 0 to 1
             spring.setEndValue(1);
         }, 600);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
     }
 
     @OnClick(R.id.btn_single_player)
