@@ -75,7 +75,7 @@ public class MainActivity extends FragmentActivity {
                 .scaleX(0)
                 .scaleY(0)
                 .rotation(-540)
-                .duration(800)
+                .duration(900)
                 .alpha(0f)
                 .build();
 
@@ -142,7 +142,7 @@ public class MainActivity extends FragmentActivity {
 
             // Set the spring in motion; moving from 0 to 1
             spring.setEndValue(1);
-        }, 1500);
+        }, 1600);
     }
 
     @Override
