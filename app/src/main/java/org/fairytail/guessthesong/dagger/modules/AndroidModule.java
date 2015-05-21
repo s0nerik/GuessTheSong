@@ -22,7 +22,8 @@ import org.fairytail.guessthesong.activities.MainActivity;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.bus.MainThreadBus;
 import org.fairytail.guessthesong.db.SongsCursorGetter;
-import org.fairytail.guessthesong.fragments.DevicesDiscoveryFragment;
+import org.fairytail.guessthesong.fragments.CreateGameFragment;
+import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
 import org.fairytail.guessthesong.fragments.GameFragment;
 import org.fairytail.guessthesong.model.game.Quiz;
@@ -52,7 +53,8 @@ import static android.content.Context.WIFI_SERVICE;
                 // Fragments
                 DifficultyFragment.class,
                 GameFragment.class,
-                DevicesDiscoveryFragment.class,
+                JoinGameFragment.class,
+                CreateGameFragment.class,
 
                 // Others
                 SongsCursorGetter.class,

@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 import ru.noties.debug.Debug;
 
-public class DevicesDiscoveryFragment extends Fragment {
+public class JoinGameFragment extends Fragment {
 
     @Inject
     Bus bus;

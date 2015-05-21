@@ -24,7 +24,8 @@ import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
-import org.fairytail.guessthesong.fragments.DevicesDiscoveryFragment;
+import org.fairytail.guessthesong.fragments.CreateGameFragment;
+import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.player.Player;
 
 import javax.inject.Inject;
@@ -32,7 +33,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import ru.noties.debug.Debug;
 
 public class MainActivity extends FragmentActivity {
 
@@ -159,12 +159,12 @@ public class MainActivity extends FragmentActivity {
 
     @OnClick(R.id.btn_create_game)
     public void onCreateGameClicked() {
-        Debug.d("Create game!");
+        getSupportFragmentManager().beginTransaction().add(new CreateGameFragment(), null).commit();
     }
 
     @OnClick(R.id.btn_join_game)
     public void onJoinGameClicked() {
-        getSupportFragmentManager().beginTransaction().add(new DevicesDiscoveryFragment(), null).commit();
+        getSupportFragmentManager().beginTransaction().add(new JoinGameFragment(), null).commit();
     }
 
     @OnMessage
