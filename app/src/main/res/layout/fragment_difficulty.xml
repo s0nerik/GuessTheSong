@@ -1,41 +1,66 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.fairytail.guessthesong.fragments.DifficultyFragment">
+    tools:context="org.fairytail.guessthesong.fragments.DifficultyFragment"
+    android:background="@drawable/bg">
 
-    <TextView
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/diff_header_height"
+        android:background="@color/header_yellow"
+        android:id="@+id/relativeLayout2">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:id="@+id/img_difficulty"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/diff_txt" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/choose_difficulty"
-        android:id="@+id/difficultyTextView"
-        android:layout_gravity="center_horizontal|top" />
+        android:layout_height="fill_parent"
+        android:id="@+id/relativeLayout"
+        android:layout_marginBottom="40dp"
+        android:layout_below="@+id/relativeLayout2" >
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:width="100dp"
-        android:id="@+id/btn_easy"
-        android:layout_gravity="center"
-        android:text="@string/difficulty_easy" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/notes_height"
+            android:layout_marginTop="40dp"
+            android:id="@+id/img_notes"
+            android:src="@drawable/music_notes" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:width="100dp"
-        android:id="@+id/btn_normal"
-        android:layout_gravity="center"
-        android:layout_marginTop="50dp"
-        android:text="@string/difficulty_normal" />
+        <info.hoang8f.widget.FButton
+            android:id="@+id/btn_easy"
+            android:text="@string/difficulty_easy"
+            app:buttonColor="@color/fbutton_color_sun_flower"
+            android:layout_above="@+id/btn_normal"
+            style="@style/btn_main_activity"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:width="100dp"
-        android:id="@+id/btn_hard"
-        android:layout_gravity="center"
-        android:layout_marginTop="100dp"
-        android:text="@string/difficulty_hard" />
+        <info.hoang8f.widget.FButton
+            android:id="@+id/btn_normal"
+            android:text="@string/difficulty_normal"
+            app:buttonColor="@color/fbutton_color_orange"
+            android:layout_above="@+id/btn_hard"
+            style="@style/btn_main_activity" />
 
-</FrameLayout>
+        <info.hoang8f.widget.FButton
+            android:id="@+id/btn_hard"
+            android:text="@string/difficulty_hard"
+            app:buttonColor="@color/fbutton_color_pumpkin"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="32dp"
+            style="@style/btn_main_activity"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

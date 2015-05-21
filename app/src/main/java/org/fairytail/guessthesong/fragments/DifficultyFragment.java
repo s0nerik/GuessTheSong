@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.rebound.SimpleSpringListener;
@@ -29,8 +30,8 @@ import butterknife.OnClick;
 
 public class DifficultyFragment extends Fragment {
 
-    @InjectView(R.id.difficultyTextView)
-    TextView difficultyTextView;
+    @InjectView(R.id.img_difficulty)
+    ImageView imgDifficulty;
     @InjectView(R.id.btn_easy)
     Button btnEasy;
     @InjectView(R.id.btn_normal)
@@ -60,14 +61,14 @@ public class DifficultyFragment extends Fragment {
 
         final Handler handler = new Handler();
 
-        difficultyTextView.setVisibility(View.INVISIBLE);
+        imgDifficulty.setVisibility(View.INVISIBLE);
         btnEasy.setVisibility(View.INVISIBLE);
         btnNormal.setVisibility(View.INVISIBLE);
         btnHard.setVisibility(View.INVISIBLE);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                difficultyTextView.setVisibility(View.VISIBLE);
+                imgDifficulty.setVisibility(View.VISIBLE);
                 btnEasy.setVisibility(View.VISIBLE);
                 btnNormal.setVisibility(View.VISIBLE);
                 btnHard.setVisibility(View.VISIBLE);
@@ -94,7 +95,7 @@ public class DifficultyFragment extends Fragment {
                         float translationRightToLeft = value * -width + 3*(width / 2);
                         float translationY = value * (height / 8);
 
-                        difficultyTextView.setY(translationY);
+                        //imgDifficulty.setY(translationY);
 
                         btnEasy.setX(translationLeftToRight - (btnEasy.getWidth() / 2));
                         btnNormal.setX(translationRightToLeft - (btnNormal.getWidth() / 2));

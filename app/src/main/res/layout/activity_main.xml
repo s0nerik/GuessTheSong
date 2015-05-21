@@ -7,12 +7,10 @@
     tools:context=".MainActivity"
     android:background="@drawable/bg">
 
-
     <info.hoang8f.widget.FButton
         android:id="@+id/btn_single_player"
         android:layout_above="@+id/btn_create_game"
         android:text="@string/single_player"
-        android:textColor="@android:color/black"
         app:buttonColor="@color/fbutton_color_clouds"
         style="@style/btn_main_activity" />
 
@@ -50,7 +48,7 @@
             android:layout_height="@dimen/vinyl_size"
             android:id="@+id/img"
             android:scaleType="centerInside"
-            android:src="@drawable/vinyl2"
+            android:src="@drawable/vinyl"
             android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
