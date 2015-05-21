@@ -11,7 +11,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.eftimoff.androidplayer.actions.property.*;
+import com.eftimoff.androidplayer.actions.property.PropertyAction;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import ru.noties.debug.Debug;
 
 public class MainActivity extends FragmentActivity {
 
@@ -150,16 +151,20 @@ public class MainActivity extends FragmentActivity {
         songsGetterService.loadAllSongs(Order.RANDOM);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getSupportFragmentManager().beginTransaction().add(new DevicesDiscoveryFragment(), null).commit();
-    }
-
     @OnClick(R.id.btn_single_player)
     public void onSinglePlayerClicked() {
         Intent intent = new Intent(this, DifficultyActivity.class);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.btn_create_game)
+    public void onCreateGameClicked() {
+        Debug.d("Create game!");
+    }
+
+    @OnClick(R.id.btn_join_game)
+    public void onJoinGameClicked() {
+        getSupportFragmentManager().beginTransaction().add(new DevicesDiscoveryFragment(), null).commit();
     }
 
     @OnMessage
