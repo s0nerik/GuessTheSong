@@ -24,6 +24,7 @@ import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
+import org.fairytail.guessthesong.fragments.DevicesDiscoveryFragment;
 import org.fairytail.guessthesong.player.Player;
 
 import javax.inject.Inject;
@@ -39,8 +40,10 @@ public class MainActivity extends FragmentActivity {
 
     @InjectView(R.id.btn_single_player)
     Button btnSinglePlayer;
-    @InjectView(R.id.btn_multi_player)
-    Button btnMultiPlayer;
+    @InjectView(R.id.btn_create_game)
+    Button btnCreateGame;
+    @InjectView(R.id.btn_join_game)
+    Button btnJoinGame;
     @InjectView(R.id.img)
     ImageView img;
     @InjectView(R.id.imageView)
@@ -51,7 +54,8 @@ public class MainActivity extends FragmentActivity {
 
     PropertyAction imgAction;
     PropertyAction btnSingleAction;
-    PropertyAction btnMultiAction;
+    PropertyAction btnCreateAction;
+    PropertyAction btnJoinAction;
     float width;
 
     @Override
@@ -81,7 +85,7 @@ public class MainActivity extends FragmentActivity {
                 .alpha(0f)
                 .build();
 
-        btnMultiAction = PropertyAction.newPropertyAction(btnMultiPlayer)
+        btnCreateAction = PropertyAction.newPropertyAction(btnCreateGame)
                 .interpolator(new DecelerateInterpolator())
                 .translationY(500)
                 .delay(100)
@@ -89,10 +93,19 @@ public class MainActivity extends FragmentActivity {
                 .alpha(0f)
                 .build();
 
+        btnJoinAction = PropertyAction.newPropertyAction(btnJoinGame)
+                .interpolator(new DecelerateInterpolator())
+                .translationY(500)
+                .delay(200)
+                .duration(700)
+                .alpha(0f)
+                .build();
+
         com.eftimoff.androidplayer.Player.init()
                 .animate(imgAction)
                 .animate(btnSingleAction)
-                .animate(btnMultiAction)
+                .animate(btnCreateAction)
+                .animate(btnJoinAction)
                 .play();
 
         Handler handler = new Handler();
@@ -140,6 +153,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        getSupportFragmentManager().beginTransaction().add(new DevicesDiscoveryFragment(), null).commit();
     }
 
     @OnClick(R.id.btn_single_player)

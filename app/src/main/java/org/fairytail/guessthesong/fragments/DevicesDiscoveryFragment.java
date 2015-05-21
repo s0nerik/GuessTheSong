@@ -94,7 +94,11 @@ public class DevicesDiscoveryFragment extends Fragment {
 
                         Debug.d("Peers:");
                         for (WifiP2pDevice p : peers) {
-                            Debug.d("deviceAddress: "+p.deviceAddress+"; deviceName"+p.deviceName);
+                            Debug.d("deviceAddress: "+p.deviceAddress+"; deviceName: "+p.deviceName);
+                        }
+
+                        if (!peers.isEmpty()) {
+                            connect(0);
                         }
                     });
                 }

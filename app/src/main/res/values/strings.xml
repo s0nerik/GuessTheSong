@@ -13,5 +13,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="whats_that_song">What\'s that song?</string>
+    <string name="create_game">Create game</string>
+    <string name="join_game">Join game</string>
 
 </resources>
