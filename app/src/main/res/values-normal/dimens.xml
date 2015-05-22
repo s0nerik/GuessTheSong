@@ -4,7 +4,6 @@
     <dimen name="vinyl_size">300dp</dimen>
     <dimen name="name_height">85dp</dimen>
     <dimen name="diff_header_height">100dp</dimen>
+    <dimen name="diff_header_translation">200dp</dimen>
     <dimen name="notes_height">160dp</dimen>
-
-
 </resources>

@@ -9,16 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 
+import com.eftimoff.androidplayer.actions.property.PropertyAction;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
 
 import org.fairytail.guessthesong.R;
-import org.fairytail.guessthesong.activities.DifficultyActivity;
 import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
 
@@ -30,17 +31,23 @@ import butterknife.OnClick;
 
 public class DifficultyFragment extends Fragment {
 
-    @InjectView(R.id.img_difficulty)
-    ImageView imgDifficulty;
+    @InjectView(R.id.img_notes)
+    ImageView imgNotes;
     @InjectView(R.id.btn_easy)
     Button btnEasy;
     @InjectView(R.id.btn_normal)
     Button btnNormal;
     @InjectView(R.id.btn_hard)
     Button btnHard;
+    @InjectView(R.id.r_layout_diff_header)
+    RelativeLayout rLayoutDiffHeader;
 
     @Inject
     WindowManager windowManager;
+
+    PropertyAction imgNotesAction;
+    PropertyAction headerAction;
+    float headerHeight;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,16 +66,34 @@ public class DifficultyFragment extends Fragment {
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        headerHeight = getResources().getDimension(R.dimen.diff_header_translation);
+
+        imgNotesAction = PropertyAction.newPropertyAction(imgNotes)
+                .alpha(0f)
+                .delay(400)
+                .duration(600)
+                .build();
+
+        headerAction = PropertyAction.newPropertyAction(rLayoutDiffHeader)
+                .interpolator(new DecelerateInterpolator())
+                .translationY(-headerHeight)
+                .delay(800)
+                .duration(500)
+                .build();
+
+        com.eftimoff.androidplayer.Player.init()
+                .animate(imgNotesAction)
+                .animate(headerAction)
+                .play();
+
         final Handler handler = new Handler();
 
-        imgDifficulty.setVisibility(View.INVISIBLE);
         btnEasy.setVisibility(View.INVISIBLE);
         btnNormal.setVisibility(View.INVISIBLE);
         btnHard.setVisibility(View.INVISIBLE);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                imgDifficulty.setVisibility(View.VISIBLE);
                 btnEasy.setVisibility(View.VISIBLE);
                 btnNormal.setVisibility(View.VISIBLE);
                 btnHard.setVisibility(View.VISIBLE);
@@ -88,14 +113,10 @@ public class DifficultyFragment extends Fragment {
                         // state by asking its current value in onSpringUpdate.
 
                         float value = (float) spring.getCurrentValue();
-                        float height = view.getHeight();
                         float width = view.getWidth();
 
                         float translationLeftToRight = value * (width / 2);
                         float translationRightToLeft = value * -width + 3*(width / 2);
-                        float translationY = value * (height / 8);
-
-                        //imgDifficulty.setY(translationY);
 
                         btnEasy.setX(translationLeftToRight - (btnEasy.getWidth() / 2));
                         btnNormal.setX(translationRightToLeft - (btnNormal.getWidth() / 2));
@@ -106,7 +127,7 @@ public class DifficultyFragment extends Fragment {
                 // Set the spring in motion; moving from 0 to 1
                 spring.setEndValue(1);
             }
-        }, 500);
+        }, 400);
     }
 
     @OnClick({R.id.btn_easy, R.id.btn_normal, R.id.btn_hard})
