@@ -53,11 +53,33 @@ public class CreateGameFragment extends Fragment {
         receiver = new WiFiDirectBroadcastReceiver();
         getActivity().registerReceiver(receiver, intentFilter);
 
-        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Debug.d();
+        manager.requestGroupInfo(channel, group -> {
+            if (group != null) {
+                Debug.d("group != null");
+                manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Debug.d();
 
+                        manager.createGroup(channel, new WifiP2pManager.ActionListener() {
+                            @Override
+                            public void onSuccess() {
+                                Debug.d();
+                            }
+
+                            @Override
+                            public void onFailure(int reason) {
+                                Debug.d("" + reason);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                        Debug.d("" + reason);
+                    }
+                });
+            } else {
                 manager.createGroup(channel, new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
@@ -69,11 +91,6 @@ public class CreateGameFragment extends Fragment {
                         Debug.d("" + reason);
                     }
                 });
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Debug.d("" + reason);
             }
         });
     }
