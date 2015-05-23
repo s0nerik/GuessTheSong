@@ -3,6 +3,8 @@ package org.fairytail.guessthesong.model;
 import android.content.ContentUris;
 import android.net.Uri;
 
+import java.io.Serializable;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Builder
 @EqualsAndHashCode(exclude = {"source"})
-public class Song {
+public class Song implements Serializable {
 
     private static final Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
 

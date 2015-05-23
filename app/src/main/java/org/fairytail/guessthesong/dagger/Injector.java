@@ -13,4 +13,9 @@ public class Injector {
     {
         graph.inject(target);
     }
+
+    public static void injectStatics()
+    {
+        graph.injectStatics();
+    }
 }

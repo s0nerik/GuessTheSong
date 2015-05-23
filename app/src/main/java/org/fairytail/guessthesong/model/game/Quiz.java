@@ -2,26 +2,22 @@ package org.fairytail.guessthesong.model.game;
 
 import android.os.Handler;
 
-import com.squareup.otto.Bus;
-
+import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.Song;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import lombok.Data;
 
 @Data
-public class Quiz {
-
-    @Inject
-    Bus bus;
+public class Quiz implements Serializable {
 
     private final Song correctSong;
-    private final List<Song> variants;
+    private final ArrayList<Song> variants;
 
     private final Difficulty difficulty;
 
@@ -32,7 +28,7 @@ public class Quiz {
     public Quiz(Song correctSong, List<Song> variants, Difficulty difficulty) {
         Injector.inject(this);
         this.correctSong = correctSong;
-        this.variants = variants;
+        this.variants = (ArrayList<Song>) variants;
         this.difficulty = difficulty;
     }
 
@@ -41,7 +37,7 @@ public class Quiz {
         endTime = startTime + difficulty.getSongDuration();
 
         new Handler().postDelayed(() ->
-                bus.post(new QuizTimeOverEvent(this)), difficulty.getSongDuration());
+                App.bus.post(new QuizTimeOverEvent(this)), difficulty.getSongDuration());
     }
 
     public boolean check(Song chosen) {

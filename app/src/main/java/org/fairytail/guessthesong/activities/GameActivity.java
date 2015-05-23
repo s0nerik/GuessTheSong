@@ -5,8 +5,10 @@ import android.support.v7.app.ActionBarActivity;
 
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.model.game.Game;
 
 import butterknife.ButterKnife;
+import ru.noties.debug.Debug;
 
 public class GameActivity extends ActionBarActivity {
 
@@ -16,5 +18,10 @@ public class GameActivity extends ActionBarActivity {
         setContentView(R.layout.activity_game);
         ButterKnife.inject(this);
         Injector.inject(this);
+
+        Game g = (Game) getIntent().getExtras().getSerializable("game");
+
+        Debug.d(g.getDifficulty().getName());
     }
+
 }

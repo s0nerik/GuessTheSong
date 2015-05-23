@@ -1,13 +1,15 @@
 package org.fairytail.guessthesong.model.game;
 
+import java.io.Serializable;
+
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class Difficulty {
+public class Difficulty implements Serializable {
 
-    enum Level {
+    public enum Level {
         EASY, MEDIUM, HARD
     }
 

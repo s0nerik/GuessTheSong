@@ -63,6 +63,9 @@ import static android.content.Context.WIFI_SERVICE;
                 WebSocketMessageServer.class,
                 WebSocketMessageClient.class
         },
+        staticInjections = {
+                App.class
+        },
         library = true
 )
 public class AndroidModule {

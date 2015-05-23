@@ -2,6 +2,7 @@ package org.fairytail.guessthesong.model.game;
 
 import org.fairytail.guessthesong.model.Song;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-public class Game {
+public class Game implements Serializable {
     private final Difficulty difficulty;
-    private final List<Quiz> quizzes;
+    private final ArrayList<Quiz> quizzes;
 
     public int countCorrectQuizzes() {
         int cnt = 0;
@@ -30,7 +31,7 @@ public class Game {
             Difficulty difficulty = Difficulty.Factory.create(level);
             List<Quiz> quizzes = createQuizzes(difficulty, correctSongs, allSongs);
 
-            return new Game(difficulty, quizzes);
+            return new Game(difficulty, (ArrayList<Quiz>) quizzes);
         }
 
         private List<Quiz> createQuizzes(Difficulty difficulty, List<Song> correctSongs, List<Song> allSongs) {
@@ -47,7 +48,7 @@ public class Game {
             List<Song> shuffledSongs = new ArrayList<>(songs);
             Collections.shuffle(shuffledSongs);
 
-            shuffledSongs = shuffledSongs.subList(0, num - 1);
+            shuffledSongs = new ArrayList<>(shuffledSongs.subList(0, num - 1));
             shuffledSongs.add(song);
             Collections.shuffle(shuffledSongs);
 
