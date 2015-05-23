@@ -26,11 +26,7 @@ import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
 import org.fairytail.guessthesong.fragments.CreateGameFragment;
 import org.fairytail.guessthesong.fragments.JoinGameFragment;
-import org.fairytail.guessthesong.model.game.Difficulty;
-import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.player.Player;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -174,14 +170,6 @@ public class MainActivity extends FragmentActivity {
     @OnMessage
     public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
         Log.d(App.TAG, e.getSongs().toString());
-
-        Intent i = new Intent(this, GameActivity.class);
-        Game g = new Game.Creator().create(Difficulty.Level.EASY, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs()));
-        Bundle b = new Bundle();
-        b.putSerializable("game", g);
-        i.putExtras(b);
-        startActivity(i);
-
 //        player.prepare(e.getSongs().get(0), Player::start);
     }
 
