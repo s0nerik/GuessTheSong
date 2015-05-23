@@ -18,10 +18,25 @@ import com.eftimoff.androidplayer.actions.property.PropertyAction;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.joanzapata.android.asyncservice.api.annotation.InjectService;
+import com.joanzapata.android.asyncservice.api.annotation.OnMessage;
+import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.activities.GameActivity;
+import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.db.Order;
+import org.fairytail.guessthesong.model.Song;
+import org.fairytail.guessthesong.model.game.Difficulty;
+import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.player.Player;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -41,18 +56,29 @@ public class DifficultyFragment extends Fragment {
     Button btnHard;
     @InjectView(R.id.r_layout_diff_header)
     RelativeLayout rLayoutDiffHeader;
+    @InjectView(R.id.progress_view)
+    CircularProgressView progressView;
 
     @Inject
     WindowManager windowManager;
 
+    @Inject
+    Player player;
+
+    @InjectService
+    SongsGetterService songsGetterService;
+
     PropertyAction imgNotesAction;
     PropertyAction headerAction;
     float headerHeight;
+    int diffId;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.inject(this);
+        AsyncService.inject(this);
     }
 
     @Override
@@ -130,10 +156,73 @@ public class DifficultyFragment extends Fragment {
         }, 400);
     }
 
-    @OnClick({R.id.btn_easy, R.id.btn_normal, R.id.btn_hard})
-    public void onDifficultyClicked() {
-        Intent intent = new Intent(getActivity(), GameActivity.class);
-        startActivity(intent);
+    @OnMessage
+    public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
+        Intent i = new Intent(getActivity(), GameActivity.class);
+        Bundle b = new Bundle();
+
+        switch (diffId) {
+            case 0:
+                b.putSerializable("game", new Game.Creator().create(Difficulty.Level.EASY, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs())));
+                break;
+            case 1:
+                b.putSerializable("game", new Game.Creator().create(Difficulty.Level.MEDIUM, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs())));
+                break;
+            case 2:
+                b.putSerializable("game", new Game.Creator().create(Difficulty.Level.HARD, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs())));
+                break;
+        }
+
+        progressView.setIndeterminate(false);
+
+        i.putExtras(b);
+        startActivity(i);
+
+//        player.prepare(e.getSongs().get(0), Player::start);
+
+    }
+
+//    @OnClick({R.id.btn_easy, R.id.btn_normal, R.id.btn_hard})
+//    public void onDifficultyClicked() {
+//        songsGetterService.loadAllSongs(Order.RANDOM);
+//        progressView.setIndeterminate(true);
+//
+//        switch(getId()){
+//            case R.id.btn_easy:
+//                diffId=1;
+//                break;
+//            case R.id.btn_normal:
+//                diffId=2;
+//                break;
+//            case R.id.btn_hard:
+//                diffId=3;
+//                break;
+//        }
+//
+////        Intent i = new Intent(this, ResultActivity.class);
+////        i.putExtra("yourcode", diffId);
+////        startActivityForResult(i, REQUEST_CODE);
+//    }
+
+    @OnClick(R.id.btn_easy)
+    public void onEasyClicked() {
+        songsGetterService.loadAllSongs(Order.RANDOM);
+        progressView.setIndeterminate(true);
+        diffId = 0;
+    }
+
+    @OnClick(R.id.btn_normal)
+    public void onNormalClicked() {
+        songsGetterService.loadAllSongs(Order.RANDOM);
+        progressView.setIndeterminate(true);
+        diffId = 1;
+    }
+
+    @OnClick(R.id.btn_hard)
+    public void onHardClicked() {
+        songsGetterService.loadAllSongs(Order.RANDOM);
+        progressView.setIndeterminate(true);
+        diffId = 2;
     }
 
     @Override

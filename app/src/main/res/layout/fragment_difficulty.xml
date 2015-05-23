@@ -7,6 +7,17 @@
     tools:context="org.fairytail.guessthesong.fragments.DifficultyFragment"
     android:background="@drawable/bg">
 
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progress_view"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="0dp"
+        app:cpv_thickness="4dp"
+        app:cpv_indeterminate="true"
+        app:cpv_animAutostart="false" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/diff_header_height"

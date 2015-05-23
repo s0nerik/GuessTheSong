@@ -170,6 +170,14 @@ public class MainActivity extends FragmentActivity {
     @OnMessage
     public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
         Log.d(App.TAG, e.getSongs().toString());
+
+//        Intent i = new Intent(this, GameActivity.class);
+//        Game g = new Game.Creator().create(Difficulty.Level.EASY, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs()));
+//        Bundle b = new Bundle();
+//        b.putSerializable("game", g);
+//        i.putExtras(b);
+//        startActivity(i);
+
 //        player.prepare(e.getSongs().get(0), Player::start);
     }
 
