@@ -160,9 +160,8 @@ public class MainActivity extends FragmentActivity {
     @OnClick(R.id.btn_create_game)
     public void onCreateGameClicked() {
         getSupportFragmentManager().beginTransaction()
-                .add(new CreateGameFragment(), null)
-//                .add(android.R.id.content, new CreateGameFragment(), null)
-//                .addToBackStack("createGame")
+                .add(android.R.id.content, new CreateGameFragment(), null)
+                .addToBackStack("createGame")
                 .commit();
     }
 

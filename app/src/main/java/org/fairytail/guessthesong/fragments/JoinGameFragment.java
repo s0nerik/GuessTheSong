@@ -20,11 +20,11 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.fairytail.guessthesong.R;
-import org.fairytail.guessthesong.adapters.GamesAdapter;
+import org.fairytail.guessthesong.adapters.WiFiP2pDevicesAdapter;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.p2p.P2PBroadcastReceivedEvent;
-import org.fairytail.guessthesong.events.ui.GameSelectedEvent;
+import org.fairytail.guessthesong.events.ui.WifiP2pDeviceSelectedEvent;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class JoinGameFragment extends Fragment {
     private List<WifiP2pDevice> peers = new ArrayList<>();
 
     private final IntentFilter intentFilter = new IntentFilter();
-    private GamesAdapter adapter;
+    private WiFiP2pDevicesAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,7 @@ public class JoinGameFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        adapter = new GamesAdapter(peers);
+        adapter = new WiFiP2pDevicesAdapter(peers);
 
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         recycler.setAdapter(adapter);
@@ -113,7 +113,7 @@ public class JoinGameFragment extends Fragment {
     }
 
     @Subscribe
-    public void onGameSelected(GameSelectedEvent event) {
+    public void onDeviceSelected(WifiP2pDeviceSelectedEvent event) {
         connect(peers.indexOf(event.device));
     }
 

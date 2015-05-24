@@ -11,7 +11,7 @@ import com.squareup.otto.Bus;
 
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.events.ui.GameSelectedEvent;
+import org.fairytail.guessthesong.events.ui.WifiP2pDeviceSelectedEvent;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> {
+public class WiFiP2pDevicesAdapter extends RecyclerView.Adapter<WiFiP2pDevicesAdapter.ViewHolder> {
 
     @Inject
     LayoutInflater layoutInflater;
@@ -31,7 +31,7 @@ public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> 
 
     private final List<WifiP2pDevice> devices;
 
-    public GamesAdapter(List<WifiP2pDevice> devices) {
+    public WiFiP2pDevicesAdapter(List<WifiP2pDevice> devices) {
         this.devices = devices;
         Injector.inject(this);
     }
@@ -66,7 +66,7 @@ public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> 
 
         @OnClick(R.id.item)
         public void onItemClicked(View item) {
-            bus.post(new GameSelectedEvent(devices.get(getAdapterPosition())));
+            bus.post(new WifiP2pDeviceSelectedEvent(devices.get(getAdapterPosition())));
         }
 
     }
