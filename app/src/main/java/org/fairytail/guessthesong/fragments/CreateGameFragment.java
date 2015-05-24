@@ -22,6 +22,7 @@ import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.p2p.P2PBroadcastReceivedEvent;
 import org.fairytail.guessthesong.events.ui.WifiP2pDeviceSelectedEvent;
+import org.fairytail.guessthesong.networking.ws.WebSocketMessageServer;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -41,6 +42,9 @@ public class CreateGameFragment extends Fragment {
 
     @Inject
     WifiP2pManager manager;
+
+    @Inject
+    WebSocketMessageServer server;
 
     private final IntentFilter intentFilter = new IntentFilter();
 
@@ -112,7 +116,7 @@ public class CreateGameFragment extends Fragment {
             @Override
             public void onSuccess() {
                 Debug.d("MANAGER: created");
-//                new WebSocketMessageServer(new InetSocketAddress())
+                server.start();
             }
 
             @Override

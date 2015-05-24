@@ -25,8 +25,10 @@ import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.p2p.P2PBroadcastReceivedEvent;
 import org.fairytail.guessthesong.events.ui.WifiP2pDeviceSelectedEvent;
+import org.fairytail.guessthesong.networking.ws.WebSocketMessageClient;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +55,8 @@ public class JoinGameFragment extends Fragment {
 
     private final IntentFilter intentFilter = new IntentFilter();
     private WiFiP2pDevicesAdapter adapter;
+
+    private WebSocketMessageClient webSocketMessageClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -166,6 +170,9 @@ public class JoinGameFragment extends Fragment {
                             // The other device acts as the client. In this case,
                             // you'll want to create a client thread that connects to the group
                             // owner.
+
+                            webSocketMessageClient = new WebSocketMessageClient(URI.create("ws://" + groupOwnerAddress.getHostAddress() + ":4807"));
+                            webSocketMessageClient.connect();
                         }
                     });
                 }

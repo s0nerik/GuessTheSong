@@ -24,15 +24,17 @@ import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.bus.MainThreadBus;
 import org.fairytail.guessthesong.db.SongsCursorGetter;
 import org.fairytail.guessthesong.fragments.CreateGameFragment;
-import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
 import org.fairytail.guessthesong.fragments.GameFragment;
+import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.ws.WebSocketMessageClient;
 import org.fairytail.guessthesong.networking.ws.WebSocketMessageServer;
 import org.fairytail.guessthesong.player.MusicPlayer;
 import org.fairytail.guessthesong.player.Player;
 import org.fairytail.guessthesong.prefs.Prefs;
+
+import java.net.InetSocketAddress;
 
 import javax.inject.Singleton;
 
@@ -169,4 +171,9 @@ public class AndroidModule {
         return new Gson();
     }
 
+    @Provides
+    @Singleton
+    WebSocketMessageServer provideWebSocketMessageServer() {
+        return new WebSocketMessageServer(new InetSocketAddress(4807));
+    }
 }
