@@ -7,6 +7,7 @@ import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.networking.AllClientsReadyEvent;
 import org.fairytail.guessthesong.events.networking.ClientReadyEvent;
 import org.fairytail.guessthesong.events.networking.ClientStateChangedEvent;
+import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.networking.entities.ClientInfo;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 import org.java_websocket.WebSocket;
@@ -23,9 +24,7 @@ import javax.inject.Inject;
 
 import ru.noties.debug.Debug;
 
-public class WebSocketMessageServer extends WebSocketServer {
-
-    public static final String URI = "ws://192.168.43.1:8080";
+public class GameWebSocketServer extends WebSocketServer {
 
     private static final int TIMEOUT = 10 * 1000; // 10 seconds
 
@@ -41,22 +40,29 @@ public class WebSocketMessageServer extends WebSocketServer {
     @Inject
     Bus bus;
 
-    public WebSocketMessageServer(InetSocketAddress address) {
+    private Game game;
+
+    public GameWebSocketServer(InetSocketAddress address) {
         super(address);
         Injector.inject(this);
     }
 
+    public void initWithGame(Game game) {
+        this.game = game;
+    }
+
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        Debug.d("WebSocketMessageServer: New connection");
-        Debug.d("WebSocketMessageServer: connections.size() = " + connections().size());
-        conn.send(gson.toJson(new SocketMessage(SocketMessage.Type.GET, SocketMessage.Message.CLIENT_INFO)));
+        Debug.d("GameWebSocketServer: New connection");
+        Debug.d("GameWebSocketServer: connections.size() = " + connections().size());
+        conn.send(gson.toJson(new SocketMessage(SocketMessage.Type.POST, SocketMessage.Message.GAME, gson.toJson(game))));
+//        conn.send(gson.toJson(new SocketMessage(SocketMessage.Type.GET, SocketMessage.Message.CLIENT_INFO)));
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        Debug.d("WebSocketMessageServer: Close connection");
-        Debug.d("WebSocketMessageServer: connections.size() = "+connections().size());
+        Debug.d("GameWebSocketServer: Close connection");
+        Debug.d("GameWebSocketServer: connections.size() = "+connections().size());
         bus.post(new ClientStateChangedEvent(clientInfoMap.get(conn), ClientStateChangedEvent.State.DISCONNECTED));
     }
 
@@ -88,7 +94,7 @@ public class WebSocketMessageServer extends WebSocketServer {
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        Debug.e("WebSocketMessageServer onError:\n", ex);
+        Debug.e("GameWebSocketServer onError:\n", ex);
     }
 
     private void processReadiness(WebSocket conn) {

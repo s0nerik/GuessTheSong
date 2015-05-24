@@ -7,6 +7,12 @@ import android.util.Log;
 
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.adapters.GameAdapter;
+import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
+
+import butterknife.ButterKnife;
+import ru.noties.debug.Debug;
 
 public class GameActivity extends FragmentActivity {
 
@@ -14,22 +20,24 @@ public class GameActivity extends FragmentActivity {
 
     GameAdapter gAdapter;
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_game);
-//        ButterKnife.inject(this);
-//        Injector.inject(this);
-//
-//        Game g = (Game) getIntent().getExtras().getSerializable("game");
-//
-//        Debug.d(g.getDifficulty().getName());
-//    }
+    private GameWebSocketClient gameWebSocketClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        ButterKnife.inject(this);
+        Injector.inject(this);
+
+        Bundle extras = getIntent().getExtras();
+
+        Game game = (Game) extras.getSerializable("game");
+
+        boolean isMultiplayer = extras.getBoolean("multiplayer", false);
+
+        if (isMultiplayer) {
+            Debug.d("isMultiplayer");
+        }
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         gAdapter = new GameAdapter(getSupportFragmentManager());

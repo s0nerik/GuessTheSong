@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,17 @@ public class Game implements Serializable {
         }
 
         return cnt;
+    }
+
+    public static Game newRandom(List<Song> allSongs) {
+        Random random = new Random();
+        Difficulty.Level[] levels = Difficulty.Level.values();
+        Difficulty.Level randomLevel = levels[(int) (random.nextFloat()*(levels.length-1))];
+
+        List<Song> shuffled = new ArrayList<>(allSongs);
+        Collections.shuffle(shuffled);
+
+        return new Game.Creator().create(randomLevel, new ArrayList<>(shuffled.subList(0, random.nextInt(8) + 1)), shuffled);
     }
 
     public static class Creator {

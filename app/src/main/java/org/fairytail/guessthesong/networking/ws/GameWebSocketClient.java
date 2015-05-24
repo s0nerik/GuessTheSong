@@ -1,12 +1,16 @@
 package org.fairytail.guessthesong.networking.ws;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
+import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.networking.ClientInfoReceivedEvent;
+import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.networking.entities.ClientInfo;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 import org.fairytail.guessthesong.networking.entities.StartFromEntity;
@@ -21,7 +25,7 @@ import javax.inject.Inject;
 
 import ru.noties.debug.Debug;
 
-public class WebSocketMessageClient extends WebSocketClient {
+public class GameWebSocketClient extends WebSocketClient {
 
     @Inject
     Player player;
@@ -31,10 +35,12 @@ public class WebSocketMessageClient extends WebSocketClient {
     Gson gson;
     @Inject
     Prefs prefs;
+    @Inject
+    Context context;
 
     private ClientInfo clientInfo;
 
-    public WebSocketMessageClient(URI serverURI) {
+    public GameWebSocketClient(URI serverURI) {
         super(serverURI);
         Injector.inject(this);
         clientInfo = new ClientInfo(prefs.clientName().getOr(Build.MODEL));
@@ -42,7 +48,7 @@ public class WebSocketMessageClient extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        Debug.d("WebSocketMessageClient: opened with handshake:"
+        Debug.d("GameWebSocketClient: opened with handshake:"
                 + "\nStatus: " + handshakedata.getHttpStatus()
                 + "\nMessage: " + handshakedata.getHttpStatusMessage());
         bus.register(this);
@@ -50,7 +56,7 @@ public class WebSocketMessageClient extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        Debug.d("WebSocketMessageClient: \"" + message + "\"");
+        Debug.d("GameWebSocketClient: \"" + message + "\"");
 
         SocketMessage socketMessage = gson.fromJson(message, SocketMessage.class);
         String body = socketMessage.body;
@@ -66,7 +72,13 @@ public class WebSocketMessageClient extends WebSocketClient {
             }
         } else if (socketMessage.type == SocketMessage.Type.POST) {
             switch (socketMessage.message) {
+                case GAME:
+                    Debug.d("socketMessage: GAME");
+                    Game game = gson.fromJson(body, Game.class);
+                    startMultiplayerGameClient(game);
+                    break;
                 case PREPARE_AND_SEEK:
+                    Debug.d("socketMessage: PREPARE_AND_SEEK");
                     StartFromEntity startFromEntity = gson.fromJson(body, StartFromEntity.class);
                     player.prepareAndSeekTo(
                             startFromEntity.song,
@@ -75,12 +87,15 @@ public class WebSocketMessageClient extends WebSocketClient {
                     );
                     break;
                 case START:
+                    Debug.d("socketMessage: START");
                     player.start();
                     break;
                 case STOP:
+                    Debug.d("socketMessage: STOP");
                     player.stop();
                     break;
                 case CLIENT_INFO:
+                    Debug.d("socketMessage: CLIENT_INFO");
                     ClientInfo clientInfo = gson.fromJson(body, ClientInfo.class);
                     bus.post(new ClientInfoReceivedEvent(getConnection(), clientInfo));
                     break;
@@ -90,15 +105,24 @@ public class WebSocketMessageClient extends WebSocketClient {
         }
     }
 
+    private void startMultiplayerGameClient(Game game) {
+        Debug.d();
+        Intent intent = new Intent(context, GameActivity.class);
+        intent.putExtra("game", game);
+//        intent.putExtra("uri", getURI());
+        intent.putExtra("multiplayer", true);
+        context.startActivity(intent);
+    }
+
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        Debug.d("WebSocketMessageClient: closed:\nCode: "+code+" Reason: "+reason);
+        Debug.d("GameWebSocketClient: closed:\nCode: "+code+" Reason: "+reason);
 //        bus.post(new SocketClosedEvent());
         bus.unregister(this);
     }
 
     @Override
     public void onError(Exception ex) {
-        Debug.d("WebSocketMessageClient: error:\n" + ex);
+        Debug.d("GameWebSocketClient: error:\n" + ex);
     }
 }
