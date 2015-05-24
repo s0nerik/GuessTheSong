@@ -70,5 +70,6 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'info.hoang8f:fbutton:1.0.5'
+    compile 'com.github.rahatarmanahmed:circularprogressview:2.2.1'
     compile 'ru.noties:debug:1.1.3'
 }
