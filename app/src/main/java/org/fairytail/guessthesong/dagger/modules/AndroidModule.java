@@ -17,7 +17,6 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
 import org.fairytail.guessthesong.App;
-import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.activities.MainActivity;
 import org.fairytail.guessthesong.adapters.WiFiP2pDevicesAdapter;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
@@ -51,7 +50,6 @@ import static android.content.Context.WIFI_SERVICE;
         injects = {
                 // Activities
                 MainActivity.class,
-                GameActivity.class,
 
                 // Fragments
                 DifficultyFragment.class,
