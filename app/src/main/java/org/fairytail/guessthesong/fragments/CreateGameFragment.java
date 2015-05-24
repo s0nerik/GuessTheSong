@@ -55,23 +55,10 @@ public class CreateGameFragment extends Fragment {
 
         manager.requestGroupInfo(channel, group -> {
             if (group != null) {
-                Debug.d("group != null");
                 manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
-                        Debug.d();
-
-                        manager.createGroup(channel, new WifiP2pManager.ActionListener() {
-                            @Override
-                            public void onSuccess() {
-                                Debug.d();
-                            }
-
-                            @Override
-                            public void onFailure(int reason) {
-                                Debug.d("" + reason);
-                            }
-                        });
+                        createGroup();
                     }
 
                     @Override
@@ -80,17 +67,22 @@ public class CreateGameFragment extends Fragment {
                     }
                 });
             } else {
-                manager.createGroup(channel, new WifiP2pManager.ActionListener() {
-                    @Override
-                    public void onSuccess() {
-                        Debug.d();
-                    }
+                createGroup();
+            }
+        });
+    }
 
-                    @Override
-                    public void onFailure(int reason) {
-                        Debug.d("" + reason);
-                    }
-                });
+    private void createGroup() {
+        manager.createGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Debug.d("MANAGER: created");
+//                new WebSocketMessageServer(new InetSocketAddress())
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Debug.d("" + reason);
             }
         });
     }

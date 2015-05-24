@@ -159,12 +159,19 @@ public class MainActivity extends FragmentActivity {
 
     @OnClick(R.id.btn_create_game)
     public void onCreateGameClicked() {
-        getSupportFragmentManager().beginTransaction().add(new CreateGameFragment(), null).commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(new CreateGameFragment(), null)
+//                .add(android.R.id.content, new CreateGameFragment(), null)
+//                .addToBackStack("createGame")
+                .commit();
     }
 
     @OnClick(R.id.btn_join_game)
     public void onJoinGameClicked() {
-        getSupportFragmentManager().beginTransaction().add(new JoinGameFragment(), null).commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(android.R.id.content, new JoinGameFragment(), null)
+                .addToBackStack("joinGame")
+                .commit();
     }
 
     @OnMessage
