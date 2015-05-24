@@ -18,19 +18,22 @@ import com.squareup.otto.ThreadEnforcer;
 
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.activities.MainActivity;
+import org.fairytail.guessthesong.adapters.WiFiP2pDevicesAdapter;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.bus.MainThreadBus;
 import org.fairytail.guessthesong.db.SongsCursorGetter;
 import org.fairytail.guessthesong.fragments.CreateGameFragment;
-import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
 import org.fairytail.guessthesong.fragments.GameFragment;
+import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.ws.WebSocketMessageClient;
 import org.fairytail.guessthesong.networking.ws.WebSocketMessageServer;
 import org.fairytail.guessthesong.player.MusicPlayer;
 import org.fairytail.guessthesong.player.Player;
 import org.fairytail.guessthesong.prefs.Prefs;
+
+import java.net.InetSocketAddress;
 
 import javax.inject.Singleton;
 
@@ -53,6 +56,9 @@ import static android.content.Context.WIFI_SERVICE;
                 GameFragment.class,
                 JoinGameFragment.class,
                 CreateGameFragment.class,
+
+                // Adapters
+                WiFiP2pDevicesAdapter.class,
 
                 // Others
                 SongsCursorGetter.class,
@@ -163,4 +169,9 @@ public class AndroidModule {
         return new Gson();
     }
 
+    @Provides
+    @Singleton
+    WebSocketMessageServer provideWebSocketMessageServer() {
+        return new WebSocketMessageServer(new InetSocketAddress(4807));
+    }
 }
