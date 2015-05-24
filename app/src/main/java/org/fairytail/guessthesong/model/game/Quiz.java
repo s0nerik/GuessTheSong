@@ -10,6 +10,7 @@ import org.fairytail.guessthesong.model.Song;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import lombok.Data;
 
@@ -30,12 +31,11 @@ public class Quiz implements Serializable {
         this.correctSong = correctSong;
         this.variants = (ArrayList<Song>) variants;
         this.difficulty = difficulty;
+        startTime = (long) (new Random().nextFloat()*correctSong.getDuration());
+        endTime = startTime + difficulty.getSongDuration();
     }
 
     public void start() {
-        startTime = System.currentTimeMillis();
-        endTime = startTime + difficulty.getSongDuration();
-
         new Handler().postDelayed(() ->
                 App.bus.post(new QuizTimeOverEvent(this)), difficulty.getSongDuration());
     }

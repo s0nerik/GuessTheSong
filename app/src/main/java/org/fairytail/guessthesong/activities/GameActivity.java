@@ -11,10 +11,16 @@ import android.util.Log;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.adapters.GameAdapter;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
+import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.fragments.GameFragment;
 import org.fairytail.guessthesong.model.game.Difficulty;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
+
+import butterknife.ButterKnife;
+import ru.noties.debug.Debug;
 
 import java.util.ArrayList;
 
@@ -27,6 +33,18 @@ public class GameActivity extends FragmentActivity {
 
     GameAdapter gAdapter;
 
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_game);
+//        ButterKnife.inject(this);
+//        Injector.inject(this);
+//
+//        Game g = (Game) getIntent().getExtras().getSerializable("game");
+//
+//        Debug.d(g.getDifficulty().getName());
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,11 +52,18 @@ public class GameActivity extends FragmentActivity {
         ButterKnife.inject(this);
         Injector.inject(this);
 
-        Game g = (Game) getIntent().getExtras().getSerializable("game");
-        Debug.d(g.getDifficulty().getName());
+        Bundle extras = getIntent().getExtras();
+
+        Game game = (Game) extras.getSerializable("game");
+
+        boolean isMultiplayer = extras.getBoolean("multiplayer", false);
+
+        if (isMultiplayer) {
+            Debug.d("isMultiplayer");
+        }
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        gAdapter = new GameAdapter(getSupportFragmentManager(), g);
+        gAdapter = new GameAdapter(getSupportFragmentManager(), game);
         pager.setAdapter(gAdapter);
 
         pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {

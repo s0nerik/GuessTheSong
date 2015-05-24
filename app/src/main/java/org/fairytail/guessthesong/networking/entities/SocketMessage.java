@@ -11,7 +11,8 @@ public class SocketMessage {
         START, START_FROM, STOP,
         CURRENT_POSITION, IS_PLAYING,
         PAUSE, UNPAUSE,
-        CLIENT_INFO
+        CLIENT_INFO,
+        GAME
     }
 
     public enum Type {

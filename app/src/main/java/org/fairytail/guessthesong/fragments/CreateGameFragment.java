@@ -9,20 +9,28 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.joanzapata.android.asyncservice.api.annotation.InjectService;
+import com.joanzapata.android.asyncservice.api.annotation.OnMessage;
+import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.adapters.WiFiP2pDevicesAdapter;
+import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.db.Order;
 import org.fairytail.guessthesong.events.p2p.P2PBroadcastReceivedEvent;
 import org.fairytail.guessthesong.events.ui.WifiP2pDeviceSelectedEvent;
-import org.fairytail.guessthesong.networking.ws.WebSocketMessageServer;
+import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.networking.ws.GameWebSocketServer;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -44,7 +52,10 @@ public class CreateGameFragment extends Fragment {
     WifiP2pManager manager;
 
     @Inject
-    WebSocketMessageServer server;
+    GameWebSocketServer server;
+
+    @InjectService
+    SongsGetterService songsGetterService;
 
     private final IntentFilter intentFilter = new IntentFilter();
 
@@ -59,10 +70,13 @@ public class CreateGameFragment extends Fragment {
 
     private WiFiP2pDevicesAdapter adapter;
 
+    private boolean isCreatingGame = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.inject(this);
+        AsyncService.inject(this);
         bus.register(this);
 
         initIntentFilter();
@@ -116,7 +130,8 @@ public class CreateGameFragment extends Fragment {
             @Override
             public void onSuccess() {
                 Debug.d("MANAGER: created");
-                server.start();
+                isCreatingGame = true;
+                songsGetterService.loadAllSongs(Order.RANDOM);
             }
 
             @Override
@@ -136,6 +151,17 @@ public class CreateGameFragment extends Fragment {
     public void onDestroy() {
         bus.unregister(this);
         super.onDestroy();
+    }
+
+    @OnMessage
+    public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
+        Log.d(App.TAG, e.getSongs().toString());
+        if (isCreatingGame) {
+            server.initWithGame(Game.newRandom(e.getSongs()));
+            server.start();
+
+            isCreatingGame = false;
+        }
     }
 
     @Subscribe
