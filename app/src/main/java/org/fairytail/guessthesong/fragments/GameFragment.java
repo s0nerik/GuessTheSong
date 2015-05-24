@@ -3,6 +3,7 @@ package org.fairytail.guessthesong.fragments;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 
 import android.support.v4.app.Fragment;
@@ -22,10 +23,13 @@ import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
+import org.fairytail.guessthesong.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -38,10 +42,14 @@ public class GameFragment extends Fragment {
     @InjectView(R.id.game_layout)
     FrameLayout gameLayout;
 
+    @Inject
+    Player player;
+
     static final String ARGUMENT_PAGE_NUMBER = "arg_page_number";
 
     int pageNumber;
     ArrayList<Quiz> quizzes;
+    Quiz quiz;
     int backColor;
 
     public static GameFragment newInstance(int page, ArrayList<Quiz> quizzes) {
@@ -71,7 +79,8 @@ public class GameFragment extends Fragment {
         gameLayout.setBackgroundColor(backColor);
 
         quizzes = (ArrayList<Quiz>) getArguments().getSerializable("quizzes");
-        addVariants(quizzes.get(pageNumber));
+        quiz = quizzes.get(pageNumber);
+        addVariants(quiz);
 
         return view;
     }
@@ -80,6 +89,15 @@ public class GameFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Handler handler = new Handler();
+
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                player.prepare(quiz.getCorrectSong(), Player::start);
+            }
+        }, 1000);
     }
 
     public void addVariants(Quiz quiz) {
