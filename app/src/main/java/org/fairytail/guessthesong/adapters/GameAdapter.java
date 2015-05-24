@@ -6,9 +6,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import org.fairytail.guessthesong.fragments.GameFragment;
 import org.fairytail.guessthesong.model.game.Game;
-import org.fairytail.guessthesong.model.game.Quiz;
-
-import java.util.ArrayList;
 
 public class GameAdapter extends FragmentPagerAdapter {
 
@@ -22,7 +19,7 @@ public class GameAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return GameFragment.newInstance(position, game.getQuizzes());
+        return GameFragment.newInstance(game.getQuizzes().get(position));
     }
 
     @Override

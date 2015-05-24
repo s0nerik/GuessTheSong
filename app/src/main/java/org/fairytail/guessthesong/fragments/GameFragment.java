@@ -1,32 +1,25 @@
 package org.fairytail.guessthesong.fragments;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.fairytail.guessthesong.R;
-import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.player.Player;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -45,18 +38,15 @@ public class GameFragment extends Fragment {
     @Inject
     Player player;
 
-    static final String ARGUMENT_PAGE_NUMBER = "arg_page_number";
+    static final String ARG_QUIZ = "quiz";
 
-    int pageNumber;
-    ArrayList<Quiz> quizzes;
     Quiz quiz;
     int backColor;
 
-    public static GameFragment newInstance(int page, ArrayList<Quiz> quizzes) {
+    public static GameFragment newInstance(Quiz quiz) {
         GameFragment pageFragment = new GameFragment();
         Bundle arguments = new Bundle();
-        arguments.putInt(ARGUMENT_PAGE_NUMBER, page);
-        arguments.putSerializable("quizzes", quizzes);
+        arguments.putSerializable(ARG_QUIZ, quiz);
         pageFragment.setArguments(arguments);
         return pageFragment;
     }
@@ -65,7 +55,7 @@ public class GameFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.inject(this);
-        pageNumber = getArguments().getInt(ARGUMENT_PAGE_NUMBER);
+        quiz = (Quiz) getArguments().getSerializable(ARG_QUIZ);
 
         Random rnd = new Random();
         backColor = Color.argb(60, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
@@ -75,11 +65,9 @@ public class GameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game, container, false);
         ButterKnife.inject(this, view);
-        tvPage.setText("Page " + pageNumber);
+        tvPage.setText("Correct: " + quiz.getCorrectSong().getArtist() + " - " + quiz.getCorrectSong().getTitle());
         gameLayout.setBackgroundColor(backColor);
 
-        quizzes = (ArrayList<Quiz>) getArguments().getSerializable("quizzes");
-        quiz = quizzes.get(pageNumber);
         addVariants(quiz);
 
         return view;
@@ -90,7 +78,6 @@ public class GameFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         final Handler handler = new Handler();
-
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -104,13 +91,11 @@ public class GameFragment extends Fragment {
         LinearLayout.LayoutParams lParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        for (int i = 0; i < quiz.getVariants().size(); i++) {
-            Button btnVariant = new Button(this.getActivity());
-            btnVariant.setText(quiz.getVariants().get(i).getArtist() + " - " + quiz.getVariants().get(i).getTitle());
+        for (Song s : quiz.getVariants()) {
+            Button btnVariant = new Button(getActivity());
+            btnVariant.setText(s.getArtist() + " - " + s.getTitle());
 
-            final int finalI = i;
-
-            btnVariant.setOnClickListener(v -> quiz.check(quiz.getVariants().get(finalI)));
+            btnVariant.setOnClickListener(v -> quiz.check(s));
             gameVariants.addView(btnVariant, lParams);
 
             ViewGroup.LayoutParams params = btnVariant.getLayoutParams();
