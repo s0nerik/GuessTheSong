@@ -157,7 +157,7 @@ public class CreateGameFragment extends Fragment {
 
                         Debug.d("Peers:");
                         for (WifiP2pDevice p : peers) {
-                            Debug.d("deviceAddress: "+p.deviceAddress+"; deviceName: "+p.deviceName);
+                            Debug.d("deviceAddress: " + p.deviceAddress + "; deviceName: " + p.deviceName);
                         }
 
 //                        if (!peers.isEmpty()) {
@@ -216,7 +216,7 @@ public class CreateGameFragment extends Fragment {
 
     @Subscribe
     public void onDeviceSelected(WifiP2pDeviceSelectedEvent event) {
-        Debug.d("onDeviceSelected: "+peers.indexOf(event.device));
+        Debug.d("onDeviceSelected: " + peers.indexOf(event.device));
     }
 
     @Override
