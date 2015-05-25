@@ -30,8 +30,10 @@ import org.fairytail.guessthesong.db.Order;
 import org.fairytail.guessthesong.events.p2p.P2PBroadcastReceivedEvent;
 import org.fairytail.guessthesong.events.ui.WifiP2pDeviceSelectedEvent;
 import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.networking.http.StreamServer;
 import org.fairytail.guessthesong.networking.ws.GameWebSocketServer;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +54,10 @@ public class CreateGameFragment extends Fragment {
     WifiP2pManager manager;
 
     @Inject
-    GameWebSocketServer server;
+    GameWebSocketServer webSocketServer;
+
+    @Inject
+    StreamServer streamServer;
 
     @InjectService
     SongsGetterService songsGetterService;
@@ -157,8 +162,13 @@ public class CreateGameFragment extends Fragment {
     public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
         Log.d(App.TAG, e.getSongs().toString());
         if (isCreatingGame) {
-            server.initWithGame(Game.newRandom(e.getSongs()));
-            server.start();
+            webSocketServer.initWithGame(Game.newRandom(e.getSongs()));
+            webSocketServer.start();
+            try {
+                streamServer.start();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
 
             isCreatingGame = false;
         }
@@ -209,7 +219,7 @@ public class CreateGameFragment extends Fragment {
                         // After the group negotiation, we can determine the group owner.
                         if (info.groupFormed && info.isGroupOwner) {
                             // Do whatever tasks are specific to the group owner.
-                            // One common case is creating a server thread and accepting
+                            // One common case is creating a webSocketServer thread and accepting
                             // incoming connections.
                         } else if (info.groupFormed) {
                             // The other device acts as the client. In this case,

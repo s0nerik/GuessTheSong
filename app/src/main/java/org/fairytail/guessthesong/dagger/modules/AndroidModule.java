@@ -28,6 +28,7 @@ import org.fairytail.guessthesong.fragments.DifficultyFragment;
 import org.fairytail.guessthesong.fragments.GameFragment;
 import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.model.game.Quiz;
+import org.fairytail.guessthesong.networking.http.StreamServer;
 import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
 import org.fairytail.guessthesong.networking.ws.GameWebSocketServer;
 import org.fairytail.guessthesong.player.MusicPlayer;
@@ -67,7 +68,8 @@ import static android.content.Context.WIFI_SERVICE;
                 WiFiDirectBroadcastReceiver.class,
                 Quiz.class,
                 GameWebSocketServer.class,
-                GameWebSocketClient.class
+                GameWebSocketClient.class,
+                StreamServer.class
         },
         staticInjections = {
                 App.class
@@ -175,5 +177,11 @@ public class AndroidModule {
     @Singleton
     GameWebSocketServer provideWebSocketMessageServer() {
         return new GameWebSocketServer(new InetSocketAddress(4807));
+    }
+
+    @Provides
+    @Singleton
+    StreamServer provideStreamServer() {
+        return new StreamServer();
     }
 }

@@ -10,12 +10,15 @@ import com.squareup.otto.Bus;
 import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.networking.ClientInfoReceivedEvent;
+import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.entities.ClientInfo;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 import org.fairytail.guessthesong.networking.entities.StartFromEntity;
 import org.fairytail.guessthesong.player.Player;
 import org.fairytail.guessthesong.prefs.Prefs;
+import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -35,14 +38,15 @@ public class GameWebSocketClient extends WebSocketClient {
     Gson gson;
     @Inject
     Prefs prefs;
-    @Inject
-    Context context;
+
+    private Context context;
 
     private ClientInfo clientInfo;
 
-    public GameWebSocketClient(URI serverURI) {
+    public GameWebSocketClient(Context context, URI serverURI) {
         super(serverURI);
         Injector.inject(this);
+        this.context = context;
         clientInfo = new ClientInfo(prefs.clientName().getOr(Build.MODEL));
     }
 
@@ -75,6 +79,7 @@ public class GameWebSocketClient extends WebSocketClient {
                 case GAME:
                     Debug.d("socketMessage: GAME");
                     Game game = gson.fromJson(body, Game.class);
+                    convertGameToMultiplayerGame(getConnection(), game);
                     startMultiplayerGameClient(game);
                     break;
                 case PREPARE_AND_SEEK:
@@ -105,11 +110,23 @@ public class GameWebSocketClient extends WebSocketClient {
         }
     }
 
+    private void convertGameToMultiplayerGame(WebSocket connection, Game game) {
+        String host = getURI().getHost();
+//        String host = getConnection().getRemoteSocketAddress().getAddress().getHostAddress();
+        String streamUrl = "http://"+host+":8888/stream";
+
+        for (Quiz q : game.getQuizzes()) {
+            for (Song s : q.getVariants()) {
+                s.setSource(streamUrl);
+            }
+            q.getCorrectSong().setSource(streamUrl);
+        }
+    }
+
     private void startMultiplayerGameClient(Game game) {
         Debug.d();
         Intent intent = new Intent(context, GameActivity.class);
         intent.putExtra("game", game);
-//        intent.putExtra("uri", getURI());
         intent.putExtra("multiplayer", true);
         context.startActivity(intent);
     }

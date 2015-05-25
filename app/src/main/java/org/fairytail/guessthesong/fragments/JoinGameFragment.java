@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.adapters.WiFiP2pDevicesAdapter;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
@@ -164,14 +165,14 @@ public class JoinGameFragment extends Fragment {
                         // After the group negotiation, we can determine the group owner.
                         if (info.groupFormed && info.isGroupOwner) {
                             // Do whatever tasks are specific to the group owner.
-                            // One common case is creating a server thread and accepting
+                            // One common case is creating a webSocketServer thread and accepting
                             // incoming connections.
                         } else if (info.groupFormed) {
                             // The other device acts as the client. In this case,
                             // you'll want to create a client thread that connects to the group
                             // owner.
 
-                            gameWebSocketClient = new GameWebSocketClient(
+                            gameWebSocketClient = App.getWebSocketMessageClient(getActivity(),
                                     URI.create("ws://" + groupOwnerAddress.getHostAddress() + ":4807")
                             );
                             gameWebSocketClient.connect();

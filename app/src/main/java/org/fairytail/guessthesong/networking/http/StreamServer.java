@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import org.fairytail.guessthesong.App;
+import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.player.Player;
 
@@ -25,6 +26,9 @@ public class StreamServer extends NanoHTTPD {
     @Inject
     Player player;
 
+    @Inject
+    Context context;
+
     public static final String PORT = "8888";
 
     public interface Method {
@@ -40,13 +44,9 @@ public class StreamServer extends NanoHTTPD {
         String STREAM = SERVER_ADDRESS + Method.STREAM;
     }
 
-//    private boolean clientsCanManage = true;
-    private Context context;
-
-    public StreamServer(Context context) {
+    public StreamServer() {
         super(8888);
-        this.context = context;
-//        clientsCanManage = sharedPreferences.getBoolean("clients_can_manage", false);
+        Injector.inject(this);
     }
 
     @Override
