@@ -8,6 +8,9 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -17,7 +20,7 @@ import com.squareup.otto.Bus;
 
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.events.QuizTimeOverEvent;
+import org.fairytail.guessthesong.events.QuizSongChosenEvent;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.player.Player;
@@ -45,9 +48,7 @@ public class GameFragment extends Fragment {
 
     static final String ARG_QUIZ = "quiz";
 
-    QuizTimeOverEvent quizTimeOverEvent;
     Quiz quiz;
-
     int backColor;
 
     public static GameFragment newInstance(Quiz quiz) {
@@ -95,19 +96,24 @@ public class GameFragment extends Fragment {
         LinearLayout.LayoutParams lParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
 
+        final Animation animation = new AlphaAnimation(1, 0);
+        animation.setDuration(300);
+        animation.setInterpolator(new LinearInterpolator());
+        animation.setRepeatCount(1);
+        animation.setRepeatMode(Animation.REVERSE);
+
         for (Song s : quiz.getVariants()) {
             Button btnVariant = new Button(getActivity());
             btnVariant.setText(s.getArtist() + " - " + s.getTitle());
 
-            //btnVariant.setOnClickListener(v -> quiz.check(s));
             btnVariant.setOnClickListener(view -> {
-                //if(quiz.check(s)) {
                 if (quiz.check(s)) {
                     btnVariant.setBackgroundColor(Color.parseColor("#00FF00"));
                 } else {
                     btnVariant.setBackgroundColor(Color.parseColor("#FF0000"));
+                    btnVariant.startAnimation(animation);
                 }
-
+                bus.post(new QuizSongChosenEvent(quiz, s));
             });
 
             gameVariants.addView(btnVariant, lParams);

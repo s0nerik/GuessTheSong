@@ -1,12 +1,18 @@
 package org.fairytail.guessthesong.activities;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.adapters.GameAdapter;
+import org.fairytail.guessthesong.custom_views.NonSwipeableViewPager;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.events.QuizSongChosenEvent;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.player.Player;
@@ -21,6 +27,10 @@ public class GameActivity extends FragmentActivity {
     static final String TAG = "myLogs";
 
     GameAdapter gAdapter;
+    NonSwipeableViewPager pager;
+
+    @Inject
+    Bus bus;
 
     @Inject
     Player player;
@@ -34,6 +44,7 @@ public class GameActivity extends FragmentActivity {
         setContentView(R.layout.activity_game);
         ButterKnife.inject(this);
         Injector.inject(this);
+        bus.register(this);
 
         Bundle extras = getIntent().getExtras();
 
@@ -44,7 +55,7 @@ public class GameActivity extends FragmentActivity {
             Debug.d("isMultiplayer");
         }
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        pager = (NonSwipeableViewPager) findViewById(R.id.pager);
         gAdapter = new GameAdapter(getSupportFragmentManager(), game);
         pager.setAdapter(gAdapter);
 
@@ -66,6 +77,17 @@ public class GameActivity extends FragmentActivity {
             player.prepare(thisQuiz.getCorrectSong(), Player::start);
             thisQuiz.start();
         }
+    }
+
+    @Subscribe
+    public void onQuizSongChoosen(QuizSongChosenEvent event) {
+        new Handler().postDelayed(() -> pager.setCurrentItem(pager.getCurrentItem()+1), 1500);
+    }
+
+    @Override
+    public void onDestroy() {
+        bus.unregister(this);
+        super.onDestroy();
     }
 
 }
