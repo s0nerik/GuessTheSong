@@ -12,7 +12,7 @@ public class SongsMatcher {
     private final Song proposed;
 
     public boolean areSimilar() {
-        return similarityPercent(original.getTitle(), proposed.getTitle()) >= 90.0d;
+        return similarityPercent(original.getTitle(), proposed.getTitle()) >= 0.9d;
     }
 
     private double similarityPercent(String s1, String s2) {
