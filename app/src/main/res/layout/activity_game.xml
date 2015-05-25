@@ -6,9 +6,8 @@
     android:layout_height="match_parent"
     tools:context="org.fairytail.guessthesong.activities.GameActivity">
 
-    <android.support.v4.view.ViewPager
+    <org.fairytail.guessthesong.custom_views.NonSwipeableViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v4.view.ViewPager>
+        android:layout_height="match_parent"/>
 </RelativeLayout>
