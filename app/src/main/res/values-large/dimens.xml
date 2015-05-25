@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="name_left_margin">120dp</dimen>
+    <dimen name="diff_header_translation">300dp</dimen>
+</resources>

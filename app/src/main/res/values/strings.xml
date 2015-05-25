@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Guess The Song!</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="single_player">SINGLE PLAYER</string>
+    <string name="create_game">CREATE GAME</string>
+    <string name="join_game">JOIN GAME</string>
+    <string name="choose_difficulty">Choose difficulty</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_normal">Normal</string>
+    <string name="difficulty_hard">Hard</string>
+    <string name="title_activity_difficulty">DifficultyActivity</string>
+    <string name="title_activity_game">GameActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="whats_that_song">What\'s that song?</string>
+
+</resources>

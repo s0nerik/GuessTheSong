@@ -1,0 +1,55 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@drawable/bg">
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/btn_single_player"
+        android:layout_above="@+id/btn_create_game"
+        android:text="@string/single_player"
+        app:buttonColor="@color/fbutton_color_clouds"
+        style="@style/btn_main_activity" />
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/btn_create_game"
+        android:layout_above="@+id/btn_join_game"
+        android:text="@string/create_game"
+        app:buttonColor="@color/fbutton_color_sun_flower"
+        style="@style/btn_main_activity" />
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/btn_join_game"
+        android:layout_alignParentBottom="true"
+        android:text="@string/join_game"
+        android:layout_marginBottom="32dp"
+        app:buttonColor="#ffd52a37"
+        style="@style/btn_main_activity" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/name_height"
+            android:id="@+id/imageView"
+            android:src="@drawable/name"
+            android:scaleType="centerInside"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/vinyl_size"
+            android:id="@+id/img"
+            android:scaleType="centerInside"
+            android:src="@drawable/vinyl"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+
+</RelativeLayout>
