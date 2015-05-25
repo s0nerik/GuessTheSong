@@ -39,4 +39,14 @@
         </LinearLayout>
     </ScrollView>
 
+    <TextView
+        android:id="@+id/waiting"
+        android:gravity="center"
+        android:layout_gravity="bottom"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Waiting for other players..."
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+
 </FrameLayout>

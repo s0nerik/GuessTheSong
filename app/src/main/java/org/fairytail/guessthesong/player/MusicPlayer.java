@@ -17,7 +17,8 @@ public class MusicPlayer extends BaseMusicPlayer {
 
     @Override
     protected MediaPlayer.OnPreparedListener getOnPreparedListener() {
-        return MediaPlayer::start;
+        return mp -> Debug.d("OnPreparedListener");
+//        return MediaPlayer::start;
     }
 
     @Override

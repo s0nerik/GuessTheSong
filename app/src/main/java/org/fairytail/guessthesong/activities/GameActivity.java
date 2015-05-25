@@ -20,6 +20,7 @@ import org.fairytail.guessthesong.player.Player;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import ru.noties.debug.Debug;
 
 public class GameActivity extends FragmentActivity {
@@ -27,7 +28,6 @@ public class GameActivity extends FragmentActivity {
     static final String TAG = "myLogs";
 
     GameAdapter gAdapter;
-    NonSwipeableViewPager pager;
 
     @Inject
     Bus bus;
@@ -35,8 +35,11 @@ public class GameActivity extends FragmentActivity {
     @Inject
     Player player;
 
+    @InjectView(R.id.pager)
+    NonSwipeableViewPager pager;
+
     private Game game;
-    private boolean isMultiplayer;
+    public boolean isMultiplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +58,6 @@ public class GameActivity extends FragmentActivity {
             Debug.d("isMultiplayer");
         }
 
-        pager = (NonSwipeableViewPager) findViewById(R.id.pager);
         gAdapter = new GameAdapter(getSupportFragmentManager(), game);
         pager.setAdapter(gAdapter);
 
@@ -72,16 +74,16 @@ public class GameActivity extends FragmentActivity {
     }
 
     private void pageSelectedListener(int position) {
-//        if (!isMultiplayer) {
+        if (!isMultiplayer) {
             Quiz thisQuiz = game.getQuizzes().get(position);
-            player.prepare(thisQuiz.getCorrectSong(), Player::start);
+            player.prepareAndSeekTo(thisQuiz.getCorrectSong(), 40 * 1000, Player::start);
             thisQuiz.start();
-//        }
+        }
     }
 
     @Subscribe
     public void onQuizSongChoosen(QuizSongChosenEvent event) {
-        new Handler().postDelayed(() -> pager.setCurrentItem(pager.getCurrentItem()+1), 1500);
+        new Handler().postDelayed(() -> pager.setCurrentItem(pager.getCurrentItem() + 1), 1500);
     }
 
     @Override

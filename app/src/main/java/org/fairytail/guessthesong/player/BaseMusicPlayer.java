@@ -4,6 +4,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.annotation.Nullable;
 
+import org.fairytail.guessthesong.App;
+import org.fairytail.guessthesong.events.PlaybackStateChangedEvent;
 import org.fairytail.guessthesong.model.Song;
 
 import java.io.IOException;
@@ -17,7 +19,7 @@ public abstract class BaseMusicPlayer implements Player {
     private Song currentSong;
 
     private interface PlayerDelegate {
-        void start();
+//        void start();
         void pause();
         void stop();
     }
@@ -72,4 +74,10 @@ public abstract class BaseMusicPlayer implements Player {
             mp.seekTo(msec);
         });
     }
+
+    public void start() {
+        player.start();
+        App.bus.post(new PlaybackStateChangedEvent(PlaybackStateChangedEvent.State.STARTED));
+    }
+
 }

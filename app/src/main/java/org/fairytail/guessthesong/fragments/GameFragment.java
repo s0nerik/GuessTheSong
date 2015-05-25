@@ -17,9 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.fairytail.guessthesong.R;
+import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.events.PlaybackStateChangedEvent;
 import org.fairytail.guessthesong.events.QuizSongChosenEvent;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Quiz;
@@ -41,6 +44,8 @@ public class GameFragment extends Fragment {
     LinearLayout gameVariants;
     @InjectView(R.id.game_layout)
     FrameLayout gameLayout;
+    @InjectView(R.id.waiting)
+    TextView waiting;
 
     @Inject
     Player player;
@@ -78,7 +83,7 @@ public class GameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game, container, false);
         ButterKnife.inject(this, view);
-        tvPage.setText("Correct: " + quiz.getCorrectSong().getArtist() + " - " + quiz.getCorrectSong().getTitle());
+//        tvPage.setText("Correct: " + quiz.getCorrectSong().getArtist() + " - " + quiz.getCorrectSong().getTitle());
         gameLayout.setBackgroundColor(backColor);
 
         buttons = new ArrayList<>();
@@ -89,12 +94,25 @@ public class GameFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (((GameActivity) getActivity()).isMultiplayer) {
+            waiting.setVisibility(View.VISIBLE);
+            gameVariants.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         bus.unregister(this);
+    }
+
+    @Subscribe
+    public void onPlaybackStateChanged(PlaybackStateChangedEvent event) {
+        if (((GameActivity) getActivity()).isMultiplayer && event.state == PlaybackStateChangedEvent.State.STARTED) {
+            waiting.setVisibility(View.GONE);
+            gameVariants.setVisibility(View.VISIBLE);
+        }
     }
 
     public void addVariants(Quiz quiz) {
@@ -137,4 +155,9 @@ public class GameFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+    }
 }

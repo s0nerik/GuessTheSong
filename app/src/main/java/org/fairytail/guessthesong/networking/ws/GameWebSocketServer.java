@@ -1,5 +1,7 @@
 package org.fairytail.guessthesong.networking.ws;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
@@ -10,6 +12,7 @@ import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.networking.entities.ClientInfo;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 import org.fairytail.guessthesong.networking.entities.StartFromEntity;
+import org.fairytail.guessthesong.player.Player;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -23,6 +26,13 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import ru.noties.debug.Debug;
+
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Message.GAME;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Message.PLAYBACK_START;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Message.PREPARE_AND_SEEK;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Message.START_GAME;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Type.GET;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Type.POST;
 
 public class GameWebSocketServer extends WebSocketServer {
 
@@ -40,6 +50,9 @@ public class GameWebSocketServer extends WebSocketServer {
     @Inject
     Bus bus;
 
+    @Inject
+    Player player;
+
     private Game game;
 
     public GameWebSocketServer(InetSocketAddress address) {
@@ -55,7 +68,7 @@ public class GameWebSocketServer extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         Debug.d("GameWebSocketServer: New connection");
         Debug.d("GameWebSocketServer: connections.size() = " + connections().size());
-        conn.send(gson.toJson(new SocketMessage(SocketMessage.Type.POST, SocketMessage.Message.GAME, gson.toJson(game))));
+        conn.send(gson.toJson(new SocketMessage(POST, GAME, gson.toJson(game))));
 //        conn.send(gson.toJson(new SocketMessage(SocketMessage.Type.GET, SocketMessage.Message.CLIENT_INFO)));
     }
 
@@ -73,25 +86,48 @@ public class GameWebSocketServer extends WebSocketServer {
         SocketMessage socketMessage = gson.fromJson(message, SocketMessage.class);
         String body = socketMessage.body;
 
-        if (socketMessage.type == SocketMessage.Type.GET) {
+        if (socketMessage.type == GET) {
             Debug.e("Can't process message: " + socketMessage.message.name());
-        } else if (socketMessage.type == SocketMessage.Type.POST) {
+        } else if (socketMessage.type == POST) { // Client returned some status (Assume OK)
+//            if (socketMessage.status == OK) {
+//                switch (socketMessage.message) {
+//                    case GAME:
+//                        processReadiness(conn, START_GAME);
+//                        break;
+//                    case START_GAME:
+//                        conn.send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, gson.toJson(new StartFromEntity(0, game.getQuizzes().get(0).getCorrectSong())))));
+//                        break;
+//                    case PREPARE_AND_SEEK:
+//                        processReadiness(conn, PLAYBACK_START);
+//                        break;
+//                    default:
+//                        Debug.e("Unknown message: "+socketMessage.message.name());
+//                }
+//            }
             switch (socketMessage.message) {
-                case START_GAME:
-                    conn.send(gson.toJson(new SocketMessage(SocketMessage.Type.POST, SocketMessage.Message.PREPARE_AND_SEEK, gson.toJson(new StartFromEntity(0, game.getQuizzes().get(0).getCorrectSong())))));
-                    break;
-                case GAME:
-                    processReadiness(conn, SocketMessage.Message.START_GAME);
-                    break;
-                case PREPARE:
-                case PREPARE_AND_SEEK:
-//                    processReadiness(conn, SocketMessage.Message.START);
-                    break;
                 case CLIENT_INFO:
+                    Debug.d("webSocket: CLIENT_INFO");
                     processClientInfo(conn, gson.fromJson(body, ClientInfo.class));
                     break;
+                case GAME:
+                    Debug.d("webSocket: GAME");
+                    processReadiness(conn, START_GAME);
+                    break;
+                case START_GAME:
+                    Debug.d("webSocket: START_GAME");
+                    player.prepareAndSeekTo(game.getQuizzes().get(0).getCorrectSong(), 40 * 1000, null);
+                    conn.send(gson.toJson(
+                            new SocketMessage(POST, PREPARE_AND_SEEK,
+                                    gson.toJson(new StartFromEntity(40 * 1000, 0))
+                            )
+                    ));
+                    break;
+                case PREPARE_AND_SEEK:
+                    Debug.d("webSocket: PREPARE_AND_SEEK");
+                    processReadiness(conn, PLAYBACK_START, () -> player.start());
+                    break;
                 default:
-                    Debug.e("Can't process message: "+socketMessage.message.name());
+                    Debug.e("Unknown message: "+socketMessage.message.name());
             }
         }
 
@@ -104,6 +140,10 @@ public class GameWebSocketServer extends WebSocketServer {
     }
 
     private void processReadiness(WebSocket conn, SocketMessage.Message message) {
+        processReadiness(conn, message, null);
+    }
+
+    private void processReadiness(WebSocket conn, SocketMessage.Message message, @Nullable Runnable runnable) {
         if (ready == null) {
             ready = new HashSet<>();
         }
@@ -112,7 +152,8 @@ public class GameWebSocketServer extends WebSocketServer {
         bus.post(new ClientReadyEvent(conn));
 
         if(ready.size() == connections().size()) {
-            conn.send(gson.toJson(new SocketMessage(SocketMessage.Type.POST, message)));
+            if (runnable != null) runnable.run();
+            conn.send(gson.toJson(new SocketMessage(POST, message)));
 //            bus.post(new AllClientsReadyEvent());
             ready = null;
         }

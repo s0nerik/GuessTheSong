@@ -27,6 +27,12 @@ import javax.inject.Inject;
 
 import ru.noties.debug.Debug;
 
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Message.GAME;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Message.PREPARE_AND_SEEK;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Message.START_GAME;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Status.OK;
+import static org.fairytail.guessthesong.networking.entities.SocketMessage.Type.POST;
+
 public class GameWebSocketClient extends WebSocketClient {
 
     @Inject
@@ -70,13 +76,28 @@ public class GameWebSocketClient extends WebSocketClient {
             switch (socketMessage.message) {
                 case CLIENT_INFO:
                     String info = gson.toJson(clientInfo, ClientInfo.class);
-                    send(gson.toJson(new SocketMessage(SocketMessage.Type.POST, SocketMessage.Message.CLIENT_INFO, info)));
+                    send(gson.toJson(new SocketMessage(POST, SocketMessage.Message.CLIENT_INFO, info)));
                     break;
                 default:
                     Debug.e("Can't process message: "+socketMessage.message.name());
             }
-        } else if (socketMessage.type == SocketMessage.Type.POST) {
+        } else if (socketMessage.type == POST) {
             switch (socketMessage.message) {
+                case CLIENT_INFO:
+                    Debug.d("socketMessage: CLIENT_INFO");
+                    ClientInfo clientInfo = gson.fromJson(body, ClientInfo.class);
+                    bus.post(new ClientInfoReceivedEvent(getConnection(), clientInfo));
+                    break;
+                case GAME:
+                    Debug.d("socketMessage: GAME");
+                    game = gson.fromJson(body, Game.class);
+                    convertGameToMultiplayerGame(game);
+                    send(gson.toJson(new SocketMessage(
+                                    POST,
+                                    GAME,
+                                    OK))
+                    );
+                    break;
                 case START_GAME:
                     Debug.d("socketMessage: START_GAME");
                     if (game == null) {
@@ -84,47 +105,27 @@ public class GameWebSocketClient extends WebSocketClient {
                     }
                     startMultiplayerGameClient(game);
                     send(gson.toJson(new SocketMessage(
-                                    SocketMessage.Type.POST,
-                                    SocketMessage.Message.START_GAME,
-                                    SocketMessage.Status.OK))
-                    );
-                    break;
-                case GAME:
-                    Debug.d("socketMessage: GAME");
-                    game = gson.fromJson(body, Game.class);
-                    convertGameToMultiplayerGame(game);
-                    send(gson.toJson(new SocketMessage(
-                            SocketMessage.Type.POST,
-                            SocketMessage.Message.GAME,
-                            SocketMessage.Status.OK))
+                                    POST,
+                                    START_GAME,
+                                    OK))
                     );
                     break;
                 case PREPARE_AND_SEEK:
                     Debug.d("socketMessage: PREPARE_AND_SEEK");
                     StartFromEntity startFromEntity = gson.fromJson(body, StartFromEntity.class);
                     player.prepareAndSeekTo(
-                            startFromEntity.song,
+                            game.getQuizzes().get(startFromEntity.quizIndex).getCorrectSong(),
                             startFromEntity.time,
-                            p -> send(gson.toJson(new SocketMessage(SocketMessage.Type.POST, SocketMessage.Message.PREPARE_AND_SEEK, SocketMessage.Status.OK)))
-                    );
-                    send(gson.toJson(new SocketMessage(
-                                    SocketMessage.Type.POST,
-                                    SocketMessage.Message.PREPARE_AND_SEEK,
-                                    SocketMessage.Status.OK))
+                            p -> send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)))
                     );
                     break;
-                case START:
+                case PLAYBACK_START:
                     Debug.d("socketMessage: START");
                     player.start();
                     break;
-                case STOP:
+                case PLAYBACK_STOP:
                     Debug.d("socketMessage: STOP");
                     player.stop();
-                    break;
-                case CLIENT_INFO:
-                    Debug.d("socketMessage: CLIENT_INFO");
-                    ClientInfo clientInfo = gson.fromJson(body, ClientInfo.class);
-                    bus.post(new ClientInfoReceivedEvent(getConnection(), clientInfo));
                     break;
                 default:
                     Debug.e("Can't process message: "+socketMessage.message.name());

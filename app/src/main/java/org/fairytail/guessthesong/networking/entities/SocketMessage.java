@@ -7,12 +7,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SocketMessage {
     public enum Message {
-        PREPARE, PREPARE_AND_SEEK, SEEK_TO,
-        START, START_FROM, STOP,
-        CURRENT_POSITION, IS_PLAYING,
-        PAUSE, UNPAUSE,
         CLIENT_INFO,
-        GAME, START_GAME
+        GAME,
+        START_GAME,
+        PREPARE_AND_SEEK,
+        PLAYBACK_START, PLAYBACK_STOP,
+        GAME_RESULTS,
+        ALL_GAME_RESULTS
     }
 
     public enum Type {
