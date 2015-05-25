@@ -85,6 +85,12 @@ public class GameActivity extends FragmentActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        player.stop();
+    }
+
+    @Override
     public void onDestroy() {
         bus.unregister(this);
         super.onDestroy();
