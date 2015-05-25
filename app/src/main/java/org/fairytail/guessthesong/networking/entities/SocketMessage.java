@@ -12,7 +12,7 @@ public class SocketMessage {
         CURRENT_POSITION, IS_PLAYING,
         PAUSE, UNPAUSE,
         CLIENT_INFO,
-        GAME
+        GAME, START_GAME
     }
 
     public enum Type {

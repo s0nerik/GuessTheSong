@@ -18,7 +18,6 @@ import org.fairytail.guessthesong.networking.entities.SocketMessage;
 import org.fairytail.guessthesong.networking.entities.StartFromEntity;
 import org.fairytail.guessthesong.player.Player;
 import org.fairytail.guessthesong.prefs.Prefs;
-import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -42,6 +41,8 @@ public class GameWebSocketClient extends WebSocketClient {
     private Context context;
 
     private ClientInfo clientInfo;
+
+    private Game game;
 
     public GameWebSocketClient(Context context, URI serverURI) {
         super(serverURI);
@@ -76,11 +77,27 @@ public class GameWebSocketClient extends WebSocketClient {
             }
         } else if (socketMessage.type == SocketMessage.Type.POST) {
             switch (socketMessage.message) {
+                case START_GAME:
+                    Debug.d("socketMessage: START_GAME");
+                    if (game == null) {
+                        throw new RuntimeException("game == null");
+                    }
+                    startMultiplayerGameClient(game);
+                    send(gson.toJson(new SocketMessage(
+                                    SocketMessage.Type.POST,
+                                    SocketMessage.Message.START_GAME,
+                                    SocketMessage.Status.OK))
+                    );
+                    break;
                 case GAME:
                     Debug.d("socketMessage: GAME");
-                    Game game = gson.fromJson(body, Game.class);
-                    convertGameToMultiplayerGame(getConnection(), game);
-                    startMultiplayerGameClient(game);
+                    game = gson.fromJson(body, Game.class);
+                    convertGameToMultiplayerGame(game);
+                    send(gson.toJson(new SocketMessage(
+                            SocketMessage.Type.POST,
+                            SocketMessage.Message.GAME,
+                            SocketMessage.Status.OK))
+                    );
                     break;
                 case PREPARE_AND_SEEK:
                     Debug.d("socketMessage: PREPARE_AND_SEEK");
@@ -89,6 +106,11 @@ public class GameWebSocketClient extends WebSocketClient {
                             startFromEntity.song,
                             startFromEntity.time,
                             p -> send(gson.toJson(new SocketMessage(SocketMessage.Type.POST, SocketMessage.Message.PREPARE_AND_SEEK, SocketMessage.Status.OK)))
+                    );
+                    send(gson.toJson(new SocketMessage(
+                                    SocketMessage.Type.POST,
+                                    SocketMessage.Message.PREPARE_AND_SEEK,
+                                    SocketMessage.Status.OK))
                     );
                     break;
                 case START:
@@ -110,9 +132,8 @@ public class GameWebSocketClient extends WebSocketClient {
         }
     }
 
-    private void convertGameToMultiplayerGame(WebSocket connection, Game game) {
+    private void convertGameToMultiplayerGame(Game game) {
         String host = getURI().getHost();
-//        String host = getConnection().getRemoteSocketAddress().getAddress().getHostAddress();
         String streamUrl = "http://"+host+":8888/stream";
 
         for (Quiz q : game.getQuizzes()) {

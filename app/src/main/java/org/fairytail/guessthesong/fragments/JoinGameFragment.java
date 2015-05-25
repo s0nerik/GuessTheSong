@@ -172,10 +172,6 @@ public class JoinGameFragment extends Fragment {
                                     URI.create("ws://" + groupOwnerAddress.getHostAddress() + ":4807")
                             );
                             gameWebSocketClient.connect();
-
-//                            Intent intent = new Intent(getActivity(), GameActivity.class);
-//                            intent.putExtra("game", new Game.Creator().create(Game.Type.MULTIPLAYER, ))
-//                            startActivity();
                         }
                     });
                 }
