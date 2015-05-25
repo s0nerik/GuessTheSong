@@ -3,12 +3,15 @@ package org.fairytail.guessthesong.activities;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.adapters.GameAdapter;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.model.game.Quiz;
+import org.fairytail.guessthesong.player.Player;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import ru.noties.debug.Debug;
@@ -19,6 +22,12 @@ public class GameActivity extends FragmentActivity {
 
     GameAdapter gAdapter;
 
+    @Inject
+    Player player;
+
+    private Game game;
+    private boolean isMultiplayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,9 +37,8 @@ public class GameActivity extends FragmentActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        Game game = (Game) extras.getSerializable("game");
-
-        boolean isMultiplayer = extras.getBoolean("multiplayer", false);
+        game = (Game) extras.getSerializable("game");
+        isMultiplayer = extras.getBoolean("multiplayer", false);
 
         if (isMultiplayer) {
             Debug.d("isMultiplayer");
@@ -40,22 +48,24 @@ public class GameActivity extends FragmentActivity {
         gAdapter = new GameAdapter(getSupportFragmentManager(), game);
         pager.setAdapter(gAdapter);
 
-        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
+        pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                Log.d(TAG, "onPageSelected, position = " + position);
-            }
-
-            @Override
-            public void onPageScrolled(int position, float positionOffset,
-                                       int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
+                pageSelectedListener(position);
             }
         });
+
+        if (pager.getCurrentItem() == 0) {
+            pageSelectedListener(0);
+        }
+    }
+
+    private void pageSelectedListener(int position) {
+        if (!isMultiplayer) {
+            Quiz thisQuiz = game.getQuizzes().get(position);
+            player.prepare(thisQuiz.getCorrectSong(), Player::start);
+            thisQuiz.start();
+        }
     }
 
 }

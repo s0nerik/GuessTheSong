@@ -1,6 +1,5 @@
 package org.fairytail.guessthesong.adapters;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
@@ -18,7 +17,7 @@ public class GameAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int position) {
+    public GameFragment getItem(int position) {
         return GameFragment.newInstance(game.getQuizzes().get(position));
     }
 

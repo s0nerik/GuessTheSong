@@ -2,6 +2,7 @@ package org.fairytail.guessthesong.player;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.support.annotation.Nullable;
 
 import org.fairytail.guessthesong.model.Song;
 
@@ -52,20 +53,20 @@ public abstract class BaseMusicPlayer implements Player {
     }
 
     @Override
-    public void prepare(Song song, ActionCompletedListener listener) {
+    public void prepare(Song song, @Nullable ActionCompletedListener listener) {
         prepareWithListener(song, mp -> {
             getOnPreparedListener().onPrepared(mp);
-            listener.onActionCompleted(this);
+            if (listener != null) listener.onActionCompleted(this);
         });
     }
 
     @Override
-    public void prepareAndSeekTo(Song song, int msec, ActionCompletedListener listener) {
+    public void prepareAndSeekTo(Song song, int msec, @Nullable ActionCompletedListener listener) {
         prepareWithListener(song, mp -> {
             mp.setOnSeekCompleteListener(mediaPlayer -> {
                 getOnPreparedListener().onPrepared(mp);
                 getOnSeekCompleteListener().onSeekComplete(mp);
-                listener.onActionCompleted(BaseMusicPlayer.this);
+                if (listener != null) listener.onActionCompleted(BaseMusicPlayer.this);
                 mp.setOnSeekCompleteListener(getOnSeekCompleteListener());
             });
             mp.seekTo(msec);

@@ -195,10 +195,6 @@ public class CreateGameFragment extends Fragment {
                         for (WifiP2pDevice p : peers) {
                             Debug.d("deviceAddress: " + p.deviceAddress + "; deviceName: " + p.deviceName);
                         }
-
-//                        if (!peers.isEmpty()) {
-//                            connect(0);
-//                        }
                     });
                 }
                 break;

@@ -2,7 +2,6 @@ package org.fairytail.guessthesong.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
@@ -13,12 +12,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.view.View.OnClickListener;
 
+import com.squareup.otto.Bus;
 
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.events.QuizSongChosenEvent;
 import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Quiz;
@@ -42,10 +40,14 @@ public class GameFragment extends Fragment {
     @Inject
     Player player;
 
+    @Inject
+    Bus bus;
+
     static final String ARG_QUIZ = "quiz";
 
     QuizTimeOverEvent quizTimeOverEvent;
     Quiz quiz;
+
     int backColor;
 
     public static GameFragment newInstance(Quiz quiz) {
@@ -57,25 +59,10 @@ public class GameFragment extends Fragment {
     }
 
     @Override
-    public void setMenuVisibility(final boolean visible) {
-        super.setMenuVisibility(visible);
-        if (visible) {
-            final Handler handler = new Handler();
-
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    player.prepare(quiz.getCorrectSong(), Player::start);
-                    quiz.start();
-                }
-            }, 1000);
-        }
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.inject(this);
+        bus.register(this);
         quiz = (Quiz) getArguments().getSerializable(ARG_QUIZ);
 
         Random rnd = new Random();
@@ -96,6 +83,12 @@ public class GameFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        bus.unregister(this);
     }
 
     public void addVariants(Quiz quiz) {
