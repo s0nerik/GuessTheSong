@@ -1,0 +1,11 @@
+extern
+node_modules
+tmp
+vendor
+.idea/workspace.xml
+.idea/misc.xml
+local.properties
+.idea
+.gradle
+*.iml
+build
