@@ -28,6 +28,7 @@ import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
+import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.game.Difficulty;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.player.Player;

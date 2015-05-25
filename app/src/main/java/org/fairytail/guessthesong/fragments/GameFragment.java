@@ -13,9 +13,13 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.view.View.OnClickListener;
+
 
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.events.QuizSongChosenEvent;
+import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.player.Player;
@@ -40,6 +44,7 @@ public class GameFragment extends Fragment {
 
     static final String ARG_QUIZ = "quiz";
 
+    QuizTimeOverEvent quizTimeOverEvent;
     Quiz quiz;
     int backColor;
 
@@ -49,6 +54,22 @@ public class GameFragment extends Fragment {
         arguments.putSerializable(ARG_QUIZ, quiz);
         pageFragment.setArguments(arguments);
         return pageFragment;
+    }
+
+    @Override
+    public void setMenuVisibility(final boolean visible) {
+        super.setMenuVisibility(visible);
+        if (visible) {
+            final Handler handler = new Handler();
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    player.prepare(quiz.getCorrectSong(), Player::start);
+                    quiz.start();
+                }
+            }, 1000);
+        }
     }
 
     @Override
@@ -69,22 +90,12 @@ public class GameFragment extends Fragment {
         gameLayout.setBackgroundColor(backColor);
 
         addVariants(quiz);
-
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        final Handler handler = new Handler();
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                player.prepare(quiz.getCorrectSong(), Player::start);
-            }
-        }, 1000);
     }
 
     public void addVariants(Quiz quiz) {
@@ -95,7 +106,17 @@ public class GameFragment extends Fragment {
             Button btnVariant = new Button(getActivity());
             btnVariant.setText(s.getArtist() + " - " + s.getTitle());
 
-            btnVariant.setOnClickListener(v -> quiz.check(s));
+            //btnVariant.setOnClickListener(v -> quiz.check(s));
+            btnVariant.setOnClickListener(view -> {
+                //if(quiz.check(s)) {
+                if (quiz.check(s)) {
+                    btnVariant.setBackgroundColor(Color.parseColor("#00FF00"));
+                } else {
+                    btnVariant.setBackgroundColor(Color.parseColor("#FF0000"));
+                }
+
+            });
+
             gameVariants.addView(btnVariant, lParams);
 
             ViewGroup.LayoutParams params = btnVariant.getLayoutParams();
