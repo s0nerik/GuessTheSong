@@ -22,8 +22,6 @@ import com.sefford.circularprogressdrawable.CircularProgressDrawable;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Injector;
 
-import java.util.Random;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 

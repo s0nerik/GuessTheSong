@@ -27,11 +27,6 @@ import ru.noties.debug.Debug;
 
 public class GameActivity extends FragmentActivity {
 
-    static final String TAG = "myLogs";
-
-    GameAdapter gAdapter;
-    NonSwipeableViewPager pager;
-
     @Inject
     Bus bus;
 
@@ -42,7 +37,8 @@ public class GameActivity extends FragmentActivity {
     NonSwipeableViewPager pager;
 
     private Game game;
-    private boolean isMultiplayer;
+    GameAdapter gAdapter;
+    public boolean isMultiplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

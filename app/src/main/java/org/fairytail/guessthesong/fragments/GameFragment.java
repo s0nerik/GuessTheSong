@@ -61,10 +61,6 @@ public class GameFragment extends Fragment {
     Quiz quiz;
     int backColor;
 
-    public ImageView getImageView(){
-        return gameVinyl;
-    }
-
     List<Button> buttons;
 
     public static GameFragment newInstance(Quiz quiz) {
