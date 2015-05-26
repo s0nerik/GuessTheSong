@@ -11,8 +11,22 @@
     <string name="difficulty_hard">Hard</string>
     <string name="title_activity_difficulty">DifficultyActivity</string>
     <string name="title_activity_game">GameActivity</string>
+    <string name="title_activity_score">ScoreActivity</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="whats_that_song">What\'s that song?</string>
+
+    <string name="button_style_1_text">Indeterminate + Center fill</string>
+    <string name="button_style_2_text">Coloured fill</string>
+    <string name="button_style_3_text">Sling empty</string>
+    <string name="button_style_4_text">Pulse</string>
+    <string name="total_observations">2375</string>
+    <string name="home_screen_observations">OBSERVATIONS</string>
+    <string name="percent_value">65%</string>
+    <string name="home_screen_observed_compliance">OBSERVED\\nCOMPLIANCE</string>
+    <string name="content_description">This is an image…</string>
+
+
+    <string name="curved_text_value">In/Out Facility</string>
 
 </resources>

@@ -13,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,6 +41,8 @@ import butterknife.InjectView;
 public class GameFragment extends Fragment {
     @InjectView(R.id.tvPage)
     TextView tvPage;
+    @InjectView(R.id.game_vinyl)
+    ImageView gameVinyl;
     @InjectView(R.id.game_variants)
     LinearLayout gameVariants;
     @InjectView(R.id.game_layout)
@@ -57,6 +60,10 @@ public class GameFragment extends Fragment {
 
     Quiz quiz;
     int backColor;
+
+    public ImageView getImageView(){
+        return gameVinyl;
+    }
 
     List<Button> buttons;
 

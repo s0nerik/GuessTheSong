@@ -1,5 +1,6 @@
 package org.fairytail.guessthesong.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
@@ -13,6 +14,7 @@ import org.fairytail.guessthesong.adapters.GameAdapter;
 import org.fairytail.guessthesong.custom_views.NonSwipeableViewPager;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.QuizSongChosenEvent;
+import org.fairytail.guessthesong.fragments.GameFragment;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.player.Player;
@@ -28,6 +30,7 @@ public class GameActivity extends FragmentActivity {
     static final String TAG = "myLogs";
 
     GameAdapter gAdapter;
+    NonSwipeableViewPager pager;
 
     @Inject
     Bus bus;
@@ -39,7 +42,7 @@ public class GameActivity extends FragmentActivity {
     NonSwipeableViewPager pager;
 
     private Game game;
-    public boolean isMultiplayer;
+    private boolean isMultiplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +85,22 @@ public class GameActivity extends FragmentActivity {
     }
 
     @Subscribe
-    public void onQuizSongChoosen(QuizSongChosenEvent event) {
-        new Handler().postDelayed(() -> pager.setCurrentItem(pager.getCurrentItem() + 1), 1500);
+    public void onQuizSongChosen(QuizSongChosenEvent event) {
+        player.stop();
+
+        new Handler().postDelayed(() -> {
+            if ((pager.getCurrentItem()+1) == game.getQuizzes().size()) {
+                int score = game.countCorrectQuizzes();
+                Intent intent = new Intent(this, ScoreActivity.class);
+                Bundle b = new Bundle();
+                b.putInt("score", score);
+                intent.putExtras(b);
+                startActivity(intent);
+                finish();
+            } else {
+                pager.setCurrentItem(pager.getCurrentItem() + 1);
+            }
+        }, 1500);
     }
 
     @Override

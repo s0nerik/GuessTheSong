@@ -2,4 +2,5 @@
     <dimen name="btn_size">160dp</dimen>
     <dimen name="btn_bottom_margin">140dp</dimen>
     <dimen name="btn_top_margin">65dp</dimen>
+    <dimen name="drawable_ring_size">4dip</dimen>
 </resources>

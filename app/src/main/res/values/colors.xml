@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="header_yellow">#f5c500</color>
+
+    <color name="light_gray">#ABBAC2</color>
+    <color name="text_gray">#6B767D</color>
+    <color name="coral_blue">#1DAEFA</color>
+    <color name="coral_blue_pressed">#1A9CE1</color>
+    <color name="dark_blue">#125D9D</color>
+    <color name="dark_blue_pressed">#10538D</color>
+
 </resources>
