@@ -79,7 +79,7 @@ public class GameFragment extends Fragment {
         quiz = (Quiz) getArguments().getSerializable(ARG_QUIZ);
 
         Random rnd = new Random();
-        backColor = Color.argb(60, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        //backColor = Color.argb(70, rnd.nextInt(256), rnd.nextInt(256), 0);
     }
 
     @Override
