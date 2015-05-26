@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="200dp"
         android:layout_marginTop="15dp"
-        android:id="@+id/imageView2"
+        android:id="@+id/game_vinyl"
         android:src="@drawable/vinyl" />
 
     <TextView
@@ -41,6 +41,7 @@
 
     <TextView
         android:id="@+id/waiting"
+        android:visibility="gone"
         android:gravity="center"
         android:layout_gravity="bottom"
         android:textSize="18sp"

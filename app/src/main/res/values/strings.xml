@@ -11,6 +11,7 @@
     <string name="difficulty_hard">Hard</string>
     <string name="title_activity_difficulty">DifficultyActivity</string>
     <string name="title_activity_game">GameActivity</string>
+    <string name="title_activity_score">ScoreActivity</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="whats_that_song">What\'s that song?</string>
