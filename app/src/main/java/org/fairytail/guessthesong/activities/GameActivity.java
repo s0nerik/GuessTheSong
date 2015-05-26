@@ -15,7 +15,7 @@ import org.fairytail.guessthesong.custom_views.NonSwipeableViewPager;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.MultiplayerGameStartedEvent;
 import org.fairytail.guessthesong.events.QuizSongChosenEvent;
-import org.fairytail.guessthesong.fragments.GameFragment;
+import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.player.Player;
@@ -83,24 +83,37 @@ public class GameActivity extends FragmentActivity {
     }
 
     @Subscribe
+    public void onQuizTimeOver(QuizTimeOverEvent event) {
+        player.stop();
+
+        if (!isMultiplayer && event.getQuiz().equals(game.getQuizzes().get(pager.getCurrentItem()))) {
+            goToNextPage();
+        }
+    }
+
+    @Subscribe
     public void onQuizSongChosen(QuizSongChosenEvent event) {
         player.stop();
 
         if (!isMultiplayer) {
-            new Handler().postDelayed(() -> {
-                if ((pager.getCurrentItem() + 1) == game.getQuizzes().size()) {
-                    int score = game.countCorrectQuizzes();
-                    Intent intent = new Intent(this, ScoreActivity.class);
-                    Bundle b = new Bundle();
-                    b.putInt("score", score);
-                    intent.putExtras(b);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    pager.setCurrentItem(pager.getCurrentItem() + 1);
-                }
-            }, 1500);
+            goToNextPage();
         }
+    }
+
+    private void goToNextPage() {
+        new Handler().postDelayed(() -> {
+            if ((pager.getCurrentItem() + 1) == game.getQuizzes().size()) {
+                int score = game.countCorrectQuizzes();
+                Intent intent = new Intent(this, ScoreActivity.class);
+                Bundle b = new Bundle();
+                b.putInt("score", score);
+                intent.putExtras(b);
+                startActivity(intent);
+                finish();
+            } else {
+                pager.setCurrentItem(pager.getCurrentItem() + 1);
+            }
+        }, 1500);
     }
 
     @Override
