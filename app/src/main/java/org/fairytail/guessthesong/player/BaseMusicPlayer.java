@@ -68,7 +68,7 @@ public abstract class BaseMusicPlayer implements Player {
             mp.setOnSeekCompleteListener(mediaPlayer -> {
                 getOnPreparedListener().onPrepared(mp);
                 getOnSeekCompleteListener().onSeekComplete(mp);
-                if (listener != null) listener.onActionCompleted(BaseMusicPlayer.this);
+                if (listener != null) listener.onActionCompleted(this);
                 mp.setOnSeekCompleteListener(getOnSeekCompleteListener());
             });
             mp.seekTo(msec);

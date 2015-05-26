@@ -1,13 +1,14 @@
 package org.fairytail.guessthesong.networking.ws;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
+import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.events.networking.AllClientsStartedPlaybackEvent;
 import org.fairytail.guessthesong.events.networking.ClientReadyEvent;
 import org.fairytail.guessthesong.events.networking.ClientStateChangedEvent;
+import org.fairytail.guessthesong.events.networking.PlayersReadyToStartEvent;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.networking.entities.ClientInfo;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
@@ -38,7 +39,8 @@ public class GameWebSocketServer extends WebSocketServer {
 
     private static final int TIMEOUT = 10 * 1000; // 10 seconds
 
-    private Set<WebSocket> ready;
+    private Set<WebSocket> readyToStart = new HashSet<>();
+    private Set<WebSocket> readyToStartGame = new HashSet<>();
 
     private Map<WebSocket, ClientInfo> clientInfoMap = new HashMap<>();
 
@@ -54,10 +56,12 @@ public class GameWebSocketServer extends WebSocketServer {
     Player player;
 
     private Game game;
+    private int currentQuizIndex = 0;
 
     public GameWebSocketServer(InetSocketAddress address) {
         super(address);
         Injector.inject(this);
+//        bus.register(this);
     }
 
     public void initWithGame(Game game) {
@@ -92,13 +96,13 @@ public class GameWebSocketServer extends WebSocketServer {
 //            if (socketMessage.status == OK) {
 //                switch (socketMessage.message) {
 //                    case GAME:
-//                        processReadiness(conn, START_GAME);
+//                        processReadyToStart(conn, START_GAME);
 //                        break;
 //                    case START_GAME:
 //                        conn.send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, gson.toJson(new StartFromEntity(0, game.getQuizzes().get(0).getCorrectSong())))));
 //                        break;
 //                    case PREPARE_AND_SEEK:
-//                        processReadiness(conn, PLAYBACK_START);
+//                        processReadyToStart(conn, PLAYBACK_START);
 //                        break;
 //                    default:
 //                        Debug.e("Unknown message: "+socketMessage.message.name());
@@ -111,20 +115,15 @@ public class GameWebSocketServer extends WebSocketServer {
                     break;
                 case GAME:
                     Debug.d("webSocket: GAME");
-                    processReadiness(conn, START_GAME);
+                    processReadyToStartGame(conn);
                     break;
                 case START_GAME:
                     Debug.d("webSocket: START_GAME");
-                    player.prepareAndSeekTo(game.getQuizzes().get(0).getCorrectSong(), 40 * 1000, null);
-                    conn.send(gson.toJson(
-                            new SocketMessage(POST, PREPARE_AND_SEEK,
-                                    gson.toJson(new StartFromEntity(40 * 1000, 0))
-                            )
-                    ));
+                    processReadyToPrepare(conn);
                     break;
                 case PREPARE_AND_SEEK:
                     Debug.d("webSocket: PREPARE_AND_SEEK");
-                    processReadiness(conn, PLAYBACK_START, () -> player.start());
+                    processReadyToStart(conn);
                     break;
                 default:
                     Debug.e("Unknown message: "+socketMessage.message.name());
@@ -139,23 +138,69 @@ public class GameWebSocketServer extends WebSocketServer {
         Debug.e("GameWebSocketServer onError:\n", ex);
     }
 
-    private void processReadiness(WebSocket conn, SocketMessage.Message message) {
-        processReadiness(conn, message, null);
+    public void startMultiplayerGame() {
+        for (WebSocket socket : readyToStartGame) {
+            if (socket.isClosed()) {
+                readyToStartGame.remove(socket);
+            }
+        }
+        if(!readyToStartGame.isEmpty() && readyToStartGame.size() == connections().size()) {
+            for (WebSocket socket : connections()) {
+                socket.send(gson.toJson(new SocketMessage(POST, START_GAME)));
+            }
+            readyToStart.clear();
+        } else {
+            Debug.e("Not all players are ready to start game.");
+        }
     }
 
-    private void processReadiness(WebSocket conn, SocketMessage.Message message, @Nullable Runnable runnable) {
-        if (ready == null) {
-            ready = new HashSet<>();
+    public void proceedToNextQuiz() {
+        int quizzesSize = game.getQuizzes().size();
+
+        if (currentQuizIndex + 1 < quizzesSize) {
+            currentQuizIndex++;
+        } else {
+            currentQuizIndex = 0;
         }
-        ready.add(conn);
+
+        for (WebSocket s : readyToStartGame) {
+            processReadyToPrepare(s);
+        }
+    }
+
+    private void processReadyToStartGame(WebSocket conn) {
+        readyToStartGame.add(conn);
+
+        if (readyToStartGame.size() == connections().size()) {
+            App.bus.post(new PlayersReadyToStartEvent());
+        }
+    }
+
+    private void processReadyToPrepare(WebSocket conn) {
+        player.prepareAndSeekTo(game.getQuizzes().get(currentQuizIndex).getCorrectSong(), 40 * 1000, null);
+        conn.send(gson.toJson(
+                new SocketMessage(POST, PREPARE_AND_SEEK,
+                        gson.toJson(new StartFromEntity(40 * 1000, 0))
+                )
+        ));
+    }
+
+    private void processReadyToStart(WebSocket conn) {
+        Debug.d("Ready: "+ readyToStart);
+
+        readyToStart.add(conn);
 
         bus.post(new ClientReadyEvent(conn));
 
-        if(ready.size() == connections().size()) {
-            if (runnable != null) runnable.run();
-            conn.send(gson.toJson(new SocketMessage(POST, message)));
-//            bus.post(new AllClientsReadyEvent());
-            ready = null;
+        if(readyToStart.size() == connections().size()) {
+            player.start();
+            game.getQuizzes().get(currentQuizIndex).start();
+            for (WebSocket socket : connections()) {
+                socket.send(gson.toJson(new SocketMessage(POST, PLAYBACK_START)));
+            }
+
+            bus.post(new AllClientsStartedPlaybackEvent());
+            readyToStart.clear();
         }
     }
 

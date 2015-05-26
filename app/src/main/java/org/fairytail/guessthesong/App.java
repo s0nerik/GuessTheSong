@@ -1,7 +1,6 @@
 package org.fairytail.guessthesong;
 
 import android.app.Application;
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.joanzapata.android.asyncservice.api.internal.AsyncService;
@@ -21,7 +20,7 @@ public class App extends Application {
 
     public static final String TAG = "GuessTheSong";
 
-    private static GameWebSocketClient gameWebSocketClient;
+    private GameWebSocketClient gameWebSocketClient;
 
     @Inject
     public static Bus bus;
@@ -35,10 +34,10 @@ public class App extends Application {
         Debug.init(BuildConfig.DEBUG);
     }
 
-    public static GameWebSocketClient getWebSocketMessageClient(@NonNull Context context, @NonNull URI uri) {
+    public GameWebSocketClient getWebSocketMessageClient(@NonNull URI uri) {
         if (gameWebSocketClient == null || !uri.equals(gameWebSocketClient.getURI())) {
 //            URI.create("ws://" + groupOwnerAddress.getHostAddress() + ":4807")
-            gameWebSocketClient = new GameWebSocketClient(context, uri);
+            gameWebSocketClient = new GameWebSocketClient(uri);
         }
         return gameWebSocketClient;
     }

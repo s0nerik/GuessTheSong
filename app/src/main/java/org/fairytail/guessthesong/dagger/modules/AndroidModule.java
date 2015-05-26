@@ -184,4 +184,10 @@ public class AndroidModule {
     StreamServer provideStreamServer() {
         return new StreamServer();
     }
+
+    @Provides
+    @Singleton
+    App provideApp() {
+        return application;
+    }
 }

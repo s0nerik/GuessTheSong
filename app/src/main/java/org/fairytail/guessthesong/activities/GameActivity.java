@@ -12,6 +12,7 @@ import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.adapters.GameAdapter;
 import org.fairytail.guessthesong.custom_views.NonSwipeableViewPager;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.events.MultiplayerGameStartedEvent;
 import org.fairytail.guessthesong.events.QuizSongChosenEvent;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
@@ -56,6 +57,7 @@ public class GameActivity extends FragmentActivity {
 
         if (isMultiplayer) {
             Debug.d("isMultiplayer");
+            bus.post(new MultiplayerGameStartedEvent(game));
         }
 
         gAdapter = new GameAdapter(getSupportFragmentManager(), game);
@@ -82,8 +84,10 @@ public class GameActivity extends FragmentActivity {
     }
 
     @Subscribe
-    public void onQuizSongChoosen(QuizSongChosenEvent event) {
-        new Handler().postDelayed(() -> pager.setCurrentItem(pager.getCurrentItem() + 1), 1500);
+    public void onQuizSongChosen(QuizSongChosenEvent event) {
+        if (!isMultiplayer) {
+            new Handler().postDelayed(() -> pager.setCurrentItem(pager.getCurrentItem() + 1), 1500);
+        }
     }
 
     @Override

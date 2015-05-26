@@ -1,14 +1,14 @@
 package org.fairytail.guessthesong.networking.ws;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
-import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.events.MultiplayerGameStartedEvent;
+import org.fairytail.guessthesong.events.ShouldStartMultiplayerGameEvent;
 import org.fairytail.guessthesong.events.networking.ClientInfoReceivedEvent;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Game;
@@ -44,17 +44,15 @@ public class GameWebSocketClient extends WebSocketClient {
     @Inject
     Prefs prefs;
 
-    private Context context;
-
     private ClientInfo clientInfo;
 
     private Game game;
 
-    public GameWebSocketClient(Context context, URI serverURI) {
+    public GameWebSocketClient(URI serverURI) {
         super(serverURI);
         Injector.inject(this);
-        this.context = context;
         clientInfo = new ClientInfo(prefs.clientName().getOr(Build.MODEL));
+        bus.register(this);
     }
 
     @Override
@@ -62,7 +60,6 @@ public class GameWebSocketClient extends WebSocketClient {
         Debug.d("GameWebSocketClient: opened with handshake:"
                 + "\nStatus: " + handshakedata.getHttpStatus()
                 + "\nMessage: " + handshakedata.getHttpStatusMessage());
-        bus.register(this);
     }
 
     @Override
@@ -103,21 +100,30 @@ public class GameWebSocketClient extends WebSocketClient {
                     if (game == null) {
                         throw new RuntimeException("game == null");
                     }
-                    startMultiplayerGameClient(game);
-                    send(gson.toJson(new SocketMessage(
-                                    POST,
-                                    START_GAME,
-                                    OK))
-                    );
+                    bus.post(new ShouldStartMultiplayerGameEvent(game));
                     break;
                 case PREPARE_AND_SEEK:
                     Debug.d("socketMessage: PREPARE_AND_SEEK");
                     StartFromEntity startFromEntity = gson.fromJson(body, StartFromEntity.class);
-                    player.prepareAndSeekTo(
-                            game.getQuizzes().get(startFromEntity.quizIndex).getCorrectSong(),
-                            startFromEntity.time,
-                            p -> send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)))
-                    );
+                    player.prepare(game.getQuizzes().get(startFromEntity.quizIndex).getCorrectSong(),
+                            new Player.ActionCompletedListener() {
+                                @Override
+                                public void onActionCompleted(Player player) {
+                                    send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)));
+                                }
+                            }
+                            );
+//                    player.prepareAndSeekTo(
+//                            game.getQuizzes().get(startFromEntity.quizIndex).getCorrectSong(),
+//                            startFromEntity.time,
+//                            new Player.ActionCompletedListener() {
+//                                @Override
+//                                public void onActionCompleted(Player player) {
+//                                    send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)));
+//                                }
+//                            });
+//                            p -> send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)))
+//                    );
                     break;
                 case PLAYBACK_START:
                     Debug.d("socketMessage: START");
@@ -145,23 +151,25 @@ public class GameWebSocketClient extends WebSocketClient {
         }
     }
 
-    private void startMultiplayerGameClient(Game game) {
-        Debug.d();
-        Intent intent = new Intent(context, GameActivity.class);
-        intent.putExtra("game", game);
-        intent.putExtra("multiplayer", true);
-        context.startActivity(intent);
-    }
-
     @Override
     public void onClose(int code, String reason, boolean remote) {
         Debug.d("GameWebSocketClient: closed:\nCode: "+code+" Reason: "+reason);
 //        bus.post(new SocketClosedEvent());
-        bus.unregister(this);
+//        bus.unregister(this);
     }
 
     @Override
     public void onError(Exception ex) {
         Debug.d("GameWebSocketClient: error:\n" + ex);
     }
+
+    @Subscribe
+    public void onMultiplayerGameStarted(MultiplayerGameStartedEvent event) {
+        send(gson.toJson(new SocketMessage(
+                        POST,
+                        START_GAME,
+                        OK))
+        );
+    }
+
 }
