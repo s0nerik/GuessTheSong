@@ -6,7 +6,6 @@ import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -16,8 +15,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.peak.salut.Salut;
+import com.peak.salut.SalutDataReceiver;
+import com.peak.salut.SalutServiceData;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -49,9 +50,6 @@ public class JoinGameFragment extends Fragment {
     App app;
 
     @Inject
-    WifiP2pManager manager;
-
-    @Inject
     Handler handler;
 
     @InjectView(R.id.recycler)
@@ -68,73 +66,32 @@ public class JoinGameFragment extends Fragment {
 
     private GameWebSocketClient gameWebSocketClient;
 
+    private Salut network;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.inject(this);
         bus.register(this);
 
-//        initIntentFilter();
+        SalutDataReceiver dataReceiver = new SalutDataReceiver(getActivity(), o -> Debug.d(o.toString()));
+        SalutServiceData serviceData = new SalutServiceData("_lwm", 50489, "Device");
+        network = new Salut(dataReceiver, serviceData, () -> Debug.e("Device not supported."));
 
-        channel = manager.initialize(getActivity(), getActivity().getMainLooper(), () -> Debug.d("Channel disconnected!"));
-        discoverService();
+        discoverServices();
     }
 
     @Override
     public void onStop() {
-        manager.clearServiceRequests(channel, null);
+        network.stopServiceDiscovery(true);
         super.onStop();
     }
 
-    private void discoverService() {
-        WifiP2pManager.DnsSdTxtRecordListener txtListener = (fullDomain, record, device) -> {
-            Debug.d("DnsSdTxtRecord available -" + record.toString());
-            buddies.put(device.deviceAddress, record.get("buddyname"));
-        };
-
-        WifiP2pManager.DnsSdServiceResponseListener servListener = (instanceName, registrationType, p2pDevice) -> {
-            Debug.d("servListener: " + p2pDevice.deviceName);
-            // Update the device name with the human-friendly version from
-            // the DnsTxtRecord, assuming one arrived.
-            p2pDevice.deviceName = buddies
-                    .containsKey(p2pDevice.deviceAddress) ? buddies
-                    .get(p2pDevice.deviceAddress) : p2pDevice.deviceName;
-
-            peers.add(p2pDevice);
-            adapter.notifyDataSetChanged();
-            Debug.d("onBonjourServiceAvailable " + instanceName + ", " + registrationType);
-        };
-
-        manager.setDnsSdResponseListeners(channel, servListener, txtListener);
-
-        WifiP2pDnsSdServiceRequest serviceRequest = WifiP2pDnsSdServiceRequest.newInstance("_lwm._tcp");
-        manager.addServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                // Success!
-                Debug.d("addServiceRequest: onSuccess");
-            }
-
-            @Override
-            public void onFailure(int code) {
-                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
-                Debug.d("addServiceRequest: onFailure("+code+")");
-            }
-        });
-
-        manager.discoverServices(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                // Success!
-                Debug.d("discoverServices: onSuccess");
-            }
-
-            @Override
-            public void onFailure(int code) {
-                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
-                Debug.d("discoverServices: onFailure("+code+")");
-            }
-        });
+    private void discoverServices() {
+        network.discoverWithTimeout(
+                () -> Debug.d("Look at all these devices! " + network.foundDevices.toString()),
+                () -> Debug.d("Bummer, we didn't find anyone. "),
+                5000);
     }
 
     @Nullable
@@ -324,19 +281,19 @@ public class JoinGameFragment extends Fragment {
         config.deviceAddress = device.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
 
-        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
-
-            @Override
-            public void onSuccess() {
-                Debug.d("MANAGER: joined");
-                // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Toast.makeText(getActivity(), "Connect failed. Retry.", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+//
+//            @Override
+//            public void onSuccess() {
+//                Debug.d("MANAGER: joined");
+//                // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
+//            }
+//
+//            @Override
+//            public void onFailure(int reason) {
+//                Toast.makeText(getActivity(), "Connect failed. Retry.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     private void initIntentFilter() {

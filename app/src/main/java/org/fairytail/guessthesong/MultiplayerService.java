@@ -2,53 +2,35 @@ package org.fairytail.guessthesong;
 
 import android.app.Service;
 import android.content.Intent;
-import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.networking.p2p.RxWifiP2pManager;
+import com.peak.salut.Salut;
+import com.peak.salut.SalutDataReceiver;
+import com.peak.salut.SalutServiceData;
 
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import lombok.val;
 import ru.noties.debug.Debug;
 
 public class MultiplayerService extends Service {
 
-    @Inject
-    WifiP2pManager manager;
-
-    private WifiP2pManager.Channel channel;
-
-    public MultiplayerService() {
-        super();
-        Injector.inject(this);
-    }
+    private Salut network;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        val record = (Map<String, String>) intent.getSerializableExtra("record");
+//        val record = (Map<String, String>) intent.getSerializableExtra("record");
 
-        // Service information.  Pass it an instance name, service type
-        // _protocol._transportlayer , and the map containing
-        // information other devices will want once they connect to this one.
-        WifiP2pDnsSdServiceInfo serviceInfo =
-                WifiP2pDnsSdServiceInfo.newInstance("LWM", "_lwm._tcp", record);
+        SalutDataReceiver dataReceiver = new SalutDataReceiver(App.getCurrentActivity(), o -> Debug.d(o.toString()));
+        SalutServiceData serviceData = new SalutServiceData("_lwm", 50489, "LWM");
 
-        channel = manager.initialize(this, getMainLooper(), () -> Debug.d("Channel disconnected!"));
-        RxWifiP2pManager.addLocalService(manager, channel, serviceInfo)
-                .subscribe(aVoid -> Debug.d("addLocalService: success"));
+        network = new Salut(dataReceiver, serviceData, () -> Debug.e("Sorry, but this device does not support WiFi Direct."));
 
+        network.startNetworkService(device -> Debug.d(device.readableName + " has connected!"));
         return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        manager.clearLocalServices(channel, null);
+        network.stopNetworkService(false);
         super.onDestroy();
     }
 
