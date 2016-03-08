@@ -161,7 +161,7 @@ public class MainActivity extends FragmentActivity {
     @OnClick(R.id.btn_create_game)
     public void onCreateGameClicked() {
         val helper = new MpGameCreationHelper();
-        helper.showCreationDialog();
+        helper.createNewGame();
 
 //        getSupportFragmentManager().beginTransaction()
 //                .add(android.R.id.content, new CreateGameFragment(), null)

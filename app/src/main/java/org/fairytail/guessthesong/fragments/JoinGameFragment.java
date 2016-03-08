@@ -76,8 +76,14 @@ public class JoinGameFragment extends Fragment {
 
 //        initIntentFilter();
 
-        channel = manager.initialize(getActivity(), getActivity().getMainLooper(), null);
+        channel = manager.initialize(getActivity(), getActivity().getMainLooper(), () -> Debug.d("Channel disconnected!"));
         discoverService();
+    }
+
+    @Override
+    public void onStop() {
+        manager.clearServiceRequests(channel, null);
+        super.onStop();
     }
 
     private void discoverService() {
@@ -101,7 +107,7 @@ public class JoinGameFragment extends Fragment {
 
         manager.setDnsSdResponseListeners(channel, servListener, txtListener);
 
-        WifiP2pDnsSdServiceRequest serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
+        WifiP2pDnsSdServiceRequest serviceRequest = WifiP2pDnsSdServiceRequest.newInstance("_lwm._tcp");
         manager.addServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {

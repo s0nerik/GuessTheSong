@@ -76,6 +76,9 @@ import static android.content.Context.WIFI_SERVICE;
                 GameWebSocketClient.class,
                 StreamServer.class,
 
+                // Services
+                MultiplayerService.class,
+
                 // Helpers
                 MpGameCreationHelper.class,
         },

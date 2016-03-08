@@ -1,7 +1,9 @@
 package org.fairytail.guessthesong.helpers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.annotation.ArrayRes;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -11,11 +13,13 @@ import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import org.fairytail.guessthesong.MultiplayerService;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Daggered;
 import org.fairytail.guessthesong.model.game.Difficulty;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,7 +47,7 @@ public class MpGameCreationHelper extends Daggered {
     @Inject
     Resources res;
 
-    public void showCreationDialog() {
+    public void createNewGame() {
         val sub = new CompositeSubscription();
 
         val dialog = new MaterialDialog.Builder(context)
@@ -53,6 +57,7 @@ public class MpGameCreationHelper extends Daggered {
                 .canceledOnTouchOutside(true)
                 .negativeText("Cancel")
                 .positiveText("Create")
+                .onPositive((dialog1, which) -> startMultiplayerService())
                 .dismissListener(d -> sub.unsubscribe())
                 .build();
 
@@ -84,6 +89,20 @@ public class MpGameCreationHelper extends Daggered {
                 .subscribe(mpGameDifficulty.asAction()));
 
         dialog.show();
+    }
+
+    private void startMultiplayerService() {
+        //  Create a string map containing information about your service.
+        val record = new HashMap<String, String>();
+        record.put("port", String.valueOf(8888));
+        record.put("name", mpGameName.get());
+        record.put("max_players", mpGameMaxPlayers.get().toString());
+        record.put("difficulty", mpGameDifficulty.get().getLevel().toString());
+
+        val bundle = new Bundle();
+        bundle.putSerializable("record", record);
+
+        context.startService(new Intent(context, MultiplayerService.class).putExtras(bundle));
     }
 
     private int indexInStrArray(String value, @ArrayRes int arrayId) {
