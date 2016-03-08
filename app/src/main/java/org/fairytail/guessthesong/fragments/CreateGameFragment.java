@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -35,13 +36,16 @@ import org.fairytail.guessthesong.events.p2p.P2PBroadcastReceivedEvent;
 import org.fairytail.guessthesong.events.ui.WifiP2pDeviceSelectedEvent;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.networking.http.StreamServer;
+import org.fairytail.guessthesong.networking.p2p.RxWifiP2pManager;
 import org.fairytail.guessthesong.networking.ws.GameWebSocketServer;
 import org.fairytail.guessthesong.player.Player;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -97,9 +101,29 @@ public class CreateGameFragment extends Fragment {
         AsyncService.inject(this);
         bus.register(this);
 
-        initIntentFilter();
+//        initIntentFilter();
 
         channel = manager.initialize(getActivity(), getActivity().getMainLooper(), null);
+        startRegistration();
+    }
+
+    private void startRegistration() {
+        //  Create a string map containing information about your service.
+        Map<String, String> record = new HashMap<>();
+        record.put("listenport", String.valueOf(8888));
+        record.put("buddyname", "John Doe" + (int) (Math.random() * 1000));
+        record.put("available", "visible");
+
+        // Service information.  Pass it an instance name, service type
+        // _protocol._transportlayer , and the map containing
+        // information other devices will want once they connect to this one.
+        WifiP2pDnsSdServiceInfo serviceInfo =
+                WifiP2pDnsSdServiceInfo.newInstance("_test", "_lwm._tcp", record);
+
+        RxWifiP2pManager.addLocalService(manager, channel, serviceInfo)
+                .subscribe(aVoid -> {
+                    Debug.d("addLocalService: success");
+                });
     }
 
     @Nullable
@@ -124,23 +148,23 @@ public class CreateGameFragment extends Fragment {
         receiver = new WiFiDirectBroadcastReceiver();
         getActivity().registerReceiver(receiver, intentFilter);
 
-        manager.requestGroupInfo(channel, group -> {
-            if (group != null) {
-                manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
-                    @Override
-                    public void onSuccess() {
-                        createGroup();
-                    }
-
-                    @Override
-                    public void onFailure(int reason) {
-                        Debug.d("" + reason);
-                    }
-                });
-            } else {
-                createGroup();
-            }
-        });
+//        manager.requestGroupInfo(channel, group -> {
+//            if (group != null) {
+//                manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+//                    @Override
+//                    public void onSuccess() {
+//                        createGroup();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(int reason) {
+//                        Debug.d("" + reason);
+//                    }
+//                });
+//            } else {
+//                createGroup();
+//            }
+//        });
     }
 
     private void createGroup() {
