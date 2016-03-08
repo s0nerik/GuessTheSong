@@ -11,7 +11,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.eftimoff.androidplayer.actions.property.PropertyAction;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
@@ -26,6 +25,7 @@ import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
 import org.fairytail.guessthesong.fragments.JoinGameFragment;
+import org.fairytail.guessthesong.helpers.MpGameCreationHelper;
 import org.fairytail.guessthesong.player.Player;
 
 import javax.inject.Inject;
@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import lombok.val;
 
 public class MainActivity extends FragmentActivity {
 
@@ -159,17 +160,8 @@ public class MainActivity extends FragmentActivity {
 
     @OnClick(R.id.btn_create_game)
     public void onCreateGameClicked() {
-        MaterialDialog dialog =
-                new MaterialDialog.Builder(this)
-                        .customView(R.layout.dialog_create_mp_game, false)
-                        .title("New multiplayer game")
-                        .cancelable(true)
-                        .canceledOnTouchOutside(true)
-                        .negativeText("Cancel")
-                        .positiveText("Create")
-                        .build();
-
-        dialog.show();
+        val helper = new MpGameCreationHelper();
+        helper.showCreationDialog();
 
 //        getSupportFragmentManager().beginTransaction()
 //                .add(android.R.id.content, new CreateGameFragment(), null)

@@ -20,7 +20,6 @@
         <item>Easy</item>
         <item>Medium</item>
         <item>Hard</item>
-        <item>Insane</item>
     </string-array>
 
     <string-array name="max_players_values">

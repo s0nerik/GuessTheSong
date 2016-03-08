@@ -29,6 +29,7 @@ import org.fairytail.guessthesong.fragments.CreateGameFragment;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
 import org.fairytail.guessthesong.fragments.GameFragment;
 import org.fairytail.guessthesong.fragments.JoinGameFragment;
+import org.fairytail.guessthesong.helpers.MpGameCreationHelper;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.http.StreamServer;
 import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
@@ -39,6 +40,7 @@ import org.fairytail.guessthesong.prefs.Prefs;
 
 import java.net.InetSocketAddress;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -50,7 +52,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.WIFI_P2P_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
 
-@Module(
+@Module(includes = { PrefsModule.class },
         injects = {
                 // Activities
                 MainActivity.class,
@@ -72,7 +74,10 @@ import static android.content.Context.WIFI_SERVICE;
                 Quiz.class,
                 GameWebSocketServer.class,
                 GameWebSocketClient.class,
-                StreamServer.class
+                StreamServer.class,
+
+                // Helpers
+                MpGameCreationHelper.class,
         },
         staticInjections = {
                 App.class
@@ -90,6 +95,13 @@ public class AndroidModule {
     @Singleton
     Context provideApplicationContext() {
         return application;
+    }
+
+    @Provides
+    @Singleton
+    @Named("activity")
+    Context provideCurrentActivityContext() {
+        return App.getCurrentActivity();
     }
 
     @Provides

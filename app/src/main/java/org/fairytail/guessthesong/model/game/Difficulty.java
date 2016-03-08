@@ -9,6 +9,7 @@ import lombok.Data;
 @Builder
 public class Difficulty implements Serializable {
 
+    // Must be one of R.array.difficulties
     public enum Level {
         EASY, MEDIUM, HARD
     }
@@ -19,19 +20,24 @@ public class Difficulty implements Serializable {
     private int variants;
     private boolean proposeSimilarStyles;
 
+    private Level level;
+
     public static class Factory {
 
         public static Difficulty create(Level level) {
             switch (level) {
                 case EASY:
                     return Difficulty.builder()
+                            .level(level)
                             .name("Easy")
                             .songDuration(1000 * 30) // 30 seconds
                             .proposeSimilarStyles(false)
                             .variants(3)
+                            .level(level)
                             .build();
                 case MEDIUM:
                     return Difficulty.builder()
+                            .level(level)
                             .name("Medium")
                             .songDuration(1000 * 20)  // 20 seconds
                             .proposeSimilarStyles(false)
@@ -39,6 +45,7 @@ public class Difficulty implements Serializable {
                             .build();
                 case HARD:
                     return Difficulty.builder()
+                            .level(level)
                             .name("Hard")
                             .songDuration(1000 * 10)  // 10 seconds
                             .proposeSimilarStyles(true)
