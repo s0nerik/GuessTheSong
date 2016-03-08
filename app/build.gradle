@@ -90,4 +90,6 @@ dependencies {
     compile('com.github.afollestad.material-dialogs:core:0.8.5.6@aar') {
         transitive = true
     }
+
+    compile 'com.github.markrjr:Salut:v0.4.9'
 }
