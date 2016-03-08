@@ -6,10 +6,10 @@ import android.net.NetworkInfo;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -54,6 +54,9 @@ public class JoinGameFragment extends Fragment {
 
     @Inject
     WifiP2pManager manager;
+
+    @Inject
+    Handler handler;
 
     @InjectView(R.id.recycler)
     RecyclerView recycler;
@@ -148,21 +151,39 @@ public class JoinGameFragment extends Fragment {
                 Debug.d("WIFI_P2P_STATE_CHANGED_ACTION");
                 break;
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
-                manager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
-                    @Override
-                    public void onPeersAvailable(WifiP2pDeviceList peerList) {
-                        // Out with the old, in with the new.
-                        peers.clear();
-                        peers.addAll(peerList.getDeviceList());
+                handler.postDelayed(() ->
+                        manager.requestPeers(channel, peerList -> {
+                            // Out with the old, in with the new.
+//                            if (peerList.getDeviceList().size() != peers.size()) {
+                                peers.clear();
+                                peers.addAll(peerList.getDeviceList());
 
-                        adapter.notifyDataSetChanged();
+                                adapter.notifyDataSetChanged();
+//                            }
 
-                        Debug.d("Peers:");
-                        for (WifiP2pDevice p : peers) {
-                            Debug.d("deviceAddress: " + p.deviceAddress + "; deviceName: " + p.deviceName);
-                        }
-                    }
-                });
+                            Debug.d("Peers:");
+                            for (WifiP2pDevice p : peers) {
+                                Debug.d("deviceAddress: " + p.deviceAddress + "; deviceName: " + p.deviceName);
+                            }
+                        }), 1000);
+//                manager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
+//                    @Override
+//                    public void onPeersAvailable(WifiP2pDeviceList peerList) {
+//                        // Out with the old, in with the new.
+//                        if (peerList.getDeviceList().size() != peers.size()) {
+//                            peers.clear();
+//                            peers.addAll(peerList.getDeviceList());
+//
+//                            adapter.notifyDataSetChanged();
+//                        }
+//
+//                        Debug.d("Peers:");
+//                        for (WifiP2pDevice p : peers) {
+//                            Debug.d("deviceAddress: " + p.deviceAddress + "; deviceName: " + p.deviceName);
+//                        }
+//                    }
+//                });
+
 //                peerList -> {
 //                    // Out with the old, in with the new.
 //                    peers.clear();

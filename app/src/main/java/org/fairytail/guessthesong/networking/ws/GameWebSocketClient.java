@@ -105,25 +105,25 @@ public class GameWebSocketClient extends WebSocketClient {
                 case PREPARE_AND_SEEK:
                     Debug.d("socketMessage: PREPARE_AND_SEEK");
                     StartFromEntity startFromEntity = gson.fromJson(body, StartFromEntity.class);
-                    player.prepare(game.getQuizzes().get(startFromEntity.quizIndex).getCorrectSong(),
-                            new Player.ActionCompletedListener() {
-                                @Override
-                                public void onActionCompleted(Player player) {
-                                    send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)));
-                                }
-                            }
-                            );
-//                    player.prepareAndSeekTo(
-//                            game.getQuizzes().get(startFromEntity.quizIndex).getCorrectSong(),
-//                            startFromEntity.time,
+//                    player.prepare(game.getQuizzes().get(startFromEntity.quizIndex).getCorrectSong(),
+//                            new Player.ActionCompletedListener() {
+//                                @Override
+//                                public void onActionCompleted(Player player) {
+//                                    send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)));
+//                                }
+//                            }
+//                            );
+                    player.prepareAndSeekTo(
+                            game.getQuizzes().get(startFromEntity.quizIndex).getCorrectSong(),
+                            startFromEntity.time,
 //                            new Player.ActionCompletedListener() {
 //                                @Override
 //                                public void onActionCompleted(Player player) {
 //                                    send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)));
 //                                }
 //                            });
-//                            p -> send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)))
-//                    );
+                            p -> send(gson.toJson(new SocketMessage(POST, PREPARE_AND_SEEK, OK)))
+                    );
                     break;
                 case PLAYBACK_START:
                     Debug.d("socketMessage: START");
@@ -155,7 +155,7 @@ public class GameWebSocketClient extends WebSocketClient {
     public void onClose(int code, String reason, boolean remote) {
         Debug.d("GameWebSocketClient: closed:\nCode: "+code+" Reason: "+reason);
 //        bus.post(new SocketClosedEvent());
-//        bus.unregister(this);
+        bus.unregister(this);
     }
 
     @Override

@@ -9,6 +9,8 @@ import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 
@@ -155,6 +157,12 @@ public class AndroidModule {
     @Singleton
     Prefs providePrefs() {
         return new Prefs(application);
+    }
+
+    @Provides
+    @Singleton
+    Handler provideHandler() {
+        return new Handler(Looper.getMainLooper());
     }
 
     @Provides

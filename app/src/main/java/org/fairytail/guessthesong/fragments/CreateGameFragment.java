@@ -2,9 +2,11 @@ package org.fairytail.guessthesong.fragments;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +39,7 @@ import org.fairytail.guessthesong.networking.ws.GameWebSocketServer;
 import org.fairytail.guessthesong.player.Player;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +67,9 @@ public class CreateGameFragment extends Fragment {
 
     @Inject
     Player player;
+
+    @Inject
+    Handler handler;
 
     @InjectService
     SongsGetterService songsGetterService;
@@ -205,6 +211,21 @@ public class CreateGameFragment extends Fragment {
                 break;
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
                 Debug.d("WIFI_P2P_PEERS_CHANGED_ACTION");
+//                handler.postDelayed(() ->
+//                        manager.requestPeers(channel, peerList -> {
+//                            // Out with the old, in with the new.
+////                            if (peerList.getDeviceList().size() != peers.size()) {
+//                            peers.clear();
+//                            peers.addAll(peerList.getDeviceList());
+//
+//                            adapter.notifyDataSetChanged();
+////                            }
+//
+//                            Debug.d("Peers:");
+//                            for (WifiP2pDevice p : peers) {
+//                                Debug.d("deviceAddress: " + p.deviceAddress + "; deviceName: " + p.deviceName);
+//                            }
+//                        }), 1000);
                 manager.requestPeers(channel, peerList -> {
                     // Out with the old, in with the new.
                     peers.clear();
@@ -220,30 +241,31 @@ public class CreateGameFragment extends Fragment {
                 break;
             case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
                 Debug.d("WIFI_P2P_CONNECTION_CHANGED_ACTION");
-//                NetworkInfo networkInfo = event.intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-//
-//                if (networkInfo.isConnected()) {
-//
-//                    // We are connected with the other device, request connection
-//                    // info to find group owner IP
-//
-//                    manager.requestConnectionInfo(channel, info -> {
-//
-//                        // InetAddress from WifiP2pInfo struct.
-//                        InetAddress groupOwnerAddress = info.groupOwnerAddress;
-//
-//                        // After the group negotiation, we can determine the group owner.
-//                        if (info.groupFormed && info.isGroupOwner) {
-//                            // Do whatever tasks are specific to the group owner.
-//                            // One common case is creating a webSocketServer thread and accepting
-//                            // incoming connections.
-//                        } else if (info.groupFormed) {
-//                            // The other device acts as the client. In this case,
-//                            // you'll want to create a client thread that connects to the group
-//                            // owner.
-//                        }
-//                    });
-//                }
+                NetworkInfo networkInfo = event.intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+                if (networkInfo.isConnected()) {
+
+                    // We are connected with the other device, request connection
+                    // info to find group owner IP
+
+                    manager.requestConnectionInfo(channel, info -> {
+
+                        // InetAddress from WifiP2pInfo struct.
+                        InetAddress groupOwnerAddress = info.groupOwnerAddress;
+
+                        // After the group negotiation, we can determine the group owner.
+                        if (info.groupFormed && info.isGroupOwner) {
+                            // Do whatever tasks are specific to the group owner.
+                            // One common case is creating a webSocketServer thread and accepting
+                            // incoming connections.
+
+                        } else if (info.groupFormed) {
+                            // The other device acts as the client. In this case,
+                            // you'll want to create a client thread that connects to the group
+                            // owner.
+                        }
+                    });
+                }
 
                 break;
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:

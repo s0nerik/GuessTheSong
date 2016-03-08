@@ -21,7 +21,7 @@ public class MainThreadBus extends Bus {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    MainThreadBus.super.post(event);
+                    MainThreadBus.this.post(event);
                 }
             });
         }

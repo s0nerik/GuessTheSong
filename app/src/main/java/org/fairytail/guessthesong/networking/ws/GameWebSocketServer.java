@@ -186,6 +186,7 @@ public class GameWebSocketServer extends WebSocketServer {
     }
 
     private void processReadyToStart(WebSocket conn) {
+        Debug.d("processReadyToStart");
         Debug.d("Ready: "+ readyToStart);
 
         readyToStart.add(conn);
