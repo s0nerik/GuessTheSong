@@ -1,4 +1,4 @@
-package org.fairytail.guessthesong.dagger.modules;
+package org.fairytail.guessthesong;
 
 import android.app.NotificationManager;
 import android.content.ContentResolver;
@@ -18,7 +18,6 @@ import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
-import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.activities.MainActivity;
 import org.fairytail.guessthesong.activities.ScoreActivity;

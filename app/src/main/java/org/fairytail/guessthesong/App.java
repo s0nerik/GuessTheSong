@@ -7,7 +7,6 @@ import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 import com.squareup.otto.Bus;
 
 import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.dagger.modules.AndroidModule;
 import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
 
 import java.net.URI;
