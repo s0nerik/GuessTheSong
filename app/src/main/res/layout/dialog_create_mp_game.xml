@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="20dp"
+    android:paddingLeft="20dp"
+    android:paddingEnd="24dp"
+    android:paddingRight="24dp"
+    android:orientation="vertical">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/name"
+        android:hint="Game name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/max_players_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginBottom="-8dp"
+        android:text="Max players"
+        />
+
+    <TextView
+        android:id="@+id/difficulty_label"
+        android:layout_alignParentRight="true"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="-8dp"
+        android:text="Difficulty"
+        />
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/max_players"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/max_players_label"
+        android:layout_alignLeft="@+id/max_players_label"
+        android:layout_alignRight="@+id/max_players_label"
+        android:textSize="18sp"
+        android:entries="@array/max_players_values"
+        />
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/difficulty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/difficulty_label"
+        android:layout_alignLeft="@+id/difficulty_label"
+        android:layout_alignRight="@+id/difficulty_label"
+        android:textSize="18sp"
+        android:entries="@array/difficulties"
+        />
+
+</RelativeLayout>

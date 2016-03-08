@@ -11,6 +11,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.eftimoff.androidplayer.actions.property.PropertyAction;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
@@ -24,7 +25,6 @@ import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
-import org.fairytail.guessthesong.fragments.CreateGameFragment;
 import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.player.Player;
 
@@ -130,9 +130,9 @@ public class MainActivity extends FragmentActivity {
                     spring.setVelocity(0.01);
 
                     float value = (float) spring.getCurrentValue();
-                    float rotate = value*150;
+                    float rotate = value * 150;
                     float translation = value * (width / 2) + 30;
-                    float translation2 = value*(-(getResources().getDimension(R.dimen.name_left_margin)));
+                    float translation2 = value * (-(getResources().getDimension(R.dimen.name_left_margin)));
 
                     img.setRotation(rotate);
                     img.setTranslationX(translation);
@@ -159,10 +159,22 @@ public class MainActivity extends FragmentActivity {
 
     @OnClick(R.id.btn_create_game)
     public void onCreateGameClicked() {
-        getSupportFragmentManager().beginTransaction()
-                .add(android.R.id.content, new CreateGameFragment(), null)
-                .addToBackStack("createGame")
-                .commit();
+        MaterialDialog dialog =
+                new MaterialDialog.Builder(this)
+                        .customView(R.layout.dialog_create_mp_game, false)
+                        .title("New multiplayer game")
+                        .cancelable(true)
+                        .canceledOnTouchOutside(true)
+                        .negativeText("Cancel")
+                        .positiveText("Create")
+                        .build();
+
+        dialog.show();
+
+//        getSupportFragmentManager().beginTransaction()
+//                .add(android.R.id.content, new CreateGameFragment(), null)
+//                .addToBackStack("createGame")
+//                .commit();
     }
 
     @OnClick(R.id.btn_join_game)
