@@ -21,7 +21,7 @@ import com.squareup.otto.ThreadEnforcer;
 import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.activities.MainActivity;
 import org.fairytail.guessthesong.activities.ScoreActivity;
-import org.fairytail.guessthesong.adapters.WiFiP2pDevicesAdapter;
+import org.fairytail.guessthesong.adapters.join_game.JoinGameViewHolder;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.bus.MainThreadBus;
 import org.fairytail.guessthesong.db.SongsCursorGetter;
@@ -65,8 +65,8 @@ import static android.content.Context.WIFI_SERVICE;
                 JoinGameFragment.class,
                 CreateGameFragment.class,
 
-                // Adapters
-                WiFiP2pDevicesAdapter.class,
+                // ViewHolders
+                JoinGameViewHolder.class,
 
                 // Others
                 SongsCursorGetter.class,

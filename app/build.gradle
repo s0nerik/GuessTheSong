@@ -94,4 +94,6 @@ dependencies {
     }
 
     compile 'com.github.markrjr:Salut:v0.4.9'
+
+    compile 'eu.davidea:flexible-adapter:5.0.0-b4'
 }
