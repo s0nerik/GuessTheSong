@@ -17,6 +17,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.viewholders.FlexibleViewHolder;
+import lombok.val;
 
 public class JoinGameViewHolder extends FlexibleViewHolder {
 
@@ -46,6 +47,11 @@ public class JoinGameViewHolder extends FlexibleViewHolder {
         this.device = device;
 
         title.setText(device.deviceName);
+
+        val players = device.txtRecord.get("players");
+
+        if (players != null)
+            subtitle.setText(players+" players");
     }
 
 }
