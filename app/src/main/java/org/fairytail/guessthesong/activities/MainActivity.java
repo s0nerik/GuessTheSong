@@ -24,8 +24,8 @@ import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
-import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.helpers.MpGameCreationHelper;
+import org.fairytail.guessthesong.helpers.MpGameJoinHelper;
 import org.fairytail.guessthesong.player.Player;
 
 import javax.inject.Inject;
@@ -162,19 +162,12 @@ public class MainActivity extends FragmentActivity {
     public void onCreateGameClicked() {
         val helper = new MpGameCreationHelper();
         helper.createNewGame();
-
-//        getSupportFragmentManager().beginTransaction()
-//                .add(android.R.id.content, new CreateGameFragment(), null)
-//                .addToBackStack("createGame")
-//                .commit();
     }
 
     @OnClick(R.id.btn_join_game)
     public void onJoinGameClicked() {
-        getSupportFragmentManager().beginTransaction()
-                .add(android.R.id.content, new JoinGameFragment(), null)
-                .addToBackStack("joinGame")
-                .commit();
+        val helper = new MpGameJoinHelper();
+        helper.joinGame();
     }
 
     @OnMessage

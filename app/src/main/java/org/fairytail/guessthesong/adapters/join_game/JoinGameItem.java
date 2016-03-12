@@ -11,11 +11,13 @@ import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class JoinGameItem extends AbstractFlexibleItem<JoinGameViewHolder> {
 
+    @Getter
     private final SalutDevice device;
 
     @Override

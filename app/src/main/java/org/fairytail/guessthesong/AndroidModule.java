@@ -1,5 +1,6 @@
 package org.fairytail.guessthesong;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -25,11 +26,10 @@ import org.fairytail.guessthesong.adapters.join_game.JoinGameViewHolder;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
 import org.fairytail.guessthesong.bus.MainThreadBus;
 import org.fairytail.guessthesong.db.SongsCursorGetter;
-import org.fairytail.guessthesong.fragments.CreateGameFragment;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
 import org.fairytail.guessthesong.fragments.GameFragment;
-import org.fairytail.guessthesong.fragments.JoinGameFragment;
 import org.fairytail.guessthesong.helpers.MpGameCreationHelper;
+import org.fairytail.guessthesong.helpers.MpGameJoinHelper;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.http.StreamServer;
 import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
@@ -62,8 +62,6 @@ import static android.content.Context.WIFI_SERVICE;
                 // Fragments
                 DifficultyFragment.class,
                 GameFragment.class,
-                JoinGameFragment.class,
-                CreateGameFragment.class,
 
                 // ViewHolders
                 JoinGameViewHolder.class,
@@ -81,6 +79,7 @@ import static android.content.Context.WIFI_SERVICE;
 
                 // Helpers
                 MpGameCreationHelper.class,
+                MpGameJoinHelper.class,
         },
         staticInjections = {
                 App.class
@@ -104,6 +103,12 @@ public class AndroidModule {
     @Singleton
     @Named("activity")
     Context provideCurrentActivityContext() {
+        return App.getCurrentActivity();
+    }
+
+    @Provides
+    @Singleton
+    Activity provideCurrentActivity() {
         return App.getCurrentActivity();
     }
 

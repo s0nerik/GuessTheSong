@@ -18,6 +18,7 @@ import butterknife.OnClick;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.viewholders.FlexibleViewHolder;
 import lombok.val;
+import ru.noties.debug.Debug;
 
 public class JoinGameViewHolder extends FlexibleViewHolder {
 
@@ -39,7 +40,7 @@ public class JoinGameViewHolder extends FlexibleViewHolder {
     }
 
     @OnClick(R.id.item)
-    public void onItemClicked(View item) {
+    public void onItemClicked() {
         bus.post(new MpGameSelectedEvent(device));
     }
 
