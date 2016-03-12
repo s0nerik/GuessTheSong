@@ -18,7 +18,6 @@ import butterknife.OnClick;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.viewholders.FlexibleViewHolder;
 import lombok.val;
-import ru.noties.debug.Debug;
 
 public class JoinGameViewHolder extends FlexibleViewHolder {
 
@@ -47,7 +46,7 @@ public class JoinGameViewHolder extends FlexibleViewHolder {
     public void setDevice(SalutDevice device) {
         this.device = device;
 
-        title.setText(device.deviceName);
+        title.setText(device.readableName);
 
         val players = device.txtRecord.get("players");
 

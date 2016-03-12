@@ -2,6 +2,7 @@ package org.fairytail.guessthesong;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -20,7 +21,7 @@ public class MultiplayerService extends Service {
 //        val record = (Map<String, String>) intent.getSerializableExtra("record");
 
         SalutDataReceiver dataReceiver = new SalutDataReceiver(App.getCurrentActivity(), o -> Debug.d(o.toString()));
-        SalutServiceData serviceData = new SalutServiceData("_lwm", 50489, "LWM");
+        SalutServiceData serviceData = new SalutServiceData("_lwm", 50489, Build.MODEL);
 
         network = new Salut(dataReceiver, serviceData, () -> Debug.e("Sorry, but this device does not support WiFi Direct."));
 

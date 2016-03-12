@@ -3,6 +3,7 @@ package org.fairytail.guessthesong.helpers;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -55,7 +56,7 @@ public class MpGameJoinHelper extends Daggered {
                 .build();
 
         SalutDataReceiver dataReceiver = new SalutDataReceiver(context, o -> Debug.d(o.toString()));
-        SalutServiceData serviceData = new SalutServiceData("_lwm", 50489, "Device");
+        SalutServiceData serviceData = new SalutServiceData("_lwm", 50489, Build.MODEL);
         network = new Salut(dataReceiver, serviceData, () -> Debug.e("Device not supported."));
 
         val view = dialog.getCustomView();
