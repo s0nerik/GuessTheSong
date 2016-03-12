@@ -70,10 +70,7 @@ public class MpGameJoinHelper extends Daggered {
 
     @Subscribe
     public void onEvent(MpGameSelectedEvent event) {
-        Debug.d("Selected game: "+event.device.deviceName);
-
         network.stopServiceDiscovery(false);
-
         network.registerWithHost(event.device,
                                  () -> Debug.d("Registered!"),
                                  () -> Debug.d("Not registered!")
@@ -90,16 +87,7 @@ public class MpGameJoinHelper extends Daggered {
     }
 
     private void discoverServices() {
-//        updateDevicesList();
-
         network.discoverNetworkServices(this::updateDevicesList, false);
-//        rx.Observable.timer(5, TimeUnit.SECONDS)
-//                     .subscribe(o -> network.stopServiceDiscovery(false));
-
-//        network.discoverWithTimeout(
-//                this::updateDevicesList,
-//                () -> Debug.d("Bummer, we didn't find anyone."),
-//                5000);
     }
 
     private void updateDevicesList() {
