@@ -46,12 +46,20 @@ public class JoinGameViewHolder extends FlexibleViewHolder {
     public void setDevice(SalutDevice device) {
         this.device = device;
 
-        title.setText(device.readableName);
+        if (device.txtRecord != null) {
+            val name = device.txtRecord.get("name");
+            if (name != null) {
+                title.setText(name);
+            } else {
+                title.setText(device.readableName);
+            }
 
-        val players = device.txtRecord.get("players");
-
-        if (players != null)
-            subtitle.setText(players+" players");
+            val players = device.txtRecord.get("players");
+            if (players != null)
+                subtitle.setText(players+" players");
+        } else {
+            title.setText(device.readableName);
+        }
     }
 
 }

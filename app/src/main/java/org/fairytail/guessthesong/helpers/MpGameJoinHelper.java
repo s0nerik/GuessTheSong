@@ -52,11 +52,11 @@ public class MpGameJoinHelper extends Daggered {
                 .canceledOnTouchOutside(true)
                 .negativeText("Cancel")
                 .showListener(d -> bus.register(this))
-                .dismissListener(d -> bus.unregister(this))
+                .dismissListener(d -> { bus.unregister(this); network.stopServiceDiscovery(false); })
                 .build();
 
         SalutDataReceiver dataReceiver = new SalutDataReceiver(context, o -> Debug.d(o.toString()));
-        SalutServiceData serviceData = new SalutServiceData("_lwm", 50489, Build.MODEL);
+        SalutServiceData serviceData = new SalutServiceData("lwm", 50489, Build.MODEL);
         network = new Salut(dataReceiver, serviceData, () -> Debug.e("Device not supported."));
 
         val view = dialog.getCustomView();
