@@ -3,13 +3,11 @@ package org.fairytail.guessthesong.helpers;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.v7.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.peak.salut.Salut;
 import com.peak.salut.SalutDataReceiver;
-import com.peak.salut.SalutDevice;
 import com.peak.salut.SalutServiceData;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -23,7 +21,6 @@ import org.fairytail.guessthesong.events.ShouldStartMultiplayerGameEvent;
 import org.fairytail.guessthesong.events.ui.MpGameSelectedEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -73,6 +70,10 @@ public class MpGameJoinHelper extends Daggered {
     @Subscribe
     public void onEvent(MpGameSelectedEvent event) {
         Debug.d("Selected game: "+event.device.deviceName);
+        network.registerWithHost(event.device,
+                                 () -> Debug.d("Registered!"),
+                                 () -> Debug.d("Not registered!")
+        );
     }
 
     @Subscribe
@@ -85,12 +86,12 @@ public class MpGameJoinHelper extends Daggered {
     }
 
     private void discoverServices() {
-        updateDevicesList();
+//        updateDevicesList();
 
-//        network.discoverWithTimeout(
-//                this::updateDevicesList,
-//                () -> Debug.d("Bummer, we didn't find anyone. "),
-//                5000);
+        network.discoverWithTimeout(
+                this::updateDevicesList,
+                () -> Debug.d("Bummer, we didn't find anyone."),
+                5000);
     }
 
     private void updateDevicesList() {
@@ -98,20 +99,20 @@ public class MpGameJoinHelper extends Daggered {
 
         games.clear();
 
-        for (int i = 0; i < 10; i++) {
-            val p2pDevice = new WifiP2pDevice();
-            p2pDevice.deviceName = "Device "+i;
-
-            val txtRecord = new HashMap<String, String>();
-            txtRecord.put("players", String.valueOf(i));
-
-            val device = new SalutDevice(p2pDevice, txtRecord);
-            games.add(new JoinGameItem(device));
-        }
-
-//        for (val d : network.foundDevices) {
-//            games.add(new JoinGameItem(d));
+//        for (int i = 0; i < 10; i++) {
+//            val p2pDevice = new WifiP2pDevice();
+//            p2pDevice.deviceName = "Device "+i;
+//
+//            val txtRecord = new HashMap<String, String>();
+//            txtRecord.put("players", String.valueOf(i));
+//
+//            val device = new SalutDevice(p2pDevice, txtRecord);
+//            games.add(new JoinGameItem(device));
 //        }
+
+        for (val d : network.foundDevices) {
+            games.add(new JoinGameItem(d));
+        }
 
         adapter.notifyDataSetChanged();
     }
