@@ -93,6 +93,9 @@ dependencies {
         transitive = true
     }
 
+    compile 'com.github.WritingMinds:ffmpeg-android-java:-SNAPSHOT'
+//    compile 'com.github.hiteshsondhi88.libffmpeg:FFmpegAndroid:0.2.5'
+
     compile 'com.github.markrjr:Salut:v0.4.9'
 
     compile 'eu.davidea:flexible-adapter:5.0.0-b4'

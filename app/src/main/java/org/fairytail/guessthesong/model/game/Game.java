@@ -31,10 +31,20 @@ public class Game implements Serializable {
         Difficulty.Level[] levels = Difficulty.Level.values();
         Difficulty.Level randomLevel = levels[(int) (random.nextFloat()*(levels.length-1))];
 
+        return newRandom(randomLevel, allSongs);
+    }
+
+    public static Game newRandom(Difficulty.Level level, List<Song> allSongs) {
+        Random random = new Random();
+
+        return newRandom(level, random.nextInt(8) + 3, allSongs);
+    }
+
+    public static Game newRandom(Difficulty.Level level, int songsNum, List<Song> allSongs) {
         List<Song> shuffled = new ArrayList<>(allSongs);
         Collections.shuffle(shuffled);
 
-        return new Game.Creator().create(randomLevel, new ArrayList<>(shuffled.subList(0, random.nextInt(8) + 3)), shuffled);
+        return new Game.Creator().create(level, new ArrayList<>(shuffled.subList(0, songsNum)), shuffled);
     }
 
     public static class Creator {

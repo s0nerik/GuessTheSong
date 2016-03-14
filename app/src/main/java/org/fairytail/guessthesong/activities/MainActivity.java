@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -19,14 +18,16 @@ import com.joanzapata.android.asyncservice.api.annotation.InjectService;
 import com.joanzapata.android.asyncservice.api.annotation.OnMessage;
 import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 
-import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
 import org.fairytail.guessthesong.helpers.MpGameCreationHelper;
 import org.fairytail.guessthesong.helpers.MpGameJoinHelper;
+import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.player.Player;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -59,6 +60,8 @@ public class MainActivity extends FragmentActivity {
     PropertyAction btnCreateAction;
     PropertyAction btnJoinAction;
     float width;
+
+    List<Song> songs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,16 +155,18 @@ public class MainActivity extends FragmentActivity {
         songsGetterService.loadAllSongs(Order.RANDOM);
     }
 
+    // TODO: check songs for null
     @OnClick(R.id.btn_single_player)
     public void onSinglePlayerClicked() {
         Intent intent = new Intent(this, DifficultyActivity.class);
         startActivity(intent);
     }
 
+    // TODO: check songs for null
     @OnClick(R.id.btn_create_game)
     public void onCreateGameClicked() {
         val helper = new MpGameCreationHelper();
-        helper.createNewGame();
+        helper.createNewGame(songs);
     }
 
     @OnClick(R.id.btn_join_game)
@@ -172,7 +177,8 @@ public class MainActivity extends FragmentActivity {
 
     @OnMessage
     public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
-        Log.d(App.TAG, e.getSongs().toString());
+        songs = e.getSongs();
+//        Log.d(App.TAG, e.getSongs().toString());
 //        player.prepare(e.getSongs().get(0), Player::start);
     }
 

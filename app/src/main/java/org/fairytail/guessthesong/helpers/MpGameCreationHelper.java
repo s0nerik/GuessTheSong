@@ -16,10 +16,13 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import org.fairytail.guessthesong.MultiplayerService;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Daggered;
+import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Difficulty;
+import org.fairytail.guessthesong.model.game.Game;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,7 +50,7 @@ public class MpGameCreationHelper extends Daggered {
     @Inject
     Resources res;
 
-    public void createNewGame() {
+    public void createNewGame(List<Song> allSongs) {
         val sub = new CompositeSubscription();
 
         val dialog = new MaterialDialog.Builder(context)
@@ -57,7 +60,7 @@ public class MpGameCreationHelper extends Daggered {
                 .canceledOnTouchOutside(true)
                 .negativeText("Cancel")
                 .positiveText("Create")
-                .onPositive((dialog1, which) -> startMultiplayerService())
+                .onPositive((dialog1, which) -> startMultiplayerService(allSongs))
                 .dismissListener(d -> sub.unsubscribe())
                 .build();
 
@@ -91,7 +94,7 @@ public class MpGameCreationHelper extends Daggered {
         dialog.show();
     }
 
-    private void startMultiplayerService() {
+    private void startMultiplayerService(List<Song> allSongs) {
         //  Create a string map containing information about your service.
         val record = new HashMap<String, String>();
         record.put("port", String.valueOf(8888));
@@ -101,6 +104,7 @@ public class MpGameCreationHelper extends Daggered {
 
         val bundle = new Bundle();
         bundle.putSerializable("record", record);
+        bundle.putSerializable("game", Game.newRandom(mpGameDifficulty.get().getLevel(), allSongs));
 
         context.startService(new Intent(context, MultiplayerService.class).putExtras(bundle));
     }
