@@ -67,20 +67,21 @@ public class MultiplayerService extends Service {
             MpGame mpGame = new MpGame(game);
             Observable<MpGame> observable = Observable.<MpGame>empty();
 
+            File newSourceFolder = new File(getFilesDir(), mpGame.getUuid().toString());
+            if (!newSourceFolder.exists() && !newSourceFolder.mkdir()) {
+                return Observable.error(new Exception("Can't create a folder for the game."));
+            }
+
             for (Quiz quiz : game.getQuizzes()) {
-                observable = observable.mergeWith(convertQuiz(mpGame, quiz, ffmpeg).ignoreElements().map(aVoid -> null));
+                observable = observable.mergeWith(convertQuiz(quiz, newSourceFolder, ffmpeg).ignoreElements().map(aVoid -> null));
             }
             return observable.concatWith(Observable.just(mpGame));
         });
     }
 
-    private Observable<Void> convertQuiz(MpGame game, Quiz quiz, FFmpeg ffmpeg) {
+    private Observable<Void> convertQuiz(Quiz quiz, File sourceFolder, FFmpeg ffmpeg) {
         return Observable.create(subscriber -> {
-            File newSourceFolder = new File(getFilesDir(), game.getUuid().toString());
-            if (!newSourceFolder.exists() && !newSourceFolder.mkdir()) {
-                subscriber.onError(new Exception("Can't create a folder for the quiz."));
-            }
-            File newSource = new File(newSourceFolder, getTempName(quiz.getCorrectSong()));
+            File newSource = new File(sourceFolder, getTempName(quiz.getCorrectSong()));
 
             String[] command = new String[] {
                     "-ss", toSeconds(quiz.getStartTime()),
