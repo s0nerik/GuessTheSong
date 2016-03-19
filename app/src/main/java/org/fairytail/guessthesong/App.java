@@ -4,26 +4,25 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 
 import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 import com.squareup.otto.Bus;
 
 import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
 
 import java.lang.ref.WeakReference;
-import java.net.URI;
 
 import javax.inject.Inject;
 
 import ru.noties.debug.Debug;
 
+//import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
+
 public class App extends Application {
 
     public static final String TAG = "GuessTheSong";
 
-    private GameWebSocketClient gameWebSocketClient;
+//    private GameWebSocketClient gameWebSocketClient;
 
     private static WeakReference<Activity> currentActivity;
 
@@ -81,12 +80,12 @@ public class App extends Application {
         return currentActivity.get();
     }
 
-    public GameWebSocketClient getWebSocketMessageClient(@NonNull URI uri) {
-        if (gameWebSocketClient == null || !uri.equals(gameWebSocketClient.getURI())) {
-//            URI.create("ws://" + groupOwnerAddress.getHostAddress() + ":4807")
-            gameWebSocketClient = new GameWebSocketClient(uri);
-        }
-        return gameWebSocketClient;
-    }
+//    public GameWebSocketClient getWebSocketMessageClient(@NonNull URI uri) {
+//        if (gameWebSocketClient == null || !uri.equals(gameWebSocketClient.getURI())) {
+////            URI.create("ws://" + groupOwnerAddress.getHostAddress() + ":4807")
+//            gameWebSocketClient = new GameWebSocketClient(uri);
+//        }
+//        return gameWebSocketClient;
+//    }
 
 }

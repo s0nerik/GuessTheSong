@@ -83,7 +83,7 @@ public class StreamServer extends NanoHTTPD {
                     return new Response(Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Player doesn't have current song.");
                 }
             default:
-                return new Response(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "Only GET is supported.");
+                return new Response(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "Only REQUEST is supported.");
         }
     }
 
