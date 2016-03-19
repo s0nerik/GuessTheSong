@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.peak.salut.Callbacks.SalutDeviceCallback;
 import com.peak.salut.Salut;
 import com.peak.salut.SalutDataReceiver;
 import com.peak.salut.SalutServiceData;
@@ -49,6 +50,14 @@ public class MultiplayerService extends Service {
 
     private Subject<SocketMessage, SocketMessage> messageSubject = AsyncSubject.create();
 
+    private SalutDeviceCallback deviceRegisteredReaction = device -> {
+        Debug.d(device.readableName + " has connected!");
+        PlayerInfo info = new PlayerInfo();
+        info.id = device.txtRecord.get("id");
+        info.setDevice(device);
+        players.add(info);
+    };
+
     public MultiplayerService() {
         super();
         Injector.inject(this);
@@ -57,7 +66,6 @@ public class MultiplayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         val record = (Map<String, String>) intent.getSerializableExtra("record");
-        val game = (Game) intent.getSerializableExtra("game");
 
         SalutDataReceiver dataReceiver =
                 new SalutDataReceiver(App.getCurrentActivity(),
@@ -73,13 +81,7 @@ public class MultiplayerService extends Service {
         network = new Salut(dataReceiver, serviceData, () -> Debug.e("Sorry, but this device does not support WiFi Direct."));
         network.thisDevice.txtRecord.putAll(record);
 
-        network.startNetworkService(device -> {
-            Debug.d(device.readableName + " has connected!");
-            PlayerInfo info = new PlayerInfo();
-            info.id = device.txtRecord.get("id");
-            info.setDevice(device);
-            players.add(info);
-        });
+        registerListeners();
 
         players.onItemAdded()
                .subscribe(event -> {
@@ -91,9 +93,6 @@ public class MultiplayerService extends Service {
 
         preparedPlayers.onItemAdded()
                .subscribe(event -> Debug.d(event.getItem().getDevice().readableName + " has prepared!"));
-
-        if (game != null)
-            prepareNewGame(game).subscribe(mpGame -> currentGame = mpGame);
 
         return START_NOT_STICKY;
     }
@@ -115,8 +114,26 @@ public class MultiplayerService extends Service {
         });
     }
 
+    private Observable<Void> startServiceIfNotAlreadyStarted() {
+        return Observable.create(subscriber -> {
+            if (!network.isRunningAsHost) {
+                network.startNetworkService(deviceRegisteredReaction,
+                                            () -> {
+                                                subscriber.onNext(null);
+                                                subscriber.onCompleted();
+                                            },
+                                            () -> subscriber.onError(new Exception("Can't start network service!")));
+            } else {
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }
+        });
+    }
+
     public Observable<MpGame> prepareNewGame(Game game) {
-        return new MpGameConverter(this).convertToMpGame(game);
+        return new MpGameConverter(this).convertToMpGame(game)
+                                        .concatMap(mpGame -> startServiceIfNotAlreadyStarted().map(aVoid -> mpGame))
+                                        .doOnNext(mpGame1 -> currentGame = mpGame1);
     }
 
     @Override
