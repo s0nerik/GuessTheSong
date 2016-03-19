@@ -107,18 +107,6 @@ public class MultiplayerService extends Service {
         val successfulPrepares = prepareMesssages
                 .filter(msg -> msg.status == SocketMessage.Status.OK);
 
-//        val playerInfoMesssages = postMessages
-//                .filter(msg -> msg.message == SocketMessage.Message.PLAYER_INFO);
-
-//        playerInfoMesssages.subscribe(socketMessage -> {
-//            try {
-//                PlayerInfo info = LoganSquare.parse(socketMessage.body, PlayerInfo.class);
-//                players.add(info);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-
         successfulPrepares.subscribe(msg -> {
             // Assuming that msg.body is a player's id
             PlayerInfo player = IterableUtils.find(players, d -> StringUtils.equals(d.id, msg.body));
@@ -130,10 +118,6 @@ public class MultiplayerService extends Service {
     public Observable<MpGame> prepareNewGame(Game game) {
         return new MpGameConverter(this).convertToMpGame(game);
     }
-
-//    public Observable<MpGame> startGame(MpGame game) {
-//        return preparePlayers(game);
-//    }
 
     @Override
     public void onDestroy() {
