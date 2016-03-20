@@ -36,6 +36,7 @@ import org.fairytail.guessthesong.networking.http.StreamServer;
 import org.fairytail.guessthesong.player.MusicPlayer;
 import org.fairytail.guessthesong.player.Player;
 import org.fairytail.guessthesong.prefs.Prefs;
+import org.fairytail.guessthesong.services.MultiplayerService;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

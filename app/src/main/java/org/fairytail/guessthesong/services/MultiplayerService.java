@@ -1,4 +1,4 @@
-package org.fairytail.guessthesong;
+package org.fairytail.guessthesong.services;
 
 import android.app.Service;
 import android.content.Intent;
@@ -19,6 +19,7 @@ import com.peak.salut.SalutServiceData;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.helpers.MpGameConverter;
 import org.fairytail.guessthesong.helpers.SocketMessageFactory;
@@ -177,7 +178,7 @@ public class MultiplayerService extends Service {
                 });
     }
 
-    private Observable<Void> startServiceIfNotAlreadyStarted() {
+    private Observable<Void> startNetworkServiceIfNotAlreadyStarted() {
         return Observable.<Void>create(subscriber -> {
             if (!network.isRunningAsHost) {
                 network.startNetworkService(deviceRegisteredReaction,
@@ -211,7 +212,7 @@ public class MultiplayerService extends Service {
     public Observable<MpGame> prepareNewGame(Game game) {
         return new MpGameConverter(this).convertToMpGame(game)
                                         .concatMap(mpGame -> enableWiFiIfNecessary().map(arg -> mpGame))
-                                        .concatMap(mpGame -> startServiceIfNotAlreadyStarted().map(arg -> mpGame))
+                                        .concatMap(mpGame -> startNetworkServiceIfNotAlreadyStarted().map(arg -> mpGame))
                                         .doOnNext(mpGame1 -> currentGame = mpGame1);
     }
 

@@ -10,7 +10,7 @@ import android.view.View;
 
 import com.squareup.otto.Bus;
 
-import org.fairytail.guessthesong.MultiplayerService;
+import org.fairytail.guessthesong.services.MultiplayerService;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.model.game.Game;
