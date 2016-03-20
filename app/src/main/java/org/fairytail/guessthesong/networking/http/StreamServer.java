@@ -3,23 +3,20 @@ package org.fairytail.guessthesong.networking.http;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.gson.Gson;
-
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.player.Player;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import fi.iki.elonen.NanoHTTPD;
+import lombok.val;
 
 public class StreamServer extends NanoHTTPD {
 
@@ -29,19 +26,8 @@ public class StreamServer extends NanoHTTPD {
     @Inject
     Context context;
 
-    public static final String PORT = "8888";
-
     public interface Method {
-        String CURRENT_INFO = "/info";
-        String CURRENT_ALBUMART = "/albumart";
-        String STREAM = "/stream";
-    }
-
-    public interface Url {
-        String SERVER_ADDRESS = "http://192.168.43.1:" + PORT;
-        String CURRENT_INFO = SERVER_ADDRESS + Method.CURRENT_INFO;
-        String CURRENT_ALBUMART = SERVER_ADDRESS + Method.CURRENT_ALBUMART;
-        String STREAM = SERVER_ADDRESS + Method.STREAM;
+        String SONG = "/song";
     }
 
     public StreamServer() {
@@ -67,32 +53,28 @@ public class StreamServer extends NanoHTTPD {
         }
         Map<String, String> params = session.getParms();
 
-        switch(method){
-            case GET: // Outcoming info
-                Song song = player.getCurrentSong();
-                if (song != null) {
+        switch(method) {
+            case GET:
+                val path = params.get("path");
+                if (path != null) {
                     switch (uri) {
-                        case Method.STREAM:
-                            return stream(song);
-                        case Method.CURRENT_INFO:
-                            return currentInfo(song);
-                        case Method.CURRENT_ALBUMART:
-                            return currentAlbumArt(song);
+                        case Method.SONG:
+                            return stream(path);
                     }
                 } else {
-                    return new Response(Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Player doesn't have current song.");
+                    return new Response(Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Can't stream the song: Path is not specified.");
                 }
             default:
                 return new Response(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "Only REQUEST is supported.");
         }
     }
 
-    private Response stream(Song song) {
-        Log.d(App.TAG, "StreamServer: STREAM");
+    private Response stream(String path) {
+        Log.d(App.TAG, "StreamServer: SONG");
         FileInputStream fis = null;
         try {
 
-            fis = new FileInputStream(song.getSource());
+            fis = new FileInputStream(path);
 
         } catch (FileNotFoundException e) {e.printStackTrace();}
 
@@ -100,24 +82,6 @@ public class StreamServer extends NanoHTTPD {
         res.addHeader("Connection", "Keep-Alive");
 //        res.setChunkedTransfer(true);
         return res;
-    }
-
-    private Response currentInfo(Song song) {
-        Log.d(App.TAG, "StreamServer: CURRENT_INFO");
-        return new Response(Response.Status.OK, "application/json", getSongInfoJSON(song));
-    }
-
-    private Response currentAlbumArt(Song song) {
-        Log.d(App.TAG, "StreamServer: CURRENT_ALBUMART");
-        InputStream is = null;
-        try {
-            is = context.getContentResolver().openInputStream(song.getAlbumArtUri());
-        } catch (FileNotFoundException ignored) {}
-        return new Response(Response.Status.OK, "image", is);
-    }
-
-    private String getSongInfoJSON(Song song){
-        return new Gson().toJson(song);
     }
 
 }
