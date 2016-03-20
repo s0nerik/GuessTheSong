@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.f2prateek.rx.receivers.wifi.RxWifiManager;
 import com.peak.salut.Callbacks.SalutDeviceCallback;
 import com.peak.salut.Salut;
 import com.peak.salut.SalutDataReceiver;
@@ -26,6 +27,7 @@ import org.fairytail.guessthesong.networking.entities.SocketMessage;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -40,6 +42,24 @@ import rx.subjects.Subject;
 
 @RequireBundler
 public class MultiplayerService extends Service {
+
+    public class NetworkServiceStartException extends Exception {
+        public NetworkServiceStartException() {
+            super("Network service can't be started");
+        }
+
+        public NetworkServiceStartException(String detailMessage) {
+            super(detailMessage);
+        }
+
+        public NetworkServiceStartException(String detailMessage, Throwable throwable) {
+            super(detailMessage, throwable);
+        }
+
+        public NetworkServiceStartException(Throwable throwable) {
+            super(throwable);
+        }
+    }
 
     @Inject
     WifiManager wifiManager;
@@ -122,14 +142,14 @@ public class MultiplayerService extends Service {
     }
 
     private Observable<Void> startServiceIfNotAlreadyStarted() {
-        return Observable.create(subscriber -> {
+        return Observable.<Void>create(subscriber -> {
             if (!network.isRunningAsHost) {
                 network.startNetworkService(deviceRegisteredReaction,
                                             () -> {
                                                 subscriber.onNext(null);
                                                 subscriber.onCompleted();
                                             },
-                                            () -> subscriber.onError(new Exception("Can't start network service!")));
+                                            () -> subscriber.onError(new NetworkServiceStartException()));
             } else {
                 subscriber.onNext(null);
                 subscriber.onCompleted();
@@ -137,9 +157,25 @@ public class MultiplayerService extends Service {
         });
     }
 
+    private Observable<Void> enableWiFiIfNeccessary() {
+        return Observable.defer(() -> {
+            if (!wifiManager.isWifiEnabled()) {
+                return RxWifiManager.wifiStateChanges(getApplicationContext())
+                                    .filter(state -> state == WifiManager.WIFI_STATE_ENABLED)
+                                    .take(1)
+                                    .map(s -> (Void) null)
+                                    .delay(1, TimeUnit.SECONDS)
+                                    .timeout(5, TimeUnit.SECONDS)
+                                    .doOnSubscribe(() -> wifiManager.setWifiEnabled(true));
+            }
+            return Observable.just(null);
+        });
+    }
+
     public Observable<MpGame> prepareNewGame(Game game) {
         return new MpGameConverter(this).convertToMpGame(game)
-                                        .concatMap(mpGame -> startServiceIfNotAlreadyStarted().map(aVoid -> mpGame))
+                                        .concatMap(mpGame -> enableWiFiIfNeccessary().map(arg -> mpGame))
+                                        .concatMap(mpGame -> startServiceIfNotAlreadyStarted().map(arg -> mpGame))
                                         .doOnNext(mpGame1 -> currentGame = mpGame1);
     }
 
