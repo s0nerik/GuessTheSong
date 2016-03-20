@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import in.workarounds.bundler.Bundler;
 import lombok.val;
 
 public class MainActivity extends FragmentActivity {
@@ -166,7 +167,9 @@ public class MainActivity extends FragmentActivity {
     @OnClick(R.id.btn_create_game)
     public void onCreateGameClicked() {
         val helper = new MpGameCreationHelper();
-        helper.createNewGame(songs);
+        helper.createNewGame(songs)
+              .subscribe(result -> Bundler.mpGameActivity(result.getServiceRecord(), result.getGame())
+                                          .start(this));
     }
 
     @OnClick(R.id.btn_join_game)

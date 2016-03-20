@@ -21,6 +21,7 @@ import com.squareup.otto.ThreadEnforcer;
 
 import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.activities.MainActivity;
+import org.fairytail.guessthesong.activities.MpGameActivity;
 import org.fairytail.guessthesong.activities.ScoreActivity;
 import org.fairytail.guessthesong.adapters.join_game.JoinGameViewHolder;
 import org.fairytail.guessthesong.broadcasts.WiFiDirectBroadcastReceiver;
@@ -32,7 +33,6 @@ import org.fairytail.guessthesong.helpers.MpGameCreationHelper;
 import org.fairytail.guessthesong.helpers.MpGameJoinHelper;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.http.StreamServer;
-//import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
 import org.fairytail.guessthesong.player.MusicPlayer;
 import org.fairytail.guessthesong.player.Player;
 import org.fairytail.guessthesong.prefs.Prefs;
@@ -49,11 +49,14 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.WIFI_P2P_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
 
+//import org.fairytail.guessthesong.networking.ws.GameWebSocketClient;
+
 @Module(includes = { PrefsModule.class },
         injects = {
                 // Activities
                 MainActivity.class,
                 GameActivity.class,
+                MpGameActivity.class,
                 ScoreActivity.class,
 
                 // Fragments

@@ -25,23 +25,30 @@ import org.fairytail.guessthesong.networking.entities.PlayerInfo;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.HashMap;
 
 import javax.inject.Inject;
 
+import in.workarounds.bundler.Bundler;
+import in.workarounds.bundler.annotations.Arg;
+import in.workarounds.bundler.annotations.RequireBundler;
 import lombok.val;
 import ru.noties.debug.Debug;
 import rx.Observable;
 import rx.subjects.AsyncSubject;
 import rx.subjects.Subject;
 
+@RequireBundler
 public class MultiplayerService extends Service {
 
     @Inject
     WifiManager wifiManager;
 
+    @Arg
+    HashMap<String, String> record;
+
     private Salut network;
-    private IBinder binder = new MultiplayerBinder();
+    private IBinder binder = new MultiplayerServiceBinder();
 
     private MpGame currentGame;
 
@@ -65,7 +72,7 @@ public class MultiplayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        val record = (Map<String, String>) intent.getSerializableExtra("record");
+        Bundler.inject(this, intent);
 
         SalutDataReceiver dataReceiver =
                 new SalutDataReceiver(App.getCurrentActivity(),
@@ -148,7 +155,7 @@ public class MultiplayerService extends Service {
         return binder;
     }
 
-    public class MultiplayerBinder extends Binder {
+    public class MultiplayerServiceBinder extends Binder {
         public MultiplayerService getService() {
             return MultiplayerService.this;
         }

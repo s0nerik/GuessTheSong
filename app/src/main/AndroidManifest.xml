@@ -48,6 +48,11 @@
             android:label="@string/title_activity_game" >
         </activity>
         <activity
+            android:screenOrientation="portrait"
+            android:name=".activities.MpGameActivity"
+            android:label="@string/title_activity_game" >
+        </activity>
+        <activity
             android:name=".activities.ScoreActivity"
             android:label="@string/title_activity_score" >
         </activity>
