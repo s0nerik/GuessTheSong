@@ -168,7 +168,7 @@ public class MainActivity extends FragmentActivity {
     public void onCreateGameClicked() {
         val helper = new MpGameCreationHelper();
         helper.createNewGame(songs)
-              .subscribe(result -> Bundler.mpGameActivity(result.getServiceRecord(), result.getGame())
+              .subscribe(result -> Bundler.mpGameHostActivity(result.getServiceRecord(), result.getGame())
                                           .start(this));
     }
 

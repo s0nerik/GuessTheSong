@@ -34,6 +34,8 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/BCKEY.DSA'
+        exclude 'META-INF/BCKEY.SF'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -97,8 +99,7 @@ dependencies {
     compile 'com.f2prateek.rx.preferences:rx-preferences:1.0.1'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile 'com.f2prateek.rx.receivers:rx-receivers:0.1.0-SNAPSHOT'
-    compile 'com.shekhargulati.reactivex:rx-okhttp:0.1.8'
-    compile 'com.github.davidmoten:rxjava-extras:0.7'
+    compile 'com.github.davidmoten:rxjava-extras:0.8-SNAPSHOT'
 
     compile('com.github.afollestad.material-dialogs:core:0.8.5.6@aar') {
         transitive = true
