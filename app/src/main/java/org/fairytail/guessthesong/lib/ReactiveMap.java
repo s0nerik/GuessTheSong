@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
-import rx.subjects.AsyncSubject;
+import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 public class ReactiveMap<K, V> implements Map<K, V> {
@@ -77,10 +77,10 @@ public class ReactiveMap<K, V> implements Map<K, V> {
 
     private final Map<K, V> map = new HashMap<>();
 
-    private Subject<Integer, Integer> sizeChangedSubject = AsyncSubject.create();
-    private Subject<ItemAddedEvent<K, V>, ItemAddedEvent<K, V>> itemAddedSubject = AsyncSubject.create();
-    private Subject<ItemRemovedEvent<K, V>, ItemRemovedEvent<K, V>> itemRemovedSubject = AsyncSubject.create();
-    private Subject<ItemPutEvent<K, V>, ItemPutEvent<K, V>> itemPutSubject = AsyncSubject.create();
+    private Subject<Integer, Integer> sizeChangedSubject = PublishSubject.create();
+    private Subject<ItemAddedEvent<K, V>, ItemAddedEvent<K, V>> itemAddedSubject = PublishSubject.create();
+    private Subject<ItemRemovedEvent<K, V>, ItemRemovedEvent<K, V>> itemRemovedSubject = PublishSubject.create();
+    private Subject<ItemPutEvent<K, V>, ItemPutEvent<K, V>> itemPutSubject = PublishSubject.create();
 
     public Observable<Integer> onSizeChanged() {
         return sizeChangedSubject;
@@ -147,6 +147,7 @@ public class ReactiveMap<K, V> implements Map<K, V> {
         itemPutSubject.onNext(new ItemPutEvent<K, V>(key, item, value));
         if (item == null) {
             itemAddedSubject.onNext(new ItemAddedEvent<K, V>(key, value));
+            sizeChangedSubject.onNext(map.size());
         }
         return item;
     }
@@ -173,6 +174,10 @@ public class ReactiveMap<K, V> implements Map<K, V> {
         for (K key : replacedItems.keySet()) {
             itemPutSubject.onNext(new ItemPutEvent<K, V>(key, replacedItems.get(key), this.map.get(key)));
         }
+
+        if (!addedKeys.isEmpty()) {
+            sizeChangedSubject.onNext(map.size());
+        }
     }
 
     @Override
@@ -180,6 +185,7 @@ public class ReactiveMap<K, V> implements Map<K, V> {
         V value = map.remove(key);
         if (value != null) {
             itemRemovedSubject.onNext(new ItemRemovedEvent<K, V>((K) key, value));
+            sizeChangedSubject.onNext(map.size());
         }
         return value;
     }
@@ -190,6 +196,10 @@ public class ReactiveMap<K, V> implements Map<K, V> {
         map.clear();
         for (Entry<K, V> item : removedItems.entrySet()) {
             itemRemovedSubject.onNext(new ItemRemovedEvent<K, V>(item.getKey(), item.getValue()));
+        }
+
+        if (!removedItems.isEmpty()) {
+            sizeChangedSubject.onNext(map.size());
         }
     }
 }

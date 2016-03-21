@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import rx.Observable;
-import rx.subjects.AsyncSubject;
+import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 public class ReactiveList<T> implements List<T> {
@@ -76,10 +76,10 @@ public class ReactiveList<T> implements List<T> {
 
     private final List<T> list = new ArrayList<>();
 
-    private Subject<Integer, Integer> sizeChangedSubject = AsyncSubject.create();
-    private Subject<ItemAddedEvent<T>, ItemAddedEvent<T>> itemAddedSubject = AsyncSubject.create();
-    private Subject<ItemRemovedEvent<T>, ItemRemovedEvent<T>> itemRemovedSubject = AsyncSubject.create();
-    private Subject<ItemReplacedEvent<T>, ItemReplacedEvent<T>> itemReplacedSubject = AsyncSubject.create();
+    private Subject<Integer, Integer> sizeChangedSubject = PublishSubject.create();
+    private Subject<ItemAddedEvent<T>, ItemAddedEvent<T>> itemAddedSubject = PublishSubject.create();
+    private Subject<ItemRemovedEvent<T>, ItemRemovedEvent<T>> itemRemovedSubject = PublishSubject.create();
+    private Subject<ItemReplacedEvent<T>, ItemReplacedEvent<T>> itemReplacedSubject = PublishSubject.create();
 
     public Observable<Integer> onSizeChanged() {
         return sizeChangedSubject;
