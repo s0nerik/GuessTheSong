@@ -1,20 +1,15 @@
 package org.fairytail.guessthesong.helpers;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.peak.salut.Salut;
-import com.peak.salut.SalutDataReceiver;
-import com.peak.salut.SalutServiceData;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
-import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.adapters.join_game.JoinGameAdapter;
 import org.fairytail.guessthesong.adapters.join_game.JoinGameItem;
 import org.fairytail.guessthesong.dagger.Daggered;
@@ -31,9 +26,6 @@ import ru.noties.debug.Debug;
 
 public class MpGameJoinHelper extends Daggered {
     @Inject
-    Activity context;
-
-    @Inject
     Resources res;
 
     @Inject
@@ -44,8 +36,10 @@ public class MpGameJoinHelper extends Daggered {
 
     private Salut network;
 
-    public void joinGame() {
-        val dialog = new MaterialDialog.Builder(context)
+    public void joinGame(Salut network) {
+        this.network = network;
+
+        val dialog = new MaterialDialog.Builder(App.getCurrentActivity())
                 .customView(R.layout.dialog_join_mp_game, false)
                 .title("Join game")
                 .cancelable(true)
@@ -54,10 +48,6 @@ public class MpGameJoinHelper extends Daggered {
                 .showListener(d -> bus.register(this))
                 .dismissListener(d -> { bus.unregister(this); network.stopServiceDiscovery(false); })
                 .build();
-
-        SalutDataReceiver dataReceiver = new SalutDataReceiver(context, o -> Debug.d(o.toString()));
-        SalutServiceData serviceData = new SalutServiceData("lwm", 50489, Build.MODEL);
-        network = new Salut(dataReceiver, serviceData, () -> Debug.e("Device not supported."));
 
         val view = dialog.getCustomView();
         val recycler = (RecyclerView) view.findViewById(R.id.recycler);
@@ -69,7 +59,7 @@ public class MpGameJoinHelper extends Daggered {
     }
 
     @Subscribe
-    public void onEvent(MpGameSelectedEvent event) {
+    void onEvent(MpGameSelectedEvent event) {
         network.stopServiceDiscovery(false);
         network.registerWithHost(event.device,
                                  () -> Debug.d("Registered!"),
@@ -78,12 +68,12 @@ public class MpGameJoinHelper extends Daggered {
     }
 
     @Subscribe
-    public void onStartMultiplayerGame(ShouldStartMultiplayerGameEvent event) {
+    void onStartMultiplayerGame(ShouldStartMultiplayerGameEvent event) {
         Debug.d();
-        Intent intent = new Intent(context, GameActivity.class);
-        intent.putExtra("game", event.game);
-        intent.putExtra("multiplayer", true);
-        context.startActivity(intent);
+//        Intent intent = new Intent(context, GameActivity.class);
+//        intent.putExtra("game", event.game);
+//        intent.putExtra("multiplayer", true);
+//        context.startActivity(intent);
     }
 
     private void discoverServices() {

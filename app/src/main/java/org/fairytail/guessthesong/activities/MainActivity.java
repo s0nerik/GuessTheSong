@@ -23,11 +23,12 @@ import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
 import org.fairytail.guessthesong.helpers.MpGameCreationHelper;
-import org.fairytail.guessthesong.helpers.MpGameJoinHelper;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.player.Player;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -174,8 +175,11 @@ public class MainActivity extends FragmentActivity {
 
     @OnClick(R.id.btn_join_game)
     public void onJoinGameClicked() {
-        val helper = new MpGameJoinHelper();
-        helper.joinGame();
+        val record = new HashMap<String, String>();
+        record.put("id", UUID.randomUUID().toString());
+        Bundler.mpGameClientActivity(record).start(this);
+//        val helper = new MpGameJoinHelper();
+//        helper.joinGame();
     }
 
     @OnMessage

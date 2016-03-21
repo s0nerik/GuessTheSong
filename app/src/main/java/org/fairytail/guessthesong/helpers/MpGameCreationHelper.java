@@ -1,6 +1,5 @@
 package org.fairytail.guessthesong.helpers;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.ArrayRes;
 import android.view.View;
@@ -12,6 +11,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.R;
 import org.fairytail.guessthesong.dagger.Daggered;
 import org.fairytail.guessthesong.model.Song;
@@ -39,10 +39,6 @@ public class MpGameCreationHelper extends Daggered {
     }
 
     @Inject
-    @Named("activity")
-    Context context;
-
-    @Inject
     @Named("mp game name")
     Preference<String> mpGameName;
 
@@ -61,7 +57,7 @@ public class MpGameCreationHelper extends Daggered {
         return Observable.create(subscriber -> {
             CompositeSubscription sub = new CompositeSubscription();
 
-            MaterialDialog dialog = new MaterialDialog.Builder(context)
+            MaterialDialog dialog = new MaterialDialog.Builder(App.getCurrentActivity())
                     .customView(R.layout.dialog_create_mp_game, false)
                     .title("New multiplayer game")
                     .cancelable(true)

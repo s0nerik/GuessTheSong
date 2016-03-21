@@ -27,6 +27,8 @@
         android:theme="@style/AppTheme" >
         <service android:name=".services.MultiplayerHostService"
                  android:stopWithTask="true" />
+        <service android:name=".services.MultiplayerClientService"
+                 android:stopWithTask="true" />
         <activity
             android:screenOrientation="portrait"
             android:name=".activities.MainActivity"
@@ -50,6 +52,11 @@
         <activity
             android:screenOrientation="portrait"
             android:name=".activities.MpGameHostActivity"
+            android:label="@string/title_activity_game" >
+        </activity>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".activities.MpGameClientActivity"
             android:label="@string/title_activity_game" >
         </activity>
         <activity

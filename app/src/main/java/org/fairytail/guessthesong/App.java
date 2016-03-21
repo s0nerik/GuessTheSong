@@ -38,39 +38,27 @@ public class App extends Application {
 
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
-            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+
+            @Override
+            public void onActivityStarted(Activity activity) {
                 currentActivity = new WeakReference<>(activity);
             }
 
             @Override
-            public void onActivityStarted(Activity activity) {
-
-            }
+            public void onActivityResumed(Activity activity) {}
 
             @Override
-            public void onActivityResumed(Activity activity) {
-
-            }
+            public void onActivityPaused(Activity activity) {}
 
             @Override
-            public void onActivityPaused(Activity activity) {
-
-            }
+            public void onActivityStopped(Activity activity) {}
 
             @Override
-            public void onActivityStopped(Activity activity) {
-
-            }
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
             @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-
-            }
-
-            @Override
-            public void onActivityDestroyed(Activity activity) {
-                currentActivity.clear();
-            }
+            public void onActivityDestroyed(Activity activity) {}
         });
 
         Debug.init(BuildConfig.DEBUG);

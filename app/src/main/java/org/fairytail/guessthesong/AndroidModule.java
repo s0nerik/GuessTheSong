@@ -21,6 +21,7 @@ import com.squareup.otto.ThreadEnforcer;
 
 import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.activities.MainActivity;
+import org.fairytail.guessthesong.activities.MpGameClientActivity;
 import org.fairytail.guessthesong.activities.MpGameHostActivity;
 import org.fairytail.guessthesong.activities.ScoreActivity;
 import org.fairytail.guessthesong.adapters.join_game.JoinGameViewHolder;
@@ -36,6 +37,7 @@ import org.fairytail.guessthesong.networking.http.StreamServer;
 import org.fairytail.guessthesong.player.MusicPlayer;
 import org.fairytail.guessthesong.player.Player;
 import org.fairytail.guessthesong.prefs.Prefs;
+import org.fairytail.guessthesong.services.MultiplayerClientService;
 import org.fairytail.guessthesong.services.MultiplayerHostService;
 
 import javax.inject.Named;
@@ -58,6 +60,7 @@ import static android.content.Context.WIFI_SERVICE;
                 MainActivity.class,
                 GameActivity.class,
                 MpGameHostActivity.class,
+                MpGameClientActivity.class,
                 ScoreActivity.class,
 
                 // Fragments
@@ -77,6 +80,7 @@ import static android.content.Context.WIFI_SERVICE;
 
                 // Services
                 MultiplayerHostService.class,
+                MultiplayerClientService.class,
 
                 // Helpers
                 MpGameCreationHelper.class,
@@ -101,14 +105,12 @@ public class AndroidModule {
     }
 
     @Provides
-    @Singleton
     @Named("activity")
     Context provideCurrentActivityContext() {
         return App.getCurrentActivity();
     }
 
     @Provides
-    @Singleton
     Activity provideCurrentActivity() {
         return App.getCurrentActivity();
     }
