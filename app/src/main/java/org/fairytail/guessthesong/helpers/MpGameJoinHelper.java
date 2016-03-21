@@ -59,7 +59,7 @@ public class MpGameJoinHelper extends Daggered {
     }
 
     @Subscribe
-    void onEvent(MpGameSelectedEvent event) {
+    public void onEvent(MpGameSelectedEvent event) {
         network.stopServiceDiscovery(false);
         network.registerWithHost(event.device,
                                  () -> Debug.d("Registered!"),
@@ -68,7 +68,7 @@ public class MpGameJoinHelper extends Daggered {
     }
 
     @Subscribe
-    void onStartMultiplayerGame(ShouldStartMultiplayerGameEvent event) {
+    public void onStartMultiplayerGame(ShouldStartMultiplayerGameEvent event) {
         Debug.d();
 //        Intent intent = new Intent(context, GameActivity.class);
 //        intent.putExtra("game", event.game);
