@@ -2,6 +2,9 @@ package org.fairytail.guessthesong.model.game;
 
 import android.os.Handler;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.QuizTimeOverEvent;
@@ -13,14 +16,19 @@ import java.util.List;
 import java.util.Random;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@JsonObject
+@NoArgsConstructor
 public class Quiz implements Serializable {
 
-    private final Song correctSong;
-    private final ArrayList<Song> variants;
-
-    private final Difficulty difficulty;
+    @JsonField
+    Song correctSong;
+    @JsonField
+    ArrayList<Song> variants;
+    @JsonField
+    Difficulty difficulty;
 
     private long startTime;
     private long endTime;

@@ -5,12 +5,15 @@ import android.app.Application;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 import com.squareup.otto.Bus;
 
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.lib.UUIDConverter;
 
 import java.lang.ref.WeakReference;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -35,6 +38,8 @@ public class App extends Application {
         AsyncService.inject(this);
         Injector.init(new AndroidModule(this), new PrefsModule(PreferenceManager.getDefaultSharedPreferences(this)));
         Injector.injectStatics();
+
+        LoganSquare.registerTypeConverter(UUID.class, new UUIDConverter());
 
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override

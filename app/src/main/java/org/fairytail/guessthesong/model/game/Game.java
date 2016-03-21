@@ -1,5 +1,8 @@
 package org.fairytail.guessthesong.model.game;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
 import org.fairytail.guessthesong.model.Song;
 
 import java.io.Serializable;
@@ -8,14 +11,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@JsonObject
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class Game implements Serializable {
-    private final Difficulty difficulty;
-    private final ArrayList<Quiz> quizzes;
+    @JsonField
+    Difficulty difficulty;
+    @JsonField
+    ArrayList<Quiz> quizzes;
 
     public int countCorrectQuizzes() {
         int cnt = 0;

@@ -1,12 +1,21 @@
 package org.fairytail.guessthesong.model.game;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.typeconverters.StringBasedTypeConverter;
+
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@JsonObject
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Difficulty implements Serializable {
 
     // Must be one of R.array.difficulties
@@ -14,13 +23,29 @@ public class Difficulty implements Serializable {
         EASY, MEDIUM, HARD
     }
 
-    private String name;
+    public static class LevelConverter extends StringBasedTypeConverter<Level> {
+        @Override
+        public Level getFromString(String s) {
+            return Level.valueOf(s);
+        }
 
-    private long songDuration;
-    private int variants;
-    private boolean proposeSimilarStyles;
+        public String convertToString(Level object) {
+            return object.toString();
+        }
+    }
 
-    private Level level;
+    @JsonField
+    String name;
+
+    @JsonField
+    long songDuration;
+    @JsonField
+    int variants;
+    @JsonField
+    boolean proposeSimilarStyles;
+
+    @JsonField(typeConverter = LevelConverter.class)
+    Level level;
 
     public static class Factory {
 

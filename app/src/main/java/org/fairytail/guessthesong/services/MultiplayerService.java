@@ -84,7 +84,7 @@ public abstract class MultiplayerService extends Service {
                                               e.printStackTrace();
                                           }
                                       });
-        SalutServiceData serviceData = new SalutServiceData("lwm", 50489, Build.MODEL);
+        SalutServiceData serviceData = new SalutServiceData("lwm", 0, Build.MODEL);
 
         network = new Salut(dataReceiver, serviceData, () -> Debug.e("Sorry, but this device does not support WiFi Direct."));
         network.thisDevice.txtRecord.putAll(record);
