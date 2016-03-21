@@ -2,6 +2,7 @@ package org.fairytail.guessthesong.networking.entities;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.typeconverters.StringBasedTypeConverter;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -16,12 +17,48 @@ public class SocketMessage {
         PREPARE
     }
 
+    public static class MessageConverter extends StringBasedTypeConverter<Message> {
+        @Override
+        public Message getFromString(String string) {
+            return Message.valueOf(string);
+        }
+
+        @Override
+        public String convertToString(Message object) {
+            return object.toString();
+        }
+    }
+
     public enum Type {
         REQUEST, RESPONSE, OFFER
     }
 
+    public static class TypeConverter extends StringBasedTypeConverter<Type> {
+        @Override
+        public Type getFromString(String string) {
+            return Type.valueOf(string);
+        }
+
+        @Override
+        public String convertToString(Type object) {
+            return object.toString();
+        }
+    }
+
     public enum Status {
         OK, ERROR
+    }
+
+    public static class StatusConverter extends StringBasedTypeConverter<Status> {
+        @Override
+        public Status getFromString(String string) {
+            return Status.valueOf(string);
+        }
+
+        @Override
+        public String convertToString(Status object) {
+            return object.toString();
+        }
     }
 
     public SocketMessage(String userId, Type type, Message message) {
@@ -42,11 +79,11 @@ public class SocketMessage {
 
     @JsonField
     public String userId;
-    @JsonField
+    @JsonField(typeConverter = TypeConverter.class)
     public Type type;
-    @JsonField
+    @JsonField(typeConverter = MessageConverter.class)
     public Message message;
-    @JsonField
+    @JsonField(typeConverter = StatusConverter.class)
     public Status status;
     @JsonField
     public String body;
