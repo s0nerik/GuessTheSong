@@ -20,6 +20,7 @@ import org.fairytail.guessthesong.model.game.MpGame;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 import in.workarounds.bundler.Bundler;
 import in.workarounds.bundler.annotations.Arg;
 import in.workarounds.bundler.annotations.RequireBundler;
+import lombok.val;
 import ru.noties.debug.Debug;
 import rx.Observable;
 import rx.Subscription;
@@ -84,7 +86,16 @@ public abstract class MultiplayerService extends Service {
                                               e.printStackTrace();
                                           }
                                       });
-        SalutServiceData serviceData = new SalutServiceData("lwm", 0, Build.MODEL);
+
+        int port = 1337;
+        try {
+            val socket = new ServerSocket(0);
+            port = socket.getLocalPort();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        SalutServiceData serviceData = new SalutServiceData("lwm", port, Build.MODEL);
 
         network = new Salut(dataReceiver, serviceData, () -> Debug.e("Sorry, but this device does not support WiFi Direct."));
         network.thisDevice.txtRecord.putAll(record);
