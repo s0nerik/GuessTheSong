@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
@@ -33,6 +34,7 @@ import rx.subscriptions.CompositeSubscription;
 public class MpGameCreationHelper extends Daggered {
 
     @Data
+    @RequiredArgsConstructor
     public static class Result {
         private final HashMap<String, String> serviceRecord;
         private final Game game;
@@ -65,6 +67,7 @@ public class MpGameCreationHelper extends Daggered {
                     .negativeText("Cancel")
                     .positiveText("Create")
                     .onPositive((dialog1, which) -> {
+                        sub.unsubscribe();
                         subscriber.onNext(prepareNewGame(allSongs));
                         subscriber.onCompleted();
                     })
@@ -115,7 +118,9 @@ public class MpGameCreationHelper extends Daggered {
 
         val game = Game.newRandom(mpGameDifficulty.get().getLevel(), allSongs);
 
-        return new Result(record, game);
+        val result = new Result(record, game);
+
+        return result;
     }
 
     private int indexInStrArray(String value, @ArrayRes int arrayId) {

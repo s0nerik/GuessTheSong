@@ -81,7 +81,7 @@ public class MpGameConverter {
 
     private Observable<FFmpeg> loadFFMPEG() {
         return Observable.create(subscriber -> {
-            FFmpeg ffmpeg = FFmpeg.getInstance(context);
+            final FFmpeg ffmpeg = FFmpeg.getInstance(context);
             try {
                 ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
                     @Override
