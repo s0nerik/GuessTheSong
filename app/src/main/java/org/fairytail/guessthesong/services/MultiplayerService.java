@@ -33,7 +33,7 @@ import lombok.val;
 import ru.noties.debug.Debug;
 import rx.Observable;
 import rx.Subscription;
-import rx.subjects.AsyncSubject;
+import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -56,7 +56,7 @@ public abstract class MultiplayerService extends Service {
 
     private Subscription subscription;
 
-    private Subject<SocketMessage, SocketMessage> messageSubject = AsyncSubject.create();
+    private Subject<SocketMessage, SocketMessage> messageSubject = PublishSubject.create();
 
     protected Observable<SocketMessage> requests =
             messageSubject.filter(msg -> msg.type == SocketMessage.Type.REQUEST);
@@ -83,6 +83,7 @@ public abstract class MultiplayerService extends Service {
                                               SocketMessage msg = LoganSquare.parse((String) o, SocketMessage.class);
                                               messageSubject.onNext(msg);
                                           } catch (IOException e) {
+                                              Debug.e(e);
                                               e.printStackTrace();
                                           }
                                       });

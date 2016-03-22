@@ -91,4 +91,9 @@ public class SocketMessage {
     public static SocketMessage newMessage(String userId, Type type, Message msg, Status status, String str) {
         return new SocketMessage(userId, type, msg, status, str);
     }
+
+    @Override
+    public String toString() {
+        return type+", "+message+", "+status;
+    }
 }
