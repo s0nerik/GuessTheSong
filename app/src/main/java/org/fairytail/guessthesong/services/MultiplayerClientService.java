@@ -69,7 +69,7 @@ public class MultiplayerClientService extends MultiplayerService {
     }
 
     private Observable<Song> prepareSong(Song s) {
-        return responses.filter(msg -> msg.message == SocketMessage.Message.PREPARE)
+        return responses.filter(msg -> msg.message == SocketMessage.Message.SONG)
                         .take(1)
                         .doOnNext(Checked.a1(msg -> Files.write(msg.body, new File(s.getSource()), Charset.defaultCharset())))
                         .doOnSubscribe(() -> network.sendToHost(msgFactory.newSongRequest(s.getSource()),

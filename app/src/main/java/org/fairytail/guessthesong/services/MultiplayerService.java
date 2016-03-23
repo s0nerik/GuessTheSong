@@ -82,6 +82,7 @@ public abstract class MultiplayerService extends Service {
                                       o -> {
                                           try {
                                               SocketMessage msg = LoganSquare.parse((String) o, SocketMessage.class);
+                                              Debug.d(msg.type+", "+msg.message+", "+msg.status);
                                               messageSubject.onNext(msg);
                                           } catch (IOException e) {
                                               Debug.e(e);
