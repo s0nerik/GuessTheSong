@@ -22,7 +22,6 @@ import org.fairytail.guessthesong.networking.entities.SocketMessage;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.HashMap;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -52,7 +51,7 @@ public abstract class MultiplayerService extends Service {
 
     protected MpGame currentGame;
 
-    protected SocketMessageFactory msgFactory = new SocketMessageFactory(UUID.randomUUID().toString());
+    protected SocketMessageFactory msgFactory;
 
     private Subscription subscription;
 
@@ -75,6 +74,8 @@ public abstract class MultiplayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundler.inject(this, intent);
+
+        msgFactory = new SocketMessageFactory(record.get("id"));
 
         SalutDataReceiver dataReceiver =
                 new SalutDataReceiver(App.getCurrentActivity(),

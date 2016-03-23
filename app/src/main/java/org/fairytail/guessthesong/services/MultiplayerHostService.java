@@ -62,6 +62,7 @@ public class MultiplayerHostService extends MultiplayerService {
         subs[0] = players.onItemAdded()
                          .subscribe(event -> {
                              Debug.d(event.getValue().readableName + " shared info about him!");
+                             Debug.d("Device id: "+event.getValue().txtRecord.get("id"));
                              network.sendToDevice(event.getValue(),
                                                   msgFactory.newPrepareRequest(currentGame),
                                                   () -> Debug.e("Can't prepare client"));
@@ -86,7 +87,7 @@ public class MultiplayerHostService extends MultiplayerService {
                           })
                           .subscribe(pair -> {
                               network.sendToDevice(players.get(pair.second.userId),
-                                                   new String(pair.first),
+                                                   msgFactory.newSongResponse(pair.first),
                                                    () -> Debug.e("Can't send a song to the client"));
                           });
 
