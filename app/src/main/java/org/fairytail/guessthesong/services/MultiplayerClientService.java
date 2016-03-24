@@ -12,10 +12,13 @@ import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.MpGame;
 import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
+import org.fairytail.guessthesong.player.Player;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import in.workarounds.bundler.annotations.RequireBundler;
 import lombok.val;
@@ -25,6 +28,9 @@ import rx.Subscription;
 
 @RequireBundler
 public class MultiplayerClientService extends MultiplayerService {
+
+    @Inject
+    Player player;
 
     public Salut getNetwork() {
         return network;
@@ -37,6 +43,14 @@ public class MultiplayerClientService extends MultiplayerService {
         subs[0] = requests.filter(msg -> msg.message == SocketMessage.Message.PREPARE)
                           .map(msg -> JSON.parseSilently(msg.body, MpGame.class))
                           .concatMap(this::prepareNewGame)
+                          .doOnNext(mpGame -> {
+                              Debug.d("Starting playback!");
+                              Debug.d(mpGame.getGame().getQuizzes().get(0).getCorrectSong().toString());
+                              player.prepare(
+                                      mpGame.getGame().getQuizzes().get(0).getCorrectSong(),
+                                      Player::start
+                              );
+                          })
                           .subscribe(mpGame -> network.sendToHost(
                                   msgFactory.newPrepareCompletedResponse(),
                                   () -> Debug.e("Can't send a prepare completion response to the host.")));
@@ -71,10 +85,24 @@ public class MultiplayerClientService extends MultiplayerService {
     private Observable<Song> prepareSong(Song s) {
         return responses.filter(msg -> msg.message == SocketMessage.Message.SONG)
                         .take(1)
-                        .doOnNext(Checked.a1(msg -> Files.write(msg.body, new File(s.getSource()), Charset.defaultCharset())))
+                        .doOnNext(Checked.a1(msg -> {
+                            File file = getNewFileToWrite(s.getSource());
+                            Files.write(msg.body, file, Charset.defaultCharset());
+                            s.setSource(file.getAbsolutePath());
+                        }))
                         .doOnSubscribe(() -> network.sendToHost(msgFactory.newSongRequest(s.getSource()),
                                                                 () -> Debug.e("Can't request a song from the host!")))
                         .map(msg -> s);
+    }
+
+    private File getNewFileToWrite(String originalPath) {
+        val latterPart = originalPath.replaceAll("(.*)(/.*/.*)", "$2");
+        val finalPath = getApplicationContext().getFilesDir().getAbsolutePath()+latterPart;
+
+        val file = new File(finalPath);
+        file.getParentFile().mkdirs();
+
+        return file;
     }
 
 }

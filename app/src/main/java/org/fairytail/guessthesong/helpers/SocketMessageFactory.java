@@ -6,6 +6,8 @@ import org.fairytail.guessthesong.model.game.MpGame;
 import org.fairytail.guessthesong.networking.entities.PlayerInfo;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 
+import java.nio.charset.Charset;
+
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -18,7 +20,7 @@ public class SocketMessageFactory {
     }
 
     public SocketMessage newSongResponse(byte[] songBytes) {
-        return newResponse(SocketMessage.Message.SONG, SocketMessage.Status.OK, new String(songBytes));
+        return newResponse(SocketMessage.Message.SONG, SocketMessage.Status.OK, new String(songBytes, Charset.defaultCharset()));
     }
 
     @SneakyThrows
