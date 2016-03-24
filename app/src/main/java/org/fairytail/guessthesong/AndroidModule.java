@@ -15,7 +15,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
@@ -197,12 +196,6 @@ public class AndroidModule {
     @Singleton
     Player providePlayer() {
         return new MusicPlayer();
-    }
-
-    @Provides
-    @Singleton
-    Gson provideGson() {
-        return new Gson();
     }
 
 //    @Provides
