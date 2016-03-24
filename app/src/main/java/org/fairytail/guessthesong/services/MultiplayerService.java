@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.f2prateek.rx.receivers.wifi.RxWifiManager;
 import com.peak.salut.Salut;
 import com.peak.salut.SalutDataReceiver;
 import com.peak.salut.SalutServiceData;
@@ -22,6 +23,7 @@ import org.fairytail.guessthesong.networking.entities.SocketMessage;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -106,6 +108,29 @@ public abstract class MultiplayerService extends Service {
         subscription = new CompositeSubscription(subscribeListeners());
 
         return START_NOT_STICKY;
+    }
+
+    public Observable<Void> toggleWiFi() {
+        return Observable.defer(() -> {
+            if (!wifiManager.isWifiEnabled()) {
+                return RxWifiManager.wifiStateChanges(getApplicationContext())
+                                    .filter(state -> state == WifiManager.WIFI_STATE_ENABLED)
+                                    .take(1)
+                                    .map(s -> (Void) null)
+                                    .delay(1, TimeUnit.SECONDS)
+                                    .timeout(5, TimeUnit.SECONDS)
+                                    .doOnSubscribe(() -> wifiManager.setWifiEnabled(true));
+            } else {
+                return RxWifiManager.wifiStateChanges(getApplicationContext())
+                                    .filter(state -> state == WifiManager.WIFI_STATE_DISABLED)
+                                    .take(1)
+                                    .delay(1, TimeUnit.SECONDS)
+                                    .timeout(5, TimeUnit.SECONDS)
+                                    .concatMap(s -> toggleWiFi())
+                                    .map(s -> (Void) null)
+                                    .doOnSubscribe(() -> wifiManager.setWifiEnabled(false));
+            }
+        });
     }
 
     protected abstract Subscription[] subscribeListeners();

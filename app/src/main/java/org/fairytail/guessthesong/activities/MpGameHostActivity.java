@@ -26,6 +26,7 @@ public class MpGameHostActivity extends MpGameActivity {
     protected Subscription provideBoundServiceSubscription() {
         return binder.bindService(MultiplayerHostService.class,
                                   Bundler.multiplayerHostService(serviceRecord).bundle())
+                     .concatMap(svc -> svc.toggleWiFi().map(v -> svc))
                      .doOnSubscribe(() -> progressBar.setVisibility(View.VISIBLE))
                      .concatMap(service -> service.prepareNewGame(game))
                      .doOnNext(service -> progressBar.setVisibility(View.GONE))
