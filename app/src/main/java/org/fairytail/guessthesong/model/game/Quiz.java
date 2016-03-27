@@ -1,5 +1,6 @@
 package org.fairytail.guessthesong.model.game;
 
+import android.net.Uri;
 import android.os.Handler;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
@@ -10,6 +11,7 @@ import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.Song;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,10 @@ public class Quiz implements Serializable {
     public boolean check(Song chosen) {
         correct = new SongsMatcher(correctSong, chosen).areSimilar();
         return correct;
+    }
+
+    public Uri getSongUri() {
+        return Uri.fromFile(new File(correctSong.getSource()));
     }
 
 }

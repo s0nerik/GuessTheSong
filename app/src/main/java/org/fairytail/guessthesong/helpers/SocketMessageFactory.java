@@ -2,7 +2,7 @@ package org.fairytail.guessthesong.helpers;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 
-import org.fairytail.guessthesong.model.game.MpGame;
+import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.networking.entities.PlayerInfo;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 
@@ -24,7 +24,7 @@ public class SocketMessageFactory {
     }
 
     @SneakyThrows
-    public SocketMessage newPrepareRequest(MpGame game) {
+    public SocketMessage newPrepareRequest(Game game) {
         return newRequest(SocketMessage.Message.PREPARE, LoganSquare.serialize(game));
     }
 

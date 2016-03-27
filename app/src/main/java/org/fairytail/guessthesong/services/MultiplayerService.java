@@ -17,7 +17,7 @@ import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.helpers.SocketMessageFactory;
 import org.fairytail.guessthesong.helpers.service_binder.RxServiceBinder;
-import org.fairytail.guessthesong.model.game.MpGame;
+import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public abstract class MultiplayerService extends Service {
 
     protected Salut network;
 
-    protected MpGame currentGame;
+    protected Game currentGame;
 
     protected SocketMessageFactory msgFactory;
 

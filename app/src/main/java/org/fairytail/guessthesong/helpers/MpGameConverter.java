@@ -22,7 +22,7 @@ public class MpGameConverter {
 
     private final Context context;
 
-    public Observable<MpGame> convertToMpGame(Game game) {
+    public Observable<Game> convertToMpGame(Game game) {
         return loadFFMPEG().concatMap(ffmpeg -> {
             MpGame mpGame = new MpGame(game);
             Observable<MpGame> observable = Observable.<MpGame>empty();

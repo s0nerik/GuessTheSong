@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -17,7 +16,6 @@ import org.fairytail.guessthesong.events.MultiplayerGameStartedEvent;
 import org.fairytail.guessthesong.events.QuizSongChosenEvent;
 import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.game.Game;
-import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.player.Player;
 
 import javax.inject.Inject;
@@ -62,25 +60,25 @@ public class GameActivity extends FragmentActivity {
         gAdapter = new GameAdapter(getSupportFragmentManager(), game);
         pager.setAdapter(gAdapter);
 
-        pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                pageSelectedListener(position);
-            }
-        });
+//        pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+//            @Override
+//            public void onPageSelected(int position) {
+//                pageSelectedListener(position);
+//            }
+//        });
 
-        if (pager.getCurrentItem() == 0) {
-            pageSelectedListener(0);
-        }
+//        if (pager.getCurrentItem() == 0) {
+//            pageSelectedListener(0);
+//        }
     }
 
-    private void pageSelectedListener(int position) {
-        if (!isMultiplayer) {
-            Quiz thisQuiz = game.getQuizzes().get(position);
-            player.prepareAndSeekTo(thisQuiz.getCorrectSong(), 40 * 1000, Player::start);
-            thisQuiz.start();
-        }
-    }
+//    private void pageSelectedListener(int position) {
+//        if (!isMultiplayer) {
+//            Quiz thisQuiz = game.getQuizzes().get(position);
+//            player.prepareAndSeekTo(thisQuiz.getCorrectSong(), 40 * 1000, Player::start);
+//            thisQuiz.start();
+//        }
+//    }
 
     @Subscribe
     public void onQuizTimeOver(QuizTimeOverEvent event) {

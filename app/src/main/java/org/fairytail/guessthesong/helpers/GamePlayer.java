@@ -1,7 +1,6 @@
 package org.fairytail.guessthesong.helpers;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.github.sonerik.rxexoplayer.BasicRxExoPlayer;
 import com.github.sonerik.rxexoplayer.RxExoPlayer;
@@ -10,7 +9,6 @@ import org.fairytail.guessthesong.dagger.Daggered;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +32,7 @@ public class GamePlayer extends Daggered {
         for (Quiz q : game.getQuizzes()) {
             val player = new BasicRxExoPlayer(context);
             players.put(q, player);
-            observable = observable.concatMap(g -> player.prepare(Uri.fromFile(new File(q.getCorrectSong().getSource()))).map(e -> g));
+            observable = observable.concatMap(g -> player.prepare(q.getSongUri()).map(e -> g));
         }
         return observable;
     }
