@@ -1,10 +1,8 @@
 package org.fairytail.guessthesong.services;
 
 import android.net.wifi.WifiManager;
-import android.support.v4.util.Pair;
 
 import com.f2prateek.rx.receivers.wifi.RxWifiManager;
-import com.github.davidmoten.rx.Bytes;
 import com.peak.salut.Callbacks.SalutDeviceCallback;
 import com.peak.salut.SalutDevice;
 
@@ -12,13 +10,9 @@ import org.fairytail.guessthesong.helpers.MpGameConverter;
 import org.fairytail.guessthesong.lib.ReactiveList;
 import org.fairytail.guessthesong.lib.ReactiveMap;
 import org.fairytail.guessthesong.model.game.Game;
-import org.fairytail.guessthesong.model.game.MpGame;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 import org.fairytail.guessthesong.networking.http.StreamServer;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.concurrent.TimeUnit;
@@ -154,9 +148,9 @@ public class MultiplayerHostService extends MultiplayerService {
         });
     }
 
-    public Observable<MpGame> prepareNewGame(Game game) {
+    public Observable<Game> prepareNewGame(Game game) {
         return new MpGameConverter(this).convertToMpGame(game)
-                                        .concatMap(g -> enableWiFiIfNecessary().map(arg -> g))
+                                        .concatMap(g -> enableWiFiIfNecessary().map(v -> g))
                                         .concatMap(g -> startHttpServer().doOnNext(this::setHttpServer)
                                                                               .map(s -> g))
                                         .concatMap(g -> startNetworkServiceIfNotAlreadyStarted().map(arg -> g))

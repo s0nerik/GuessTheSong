@@ -7,7 +7,7 @@ import com.peak.salut.Salut;
 
 import org.fairytail.guessthesong.helpers.GamePlayer;
 import org.fairytail.guessthesong.helpers.JSON;
-import org.fairytail.guessthesong.model.game.MpGame;
+import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
 
 import java.util.concurrent.TimeUnit;
@@ -30,8 +30,9 @@ public class MultiplayerClientService extends MultiplayerService {
         return network;
     }
 
-    private void setCurrentGame(MpGame game) {
-        gamePlayer = new GamePlayer(game.getGame());
+    private void setCurrentGame(Game game) {
+        currentGame = game;
+        gamePlayer = new GamePlayer(game);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class MultiplayerClientService extends MultiplayerService {
         val subs = new Subscription[1];
 
         subs[0] = requests.filter(msg -> msg.message == SocketMessage.Message.PREPARE)
-                          .map(msg -> JSON.parseSilently(msg.body, MpGame.class))
+                          .map(msg -> JSON.parseSilently(msg.body, Game.class))
                           .doOnNext(this::setCurrentGame)
                           .concatMap(mpGame -> gamePlayer.prepare())
                           .doOnNext(game -> gamePlayer.start(game.getQuizzes().get(0)))

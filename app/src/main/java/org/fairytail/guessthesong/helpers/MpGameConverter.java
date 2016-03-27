@@ -8,12 +8,12 @@ import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
 
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Game;
-import org.fairytail.guessthesong.model.game.MpGame;
 import org.fairytail.guessthesong.model.game.Quiz;
 
 import java.io.File;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import ru.noties.debug.Debug;
 import rx.Observable;
 
@@ -24,8 +24,8 @@ public class MpGameConverter {
 
     public Observable<Game> convertToMpGame(Game game) {
         return loadFFMPEG().concatMap(ffmpeg -> {
-            MpGame mpGame = new MpGame(game);
-            Observable<MpGame> observable = Observable.<MpGame>empty();
+            val mpGame = new Game(game);
+            Observable<Game> observable = Observable.<Game>empty();
 
             File newSourceFolder = new File(context.getFilesDir(), mpGame.getUuid().toString());
             if (!newSourceFolder.exists() && !newSourceFolder.mkdir()) {
@@ -33,13 +33,18 @@ public class MpGameConverter {
             }
 
             for (Quiz quiz : game.getQuizzes()) {
-                observable = observable.mergeWith(convertQuiz(quiz, newSourceFolder, ffmpeg).ignoreElements().map(aVoid -> null));
+                observable = observable.mergeWith(
+                        convertQuiz(quiz, newSourceFolder, ffmpeg)
+                                .doOnNext(file -> quiz.getCorrectSong().setSource(file.getAbsolutePath()))
+                                .ignoreElements()
+                                .map(aVoid -> null)
+                );
             }
             return observable.concatWith(Observable.just(mpGame));
         });
     }
 
-    private Observable<Void> convertQuiz(Quiz quiz, File sourceFolder, FFmpeg ffmpeg) {
+    private Observable<File> convertQuiz(Quiz quiz, File sourceFolder, FFmpeg ffmpeg) {
         return Observable.create(subscriber -> {
             File newSource = new File(sourceFolder, getTempName(quiz.getCorrectSong()));
 
@@ -54,8 +59,7 @@ public class MpGameConverter {
                 ffmpeg.execute(command, new ExecuteBinaryResponseHandler() {
                     @Override
                     public void onSuccess(String message) {
-                        quiz.getCorrectSong().setSource(newSource.getAbsolutePath());
-                        subscriber.onNext(null);
+                        subscriber.onNext(newSource);
                         subscriber.onCompleted();
                     }
 

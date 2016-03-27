@@ -3,6 +3,7 @@ package org.fairytail.guessthesong.model.game;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import org.fairytail.guessthesong.lib.UUIDConverter;
 import org.fairytail.guessthesong.model.Song;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +26,14 @@ public class Game implements Serializable {
     Difficulty difficulty;
     @JsonField
     ArrayList<Quiz> quizzes;
+    @JsonField(typeConverter = UUIDConverter.class)
+    UUID uuid;
+
+    public Game(Game game) {
+        difficulty = game.difficulty;
+        quizzes = new ArrayList<>(game.quizzes);
+        uuid = game.uuid;
+    }
 
     public int countCorrectQuizzes() {
         int cnt = 0;
@@ -61,7 +71,7 @@ public class Game implements Serializable {
             Difficulty difficulty = Difficulty.Factory.create(level);
             List<Quiz> quizzes = createQuizzes(difficulty, correctSongs, allSongs);
 
-            return new Game(difficulty, (ArrayList<Quiz>) quizzes);
+            return new Game(difficulty, (ArrayList<Quiz>) quizzes, UUID.randomUUID());
         }
 
         private List<Quiz> createQuizzes(Difficulty difficulty, List<Song> correctSongs, List<Song> allSongs) {
