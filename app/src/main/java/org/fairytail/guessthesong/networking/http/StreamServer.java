@@ -3,6 +3,7 @@ package org.fairytail.guessthesong.networking.http;
 import android.content.Context;
 import android.util.Log;
 
+import org.apache.commons.lang3.StringUtils;
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.player.Player;
@@ -30,8 +31,8 @@ public class StreamServer extends NanoHTTPD {
         String SONG = "/song";
     }
 
-    public StreamServer() {
-        super(8888);
+    public StreamServer(int port) {
+        super(port);
         Injector.inject(this);
     }
 
@@ -47,25 +48,27 @@ public class StreamServer extends NanoHTTPD {
         try {
             session.parseBody(files);
         } catch (IOException ioe) {
-            return new Response(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
+            val msg = "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage();
+            return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, msg);
         } catch (ResponseException re) {
-            return new Response(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
+            val msg = re.getMessage();
+            return newFixedLengthResponse(re.getStatus(), MIME_PLAINTEXT, msg);
         }
-        Map<String, String> params = session.getParms();
 
         switch(method) {
             case GET:
-                val path = params.get("path");
-                if (path != null) {
-                    switch (uri) {
-                        case Method.SONG:
-                            return stream(path);
+                if (uri.startsWith(Method.SONG)) {
+                    val path = uri.substring(Method.SONG.length());
+                    if (StringUtils.isEmpty(path)) {
+                        val msg = "Can't stream the song: Path is not specified.";
+                        return newFixedLengthResponse(Response.Status.NO_CONTENT, MIME_PLAINTEXT, msg);
+                    } else {
+                        return stream(path);
                     }
-                } else {
-                    return new Response(Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Can't stream the song: Path is not specified.");
                 }
             default:
-                return new Response(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "Only REQUEST is supported.");
+                val msg = "Only REQUEST is supported.";
+                return newFixedLengthResponse(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, msg);
         }
     }
 
@@ -74,11 +77,11 @@ public class StreamServer extends NanoHTTPD {
         FileInputStream fis = null;
         try {
 
-            fis = new FileInputStream(path);
+            fis = new FileInputStream(context.getFilesDir().getAbsolutePath()+path);
 
         } catch (FileNotFoundException e) {e.printStackTrace();}
 
-        Response res = new Response(Response.Status.OK, "audio/x-mpeg", fis);
+        Response res = newChunkedResponse(Response.Status.OK, "audio/x-mpeg", fis);
         res.addHeader("Connection", "Keep-Alive");
 //        res.setChunkedTransfer(true);
         return res;

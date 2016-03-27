@@ -14,10 +14,13 @@ import org.fairytail.guessthesong.lib.ReactiveMap;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.MpGame;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
+import org.fairytail.guessthesong.networking.http.StreamServer;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.concurrent.TimeUnit;
 
 import in.workarounds.bundler.annotations.RequireBundler;
@@ -49,6 +52,8 @@ public class MultiplayerHostService extends MultiplayerService {
 
     private ReactiveMap<String, SalutDevice> players = new ReactiveMap<>();
     private ReactiveList<String> preparedPlayers = new ReactiveList<>();
+
+    private StreamServer httpServer;
 
     private SalutDeviceCallback deviceRegisteredReaction = device -> {
         Debug.d(device.readableName + " has connected!");
@@ -94,6 +99,11 @@ public class MultiplayerHostService extends MultiplayerService {
         return subs;
     }
 
+    private void setHttpServer(StreamServer server) {
+        httpServer = server;
+        network.thisDevice.txtRecord.put("http_port", String.valueOf(server.getListeningPort()));
+    }
+
     private Observable<Void> startNetworkServiceIfNotAlreadyStarted() {
         return Observable.<Void>create(subscriber -> {
             if (!network.isRunningAsHost) {
@@ -106,6 +116,25 @@ public class MultiplayerHostService extends MultiplayerService {
             } else {
                 subscriber.onNext(null);
                 subscriber.onCompleted();
+            }
+        });
+    }
+
+    private Observable<StreamServer> startHttpServer() {
+        return Observable.create(subscriber -> {
+            try {
+                int port = 8888;
+                try {
+                    val socket = new ServerSocket(0);
+                    port = socket.getLocalPort();
+                } catch (Exception ignored) {}
+
+                val server = new StreamServer(port);
+                server.start();
+                subscriber.onNext(server);
+                subscriber.onCompleted();
+            } catch (IOException e) {
+                subscriber.onError(e);
             }
         });
     }
@@ -128,6 +157,8 @@ public class MultiplayerHostService extends MultiplayerService {
     public Observable<MpGame> prepareNewGame(Game game) {
         return new MpGameConverter(this).convertToMpGame(game)
                                         .concatMap(mpGame -> enableWiFiIfNecessary().map(arg -> mpGame))
+                                        .concatMap(mpGame -> startHttpServer().doOnNext(this::setHttpServer)
+                                                                              .map(s -> mpGame))
                                         .concatMap(mpGame -> startNetworkServiceIfNotAlreadyStarted().map(arg -> mpGame))
                                         .doOnNext(mpGame1 -> currentGame = mpGame1);
     }
