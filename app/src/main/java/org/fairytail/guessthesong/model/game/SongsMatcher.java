@@ -1,6 +1,6 @@
 package org.fairytail.guessthesong.model.game;
 
-import org.apache.commons.lang3.StringUtils;
+import org.fairytail.guessthesong.helpers.Utils;
 import org.fairytail.guessthesong.model.Song;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class SongsMatcher {
         }
         int longerLength = longer.length();
         if (longerLength == 0) { return 1.0; /* both strings are zero length */ }
-        return (longerLength - StringUtils.getLevenshteinDistance(longer, shorter)) / (double) longerLength;
+        return (longerLength - Utils.getLevenshteinDistance(longer, shorter)) / (double) longerLength;
     }
 
 }

@@ -85,9 +85,6 @@ dependencies {
     compile 'com.eftimoff:androidplayer:1.0.2@aar'
     compile 'com.nineoldandroids:library:2.4.0'
 
-    compile 'org.apache.commons:commons-lang3:3.3.2'
-    compile 'org.apache.commons:commons-collections4:4.1'
-
     compile 'info.hoang8f:fbutton:1.0.5'
     compile 'com.github.rahatarmanahmed:circularprogressview:2.2.1'
     compile 'com.sefford:circular-progress-drawable:1.31@aar'

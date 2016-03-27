@@ -3,7 +3,8 @@ package org.fairytail.guessthesong.networking.http;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
+
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.player.Player;
@@ -59,7 +60,7 @@ public class StreamServer extends NanoHTTPD {
             case GET:
                 if (uri.startsWith(Method.SONG)) {
                     val path = uri.substring(Method.SONG.length());
-                    if (StringUtils.isEmpty(path)) {
+                    if (Strings.isNullOrEmpty(path)) {
                         val msg = "Can't stream the song: Path is not specified.";
                         return newFixedLengthResponse(Response.Status.NO_CONTENT, MIME_PLAINTEXT, msg);
                     } else {
