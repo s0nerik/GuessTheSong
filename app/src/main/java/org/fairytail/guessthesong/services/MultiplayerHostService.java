@@ -121,7 +121,10 @@ public class MultiplayerHostService extends MultiplayerService {
                 try {
                     ServerSocket socket = new ServerSocket(0);
                     port = socket.getLocalPort();
-                } catch (Exception ignored) {}
+                    socket.close();
+                } catch (Exception e) {
+                    Debug.e(e);
+                }
 
                 StreamServer server = new StreamServer(port);
                 server.start();
@@ -149,12 +152,20 @@ public class MultiplayerHostService extends MultiplayerService {
     }
 
     public Observable<Game> prepareNewGame(Game game) {
-        return new MpGameConverter(this, httpServer)
-                .convertToMpGame(game)
-                .concatMap(g -> enableWiFiIfNecessary().map(v -> g))
-                .concatMap(g -> startHttpServer().doOnNext(this::setHttpServer)
-                                                 .map(s -> g))
+        return enableWiFiIfNecessary()
+                .concatMap(v -> startHttpServer().doOnNext(this::setHttpServer))
+                .concatMap(s -> new MpGameConverter(this, httpServer).convertToMpGame(game))
                 .concatMap(g -> startNetworkServiceIfNotAlreadyStarted().map(arg -> g))
                 .doOnNext(g -> currentGame = g);
+
+//        return Observable.defer(() -> {
+//            return new MpGameConverter(this, httpServer)
+//                    .convertToMpGame(game)
+//                    .concatMap(g -> enableWiFiIfNecessary().map(v -> g))
+//                    .concatMap(g -> startHttpServer().doOnNext(this::setHttpServer)
+//                                                     .map(s -> g))
+//                    .concatMap(g -> startNetworkServiceIfNotAlreadyStarted().map(arg -> g))
+//                    .doOnNext(g -> currentGame = g);
+//        });
     }
 }
