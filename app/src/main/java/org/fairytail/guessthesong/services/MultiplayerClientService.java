@@ -5,16 +5,12 @@ import android.net.wifi.WifiManager;
 import com.f2prateek.rx.receivers.wifi.RxWifiManager;
 import com.peak.salut.Salut;
 
+import org.fairytail.guessthesong.helpers.GamePlayer;
 import org.fairytail.guessthesong.helpers.JSON;
 import org.fairytail.guessthesong.model.game.MpGame;
-import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
-import org.fairytail.guessthesong.player.Player;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 import in.workarounds.bundler.annotations.RequireBundler;
 import lombok.val;
@@ -25,11 +21,17 @@ import rx.Subscription;
 @RequireBundler
 public class MultiplayerClientService extends MultiplayerService {
 
-    @Inject
-    Player player;
+//    @Inject
+//    Player player;
+
+    private GamePlayer gamePlayer;
 
     public Salut getNetwork() {
         return network;
+    }
+
+    private void setCurrentGame(MpGame game) {
+        gamePlayer = new GamePlayer(game.getGame());
     }
 
     @Override
@@ -38,7 +40,10 @@ public class MultiplayerClientService extends MultiplayerService {
 
         subs[0] = requests.filter(msg -> msg.message == SocketMessage.Message.PREPARE)
                           .map(msg -> JSON.parseSilently(msg.body, MpGame.class))
-                          .concatMap(this::prepareNewGame)
+                          .doOnNext(this::setCurrentGame)
+                          .concatMap(mpGame -> gamePlayer.prepare())
+                          .doOnNext(game -> gamePlayer.start(game.getQuizzes().get(0)))
+//                          .concatMap(this::prepareNewGame)
 //                          .doOnNext(mpGame -> {
 //                              Debug.d("Starting playback!");
 //                              Debug.d(mpGame.getGame().getQuizzes().get(0).getCorrectSong().toString());
@@ -69,14 +74,14 @@ public class MultiplayerClientService extends MultiplayerService {
         });
     }
 
-    private Observable<MpGame> prepareNewGame(MpGame game) {
-        Observable<MpGame> observable = Observable.just(game);
-        for (Quiz q : game.getGame().getQuizzes()) {
-            val song = q.getCorrectSong();
-//            observable = observable.concatMap(mpGame -> prepareSong(song).map(s -> mpGame));
-        }
-        return observable;
-    }
+//    private Observable<MpGame> prepareNewGame(MpGame game) {
+//        Observable<MpGame> observable = Observable.just(game);
+//        for (Quiz q : game.getGame().getQuizzes()) {
+//            val song = q.getCorrectSong();
+////            observable = observable.concatMap(mpGame -> prepareSong(song).map(s -> mpGame));
+//        }
+//        return observable;
+//    }
 
 //    private Observable<Song> prepareSong(Song s) {
 //        val request = new Request.Builder()
@@ -107,14 +112,14 @@ public class MultiplayerClientService extends MultiplayerService {
 //                        .map(msg -> s);
 //    }
 
-    private File getNewFileToWrite(String originalPath) {
-        val latterPart = originalPath.replaceAll("(.*)(/.*/.*)", "$2");
-        val finalPath = getApplicationContext().getFilesDir().getAbsolutePath()+latterPart;
-
-        val file = new File(finalPath);
-        file.getParentFile().mkdirs();
-
-        return file;
-    }
+//    private File getNewFileToWrite(String originalPath) {
+//        val latterPart = originalPath.replaceAll("(.*)(/.*/.*)", "$2");
+//        val finalPath = getApplicationContext().getFilesDir().getAbsolutePath()+latterPart;
+//
+//        val file = new File(finalPath);
+//        file.getParentFile().mkdirs();
+//
+//        return file;
+//    }
 
 }

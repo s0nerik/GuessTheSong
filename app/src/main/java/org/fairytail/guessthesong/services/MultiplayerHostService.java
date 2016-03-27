@@ -62,7 +62,7 @@ public class MultiplayerHostService extends MultiplayerService {
 
     @Override
     protected Subscription[] subscribeListeners() {
-        val subs = new Subscription[4];
+        val subs = new Subscription[3];
 
         subs[0] = players.onItemAdded()
                          .subscribe(event -> {
@@ -81,20 +81,20 @@ public class MultiplayerHostService extends MultiplayerService {
                            .filter(msg -> msg.status == SocketMessage.Status.OK)
                            .subscribe(msg -> preparedPlayers.add(msg.userId));
 
-        subs[3] = requests.filter(msg -> msg.message == SocketMessage.Message.SONG)
-                          .concatMap(msg -> {
-                              try {
-                                  return Bytes.from(new BufferedInputStream(new FileInputStream(msg.body)))
-                                              .map(bytes -> Pair.<byte[], SocketMessage>create(bytes, msg));
-                              } catch (FileNotFoundException e) {
-                                  return Observable.error(e);
-                              }
-                          })
-                          .subscribe(pair -> {
-                              network.sendToDevice(players.get(pair.second.userId),
-                                                   msgFactory.newSongResponse(pair.first),
-                                                   () -> Debug.e("Can't send a song to the client"));
-                          });
+//        subs[3] = requests.filter(msg -> msg.message == SocketMessage.Message.SONG)
+//                          .concatMap(msg -> {
+//                              try {
+//                                  return Bytes.from(new BufferedInputStream(new FileInputStream(msg.body)))
+//                                              .map(bytes -> Pair.<byte[], SocketMessage>create(bytes, msg));
+//                              } catch (FileNotFoundException e) {
+//                                  return Observable.error(e);
+//                              }
+//                          })
+//                          .subscribe(pair -> {
+//                              network.sendToDevice(players.get(pair.second.userId),
+//                                                   msgFactory.newSongResponse(pair.first),
+//                                                   () -> Debug.e("Can't send a song to the client"));
+//                          });
 
         return subs;
     }
