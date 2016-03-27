@@ -119,11 +119,11 @@ public class MultiplayerHostService extends MultiplayerService {
             try {
                 int port = 8888;
                 try {
-                    val socket = new ServerSocket(0);
+                    ServerSocket socket = new ServerSocket(0);
                     port = socket.getLocalPort();
                 } catch (Exception ignored) {}
 
-                val server = new StreamServer(port);
+                StreamServer server = new StreamServer(port);
                 server.start();
                 subscriber.onNext(server);
                 subscriber.onCompleted();
@@ -149,11 +149,12 @@ public class MultiplayerHostService extends MultiplayerService {
     }
 
     public Observable<Game> prepareNewGame(Game game) {
-        return new MpGameConverter(this).convertToMpGame(game)
-                                        .concatMap(g -> enableWiFiIfNecessary().map(v -> g))
-                                        .concatMap(g -> startHttpServer().doOnNext(this::setHttpServer)
-                                                                              .map(s -> g))
-                                        .concatMap(g -> startNetworkServiceIfNotAlreadyStarted().map(arg -> g))
-                                        .doOnNext(g -> currentGame = g);
+        return new MpGameConverter(this, httpServer)
+                .convertToMpGame(game)
+                .concatMap(g -> enableWiFiIfNecessary().map(v -> g))
+                .concatMap(g -> startHttpServer().doOnNext(this::setHttpServer)
+                                                 .map(s -> g))
+                .concatMap(g -> startNetworkServiceIfNotAlreadyStarted().map(arg -> g))
+                .doOnNext(g -> currentGame = g);
     }
 }

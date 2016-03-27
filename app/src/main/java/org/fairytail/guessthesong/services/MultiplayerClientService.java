@@ -42,7 +42,7 @@ public class MultiplayerClientService extends MultiplayerService {
         subs[0] = requests.filter(msg -> msg.message == SocketMessage.Message.PREPARE)
                           .map(msg -> JSON.parseSilently(msg.body, Game.class))
                           .doOnNext(this::setCurrentGame)
-                          .concatMap(mpGame -> gamePlayer.prepare())
+                          .concatMap(mpGame -> gamePlayer.prepare(false))
                           .doOnNext(game -> gamePlayer.start(game.getQuizzes().get(0)))
 //                          .concatMap(this::prepareNewGame)
 //                          .doOnNext(mpGame -> {

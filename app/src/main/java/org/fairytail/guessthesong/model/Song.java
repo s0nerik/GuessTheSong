@@ -34,6 +34,8 @@ public class Song implements Serializable {
     String lyrics;
     @JsonField
     String source;
+    @JsonField
+    String remoteSource;
 
     private long songId;
     private long artistId;

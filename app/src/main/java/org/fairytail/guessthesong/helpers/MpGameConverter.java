@@ -9,11 +9,11 @@ import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
+import org.fairytail.guessthesong.networking.http.StreamServer;
 
 import java.io.File;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import ru.noties.debug.Debug;
 import rx.Observable;
 
@@ -21,10 +21,11 @@ import rx.Observable;
 public class MpGameConverter {
 
     private final Context context;
+    private final StreamServer server;
 
     public Observable<Game> convertToMpGame(Game game) {
         return loadFFMPEG().concatMap(ffmpeg -> {
-            val mpGame = new Game(game);
+            Game mpGame = new Game(game);
             Observable<Game> observable = Observable.<Game>empty();
 
             File newSourceFolder = new File(context.getFilesDir(), mpGame.getUuid().toString());
@@ -35,7 +36,13 @@ public class MpGameConverter {
             for (Quiz quiz : game.getQuizzes()) {
                 observable = observable.mergeWith(
                         convertQuiz(quiz, newSourceFolder, ffmpeg)
-                                .doOnNext(file -> quiz.getCorrectSong().setSource(file.getAbsolutePath()))
+                                .doOnNext(file -> {
+                                    Song correctSong = quiz.getCorrectSong();
+                                    correctSong.setSource(file.getAbsolutePath());
+                                    Debug.d("HOSTNAME: "+server.getHostname());
+                                    Debug.d("PORT: "+server.getListeningPort());
+                                    correctSong.setRemoteSource(server.getHostname()+":"+server.getListeningPort());
+                                })
                                 .ignoreElements()
                                 .map(aVoid -> null)
                 );

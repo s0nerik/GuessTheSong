@@ -14,25 +14,31 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import rx.Observable;
 
-@RequiredArgsConstructor
 public class GamePlayer extends Daggered {
     @Inject
     Context context;
 
     private final Game game;
 
+    public GamePlayer(Game game) {
+        this.game = game;
+    }
+
     private final Map<Quiz, RxExoPlayer> players = new HashMap<>();
 
     public Observable<Game> prepare() {
-        val observable = Observable.just(game);
+        return prepare(true);
+    }
+
+    public Observable<Game> prepare(boolean local) {
+        Observable<Game> observable = Observable.just(game);
         for (Quiz q : game.getQuizzes()) {
             val player = new BasicRxExoPlayer(context);
             players.put(q, player);
-            observable = observable.concatMap(g -> player.prepare(q.getSongUri()).map(e -> g));
+            observable = observable.concatMap(g -> player.prepare(local ? q.getSongUri() : q.getRemoteSongUri()).map(e -> g));
         }
         return observable;
     }

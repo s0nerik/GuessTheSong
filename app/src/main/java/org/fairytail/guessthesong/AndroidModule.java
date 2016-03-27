@@ -29,6 +29,7 @@ import org.fairytail.guessthesong.bus.MainThreadBus;
 import org.fairytail.guessthesong.db.SongsCursorGetter;
 import org.fairytail.guessthesong.fragments.DifficultyFragment;
 import org.fairytail.guessthesong.fragments.GameFragment;
+import org.fairytail.guessthesong.helpers.GamePlayer;
 import org.fairytail.guessthesong.helpers.MpGameCreationHelper;
 import org.fairytail.guessthesong.helpers.MpGameJoinHelper;
 import org.fairytail.guessthesong.model.game.Quiz;
@@ -84,6 +85,7 @@ import static android.content.Context.WIFI_SERVICE;
                 // Helpers
                 MpGameCreationHelper.class,
                 MpGameJoinHelper.class,
+                GamePlayer.class,
         },
         staticInjections = {
                 App.class
@@ -204,11 +206,11 @@ public class AndroidModule {
 //        return new GameWebSocketServer(new InetSocketAddress(4807));
 //    }
 
-    @Provides
-    @Singleton
-    StreamServer provideStreamServer() {
-        return new StreamServer();
-    }
+//    @Provides
+//    @Singleton
+//    StreamServer provideStreamServer() {
+//        return new StreamServer();
+//    }
 
     @Provides
     @Singleton

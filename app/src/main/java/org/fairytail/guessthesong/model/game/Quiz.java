@@ -59,4 +59,8 @@ public class Quiz implements Serializable {
         return Uri.fromFile(new File(correctSong.getSource()));
     }
 
+    public Uri getRemoteSongUri() {
+        return Uri.parse(getCorrectSong().getRemoteSource());
+    }
+
 }
