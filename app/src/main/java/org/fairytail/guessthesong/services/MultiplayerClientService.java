@@ -8,7 +8,9 @@ import com.peak.salut.Salut;
 import org.fairytail.guessthesong.helpers.GamePlayer;
 import org.fairytail.guessthesong.helpers.JSON;
 import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.model.game.Quiz;
 import org.fairytail.guessthesong.networking.entities.SocketMessage;
+import org.fairytail.guessthesong.networking.http.StreamServer;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,9 +23,6 @@ import rx.Subscription;
 @RequireBundler
 public class MultiplayerClientService extends MultiplayerService {
 
-//    @Inject
-//    Player player;
-
     private GamePlayer gamePlayer;
 
     public Salut getNetwork() {
@@ -31,8 +30,19 @@ public class MultiplayerClientService extends MultiplayerService {
     }
 
     private void setCurrentGame(Game game) {
-        currentGame = game;
+        currentGame = convertGameSongsToRemote(game,
+                                               network.registeredHost.getServiceAddress(),
+                                               network.registeredHost.txtRecord.get("http_port"));
         gamePlayer = new GamePlayer(game);
+    }
+
+    private Game convertGameSongsToRemote(Game game, String address, String port) {
+        for (Quiz q : game.getQuizzes()) {
+            val song = q.getCorrectSong();
+            song.setRemoteSource("http://"+address+":"+port+StreamServer.Method.SONG+"/"+song.getRemoteSource());
+            Debug.d("Song Remote Source: "+song.getRemoteSource());
+        }
+        return game;
     }
 
     @Override
@@ -43,16 +53,7 @@ public class MultiplayerClientService extends MultiplayerService {
                           .map(msg -> JSON.parseSilently(msg.body, Game.class))
                           .doOnNext(this::setCurrentGame)
                           .concatMap(mpGame -> gamePlayer.prepare(false))
-                          .doOnNext(game -> gamePlayer.start(game.getQuizzes().get(0)))
-//                          .concatMap(this::prepareNewGame)
-//                          .doOnNext(mpGame -> {
-//                              Debug.d("Starting playback!");
-//                              Debug.d(mpGame.getGame().getQuizzes().get(0).getCorrectSong().toString());
-//                              player.prepare(
-//                                      mpGame.getGame().getQuizzes().get(0).getCorrectSong(),
-//                                      Player::start
-//                              );
-//                          })
+                          .concatMap(game -> gamePlayer.start(game.getQuizzes().get(0)).map(o -> game))
                           .subscribe(mpGame -> network.sendToHost(
                                   msgFactory.newPrepareCompletedResponse(),
                                   () -> Debug.e("Can't send a prepare completion response to the host.")));
