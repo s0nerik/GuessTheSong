@@ -154,8 +154,8 @@ public class MultiplayerHostService extends MultiplayerService {
     public Observable<Game> prepareNewGame(Game game) {
         return enableWiFiIfNecessary()
                 .concatMap(v -> startHttpServer().doOnNext(this::setHttpServer))
-                .concatMap(s -> new MpGameConverter(this, httpServer).convertToMpGame(game))
-                .concatMap(g -> startNetworkServiceIfNotAlreadyStarted().map(arg -> g))
+                .concatMap(s -> startNetworkServiceIfNotAlreadyStarted().map(arg -> s))
+                .concatMap(s -> new MpGameConverter(this).convertToMpGame(game))
                 .doOnNext(g -> currentGame = g);
 
 //        return Observable.defer(() -> {

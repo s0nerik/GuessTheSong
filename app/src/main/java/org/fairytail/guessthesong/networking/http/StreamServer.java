@@ -3,10 +3,9 @@ package org.fairytail.guessthesong.networking.http;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.common.base.Strings;
-
 import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
+import org.fairytail.guessthesong.helpers.Strings;
 import org.fairytail.guessthesong.player.Player;
 
 import java.io.FileInputStream;

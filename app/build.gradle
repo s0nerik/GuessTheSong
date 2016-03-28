@@ -106,7 +106,7 @@ dependencies {
     compile 'com.github.WritingMinds:ffmpeg-android-java:-SNAPSHOT'
 //    compile 'com.github.hiteshsondhi88.libffmpeg:FFmpegAndroid:0.2.5'
 
-    compile 'com.github.markrjr:Salut:v0.4.9'
+    compile 'com.github.s0nerik:Salut:3f5a7742f3'
 
     compile 'eu.davidea:flexible-adapter:5.0.0-b4'
 }

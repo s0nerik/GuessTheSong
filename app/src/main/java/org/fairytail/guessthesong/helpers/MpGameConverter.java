@@ -9,7 +9,6 @@ import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
 import org.fairytail.guessthesong.model.Song;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.model.game.Quiz;
-import org.fairytail.guessthesong.networking.http.StreamServer;
 
 import java.io.File;
 
@@ -21,7 +20,6 @@ import rx.Observable;
 public class MpGameConverter {
 
     private final Context context;
-    private final StreamServer server;
 
     public Observable<Game> convertToMpGame(Game game) {
         return loadFFMPEG().concatMap(ffmpeg -> {
@@ -33,15 +31,17 @@ public class MpGameConverter {
                 return Observable.error(new Exception("Can't create a folder for the game."));
             }
 
+            // TODO: resolve server address on client.
+
             for (Quiz quiz : game.getQuizzes()) {
                 observable = observable.mergeWith(
                         convertQuiz(quiz, newSourceFolder, ffmpeg)
                                 .doOnNext(file -> {
                                     Song correctSong = quiz.getCorrectSong();
                                     correctSong.setSource(file.getAbsolutePath());
-                                    Debug.d("HOSTNAME: "+server.getHostname());
-                                    Debug.d("PORT: "+server.getListeningPort());
-                                    correctSong.setRemoteSource(server.getHostname()+":"+server.getListeningPort());
+                                    String remoteSource = file.getParentFile().getName() + "/" + file.getName();
+                                    Debug.d("RemoteSource: "+remoteSource);
+                                    correctSong.setRemoteSource(remoteSource);
                                 })
                                 .ignoreElements()
                                 .map(aVoid -> null)
