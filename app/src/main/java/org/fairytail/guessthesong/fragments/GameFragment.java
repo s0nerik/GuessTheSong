@@ -21,7 +21,6 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.fairytail.guessthesong.R;
-import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.PlaybackStateChangedEvent;
 import org.fairytail.guessthesong.events.QuizSongChosenEvent;
@@ -98,10 +97,10 @@ public class GameFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (((GameActivity) getActivity()).isMultiplayer) {
-            waiting.setVisibility(View.VISIBLE);
-            gameVariants.setVisibility(View.GONE);
-        }
+//        if (((GameActivity) getActivity()).isMultiplayer) {
+//            waiting.setVisibility(View.VISIBLE);
+//            gameVariants.setVisibility(View.GONE);
+//        }
     }
 
     @Override
@@ -112,10 +111,10 @@ public class GameFragment extends Fragment {
 
     @Subscribe
     public void onPlaybackStateChanged(PlaybackStateChangedEvent event) {
-        if (((GameActivity) getActivity()).isMultiplayer && event.state == PlaybackStateChangedEvent.State.STARTED) {
-            waiting.setVisibility(View.GONE);
-            gameVariants.setVisibility(View.VISIBLE);
-        }
+//        if (((GameActivity) getActivity()).isMultiplayer && event.state == PlaybackStateChangedEvent.State.STARTED) {
+//            waiting.setVisibility(View.GONE);
+//            gameVariants.setVisibility(View.VISIBLE);
+//        }
     }
 
     public void addVariants(Quiz quiz) {
