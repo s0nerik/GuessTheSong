@@ -31,9 +31,7 @@ public class MpGameConverter {
                 return Observable.error(new Exception("Can't create a folder for the game."));
             }
 
-            // TODO: resolve server address on client.
-
-            for (Quiz quiz : game.getQuizzes()) {
+            for (Quiz quiz : mpGame.getQuizzes()) {
                 observable = observable.mergeWith(
                         convertQuiz(quiz, newSourceFolder, ffmpeg)
                                 .doOnNext(file -> {
@@ -42,6 +40,9 @@ public class MpGameConverter {
                                     String remoteSource = file.getParentFile().getName() + "/" + file.getName();
                                     Debug.d("RemoteSource: "+remoteSource);
                                     correctSong.setRemoteSource(remoteSource);
+
+                                    quiz.setEndTime(quiz.getEndTime() - quiz.getStartTime());
+                                    quiz.setStartTime(0);
                                 })
                                 .ignoreElements()
                                 .map(aVoid -> null)
