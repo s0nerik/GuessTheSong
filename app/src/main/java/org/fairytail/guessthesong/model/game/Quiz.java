@@ -1,14 +1,11 @@
 package org.fairytail.guessthesong.model.game;
 
 import android.net.Uri;
-import android.os.Handler;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
-import org.fairytail.guessthesong.App;
 import org.fairytail.guessthesong.dagger.Injector;
-import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.Song;
 
 import java.io.File;
@@ -18,11 +15,13 @@ import java.util.List;
 import java.util.Random;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @JsonObject
 @NoArgsConstructor
+@EqualsAndHashCode(of = { "correctSong" })
 public class Quiz implements Serializable {
 
     @JsonField
@@ -33,22 +32,21 @@ public class Quiz implements Serializable {
     Difficulty difficulty;
 
     private long startTime;
-    private long endTime;
     private boolean correct = false;
 
+    // TODO: Handle a case when the song is shorter than it's required
     public Quiz(Song correctSong, List<Song> variants, Difficulty difficulty) {
         Injector.inject(this);
         this.correctSong = correctSong;
         this.variants = (ArrayList<Song>) variants;
         this.difficulty = difficulty;
-        startTime = (long) (new Random().nextFloat()*correctSong.getDuration());
-        endTime = startTime + difficulty.getSongDuration();
+        startTime = (long) (new Random().nextFloat()*(correctSong.getDuration() - difficulty.getSongDuration()));
     }
 
-    public void start() {
-        new Handler().postDelayed(() ->
-                App.bus.post(new QuizTimeOverEvent(this)), difficulty.getSongDuration());
-    }
+//    public void start() {
+//        new Handler().postDelayed(() ->
+//                App.bus.post(new QuizTimeOverEvent(this)), difficulty.getSongDuration());
+//    }
 
     public boolean check(Song chosen) {
         correct = new SongsMatcher(correctSong, chosen).areSimilar();

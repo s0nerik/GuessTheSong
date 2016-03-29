@@ -41,7 +41,6 @@ public class MpGameConverter {
                                     Debug.d("RemoteSource: "+remoteSource);
                                     correctSong.setRemoteSource(remoteSource);
 
-                                    quiz.setEndTime(quiz.getEndTime() - quiz.getStartTime());
                                     quiz.setStartTime(0);
                                 })
                                 .ignoreElements()
@@ -58,7 +57,7 @@ public class MpGameConverter {
 
             String[] command = new String[] {
                     "-ss", toSeconds(quiz.getStartTime()),
-                    "-t", toSeconds(quiz.getEndTime()-quiz.getStartTime()),
+                    "-t", toSeconds(quiz.getDifficulty().getSongDuration()),
                     "-i", quiz.getCorrectSong().getSource(),
                     "-acodec", "copy",
                     newSource.getAbsolutePath()

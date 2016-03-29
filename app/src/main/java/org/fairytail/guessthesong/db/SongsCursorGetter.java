@@ -3,6 +3,8 @@ package org.fairytail.guessthesong.db;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import org.fairytail.guessthesong.dagger.Daggered;
 
@@ -13,7 +15,20 @@ public class SongsCursorGetter extends Daggered {
     @Inject
     ContentResolver contentResolver;
 
-    private String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+    static final String[] SUPPORTED_MIME_TYPES = {
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("mp3"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("m4a"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("mp4"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("aac")
+    };
+
+    private String supportedTypes = "('" + TextUtils.join("','", SUPPORTED_MIME_TYPES) + "')";
+
+    private String selection = ""
+            + MediaStore.Audio.Media.IS_MUSIC + " != 0"
+            + " AND "
+            + MediaStore.Audio.Media.MIME_TYPE + " in " + supportedTypes;
+
     private String[] projection = {
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,
@@ -25,6 +40,7 @@ public class SongsCursorGetter extends Daggered {
             MediaStore.Audio.Media.SIZE,
             MediaStore.Audio.Media.ALBUM_ID,
             MediaStore.Audio.Media.ARTIST_ID,
+            MediaStore.Audio.Media.MIME_TYPE
 //            MediaStore.Audio.Media.TRACK,
 //            MediaStore.Audio.Media.ALBUM_KEY,
 //            MediaStore.Audio.Media.ALBUM_KEY,

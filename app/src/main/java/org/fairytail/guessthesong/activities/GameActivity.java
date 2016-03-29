@@ -1,6 +1,8 @@
 package org.fairytail.guessthesong.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 
 import com.squareup.otto.Bus;
@@ -13,6 +15,9 @@ import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.events.QuizSongChosenEvent;
 import org.fairytail.guessthesong.helpers.GamePlayer;
 import org.fairytail.guessthesong.model.game.Game;
+import org.fairytail.guessthesong.model.game.Quiz;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -21,6 +26,10 @@ import butterknife.InjectView;
 import in.workarounds.bundler.Bundler;
 import in.workarounds.bundler.annotations.Arg;
 import in.workarounds.bundler.annotations.RequireBundler;
+import ru.noties.debug.Debug;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 
 @RequireBundler
 public class GameActivity extends FragmentActivity {
@@ -38,6 +47,8 @@ public class GameActivity extends FragmentActivity {
 
     private GamePlayer player;
 
+    private Subject<Quiz, Quiz> quizFinishSubject = PublishSubject.create();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +58,14 @@ public class GameActivity extends FragmentActivity {
         Bundler.inject(this);
         bus.register(this);
 
+        player = new GamePlayer(game);
+
         gameAdapter = new GameAdapter(getSupportFragmentManager(), game);
         pager.setAdapter(gameAdapter);
+
+        player.prepare(true)
+              .concatMap(this::play)
+              .subscribe(g -> Debug.d("Game finished: "+g));
 
 //        pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 //            @Override
@@ -62,13 +79,25 @@ public class GameActivity extends FragmentActivity {
 //        }
     }
 
-//    private void pageSelectedListener(int position) {
-//        if (!isMultiplayer) {
-//            Quiz thisQuiz = game.getQuizzes().get(position);
-//            player.prepareAndSeekTo(thisQuiz.getCorrectSong(), 40 * 1000, Player::start);
-//            thisQuiz.start();
-//        }
-//    }
+    private Observable<Game> play(Game game) {
+        Observable<Game> observable = Observable.<Game>empty();
+        for (Quiz q : game.getQuizzes()) {
+            observable = observable.concatWith(
+                    player.start(q)
+                          .delay(q.getDifficulty().getSongDuration(), TimeUnit.MILLISECONDS)
+                          .doOnNext(quiz -> Debug.d("doOnNext: " + quiz))
+                          .doOnUnsubscribe(() -> {
+                              Debug.d("doOnUnsubscribe: " + q);
+                              player.stop(q).subscribe();
+                              goToNextPage();
+                          })
+                          .map(quiz -> game)
+                          .takeUntil(quizFinishSubject.filter(quiz -> quiz.equals(q)))
+                          .ignoreElements()
+            );
+        }
+        return observable.concatWith(Observable.just(game));
+    }
 
 //    @Subscribe
 //    public void onQuizTimeOver(QuizTimeOverEvent event) {
@@ -81,6 +110,8 @@ public class GameActivity extends FragmentActivity {
 
     @Subscribe
     public void onQuizSongChosen(QuizSongChosenEvent event) {
+        Debug.d("Quiz song chosen!");
+        quizFinishSubject.onNext(event.getQuiz());
 //        player.stop();
 
 //        if (!isMultiplayer) {
@@ -89,19 +120,19 @@ public class GameActivity extends FragmentActivity {
     }
 
     private void goToNextPage() {
-//        new Handler().postDelayed(() -> {
-//            if ((pager.getCurrentItem() + 1) == game.getQuizzes().size()) {
-//                int score = game.countCorrectQuizzes();
-//                Intent intent = new Intent(this, ScoreActivity.class);
-//                Bundle b = new Bundle();
-//                b.putInt("score", score);
-//                intent.putExtras(b);
-//                startActivity(intent);
-//                finish();
-//            } else {
-//                pager.setCurrentItem(pager.getCurrentItem() + 1);
-//            }
-//        }, 1500);
+        new Handler().postDelayed(() -> {
+            if ((pager.getCurrentItem() + 1) == game.getQuizzes().size()) {
+                int score = game.countCorrectQuizzes();
+                Intent intent = new Intent(this, ScoreActivity.class);
+                Bundle b = new Bundle();
+                b.putInt("score", score);
+                intent.putExtras(b);
+                startActivity(intent);
+                finish();
+            } else {
+                pager.setCurrentItem(pager.getCurrentItem() + 1);
+            }
+        }, 1500);
     }
 
     @Override

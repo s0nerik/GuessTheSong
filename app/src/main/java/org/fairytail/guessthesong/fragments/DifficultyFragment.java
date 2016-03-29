@@ -1,6 +1,5 @@
 package org.fairytail.guessthesong.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -15,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.eftimoff.androidplayer.actions.property.PropertyAction;
-import com.esotericsoftware.reflectasm.shaded.org.objectweb.asm.Handle;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
@@ -25,11 +23,9 @@ import com.joanzapata.android.asyncservice.api.annotation.OnMessage;
 import com.joanzapata.android.asyncservice.api.internal.AsyncService;
 
 import org.fairytail.guessthesong.R;
-import org.fairytail.guessthesong.activities.GameActivity;
 import org.fairytail.guessthesong.async.SongsGetterService;
 import org.fairytail.guessthesong.dagger.Injector;
 import org.fairytail.guessthesong.db.Order;
-import org.fairytail.guessthesong.events.QuizTimeOverEvent;
 import org.fairytail.guessthesong.model.game.Difficulty;
 import org.fairytail.guessthesong.model.game.Game;
 import org.fairytail.guessthesong.player.Player;
@@ -41,6 +37,8 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import in.workarounds.bundler.Bundler;
+import lombok.val;
 
 public class DifficultyFragment extends Fragment {
 
@@ -156,28 +154,23 @@ public class DifficultyFragment extends Fragment {
 
     @OnMessage
     public void onSongsAvailable(SongsGetterService.SongsListLoadedEvent e) {
-        Intent i = new Intent(getActivity(), GameActivity.class);
-        Bundle b = new Bundle();
-
+        Difficulty.Level lvl = Difficulty.Level.EASY;
         switch (diffId) {
             case 0:
-                b.putSerializable("game", new Game.Creator().create(Difficulty.Level.EASY, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs())));
+                lvl = Difficulty.Level.EASY;
                 break;
             case 1:
-                b.putSerializable("game", new Game.Creator().create(Difficulty.Level.MEDIUM, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs())));
+                lvl = Difficulty.Level.MEDIUM;
                 break;
             case 2:
-                b.putSerializable("game", new Game.Creator().create(Difficulty.Level.HARD, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs())));
+                lvl = Difficulty.Level.HARD;
                 break;
         }
 
+        val game = new Game.Creator().create(lvl, new ArrayList<>(e.getSongs().subList(0, 5)), new ArrayList<>(e.getSongs()));
         progressView.setIndeterminate(false);
 
-        i.putExtras(b);
-        startActivity(i);
-
-//        player.prepare(e.getSongs().get(0), Player::start);
-
+        Bundler.gameActivity(game).start(getActivity());
     }
 
     @OnClick(R.id.btn_easy)

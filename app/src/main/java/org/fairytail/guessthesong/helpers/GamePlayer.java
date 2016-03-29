@@ -43,11 +43,11 @@ public class GamePlayer extends Daggered {
         return observable;
     }
 
-    public Observable start(Quiz q) {
-        return players.get(q).start();
+    public Observable<Quiz> start(Quiz q) {
+        return players.get(q).start().map(event -> q);
     }
 
-    public Observable stop(Quiz q) {
-        return players.get(q).stop();
+    public Observable<Quiz> stop(Quiz q) {
+        return players.get(q).stop().map(event -> q);
     }
 }
