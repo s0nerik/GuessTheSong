@@ -2,7 +2,6 @@ package org.fairytail.guessthesong.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 
 import com.squareup.otto.Bus;
@@ -28,6 +27,7 @@ import in.workarounds.bundler.annotations.Arg;
 import in.workarounds.bundler.annotations.RequireBundler;
 import ru.noties.debug.Debug;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -61,42 +61,40 @@ public class GameActivity extends FragmentActivity {
         player = new GamePlayer(game);
 
         gameAdapter = new GameAdapter(getSupportFragmentManager(), game);
-        pager.setAdapter(gameAdapter);
 
         player.prepare(true)
+              .doOnNext(game1 -> {
+                  Debug.d("player.prepare: onNext");
+                  pager.setAdapter(gameAdapter);
+              })
               .concatMap(this::play)
               .subscribe(g -> Debug.d("Game finished: "+g));
-
-//        pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-//            @Override
-//            public void onPageSelected(int position) {
-//                pageSelectedListener(position);
-//            }
-//        });
-
-//        if (pager.getCurrentItem() == 0) {
-//            pageSelectedListener(0);
-//        }
     }
 
-    private Observable<Game> play(Game game) {
-        Observable<Game> observable = Observable.<Game>empty();
+    private Observable<Void> play(Game game) {
+        Observable<Void> observable = Observable.<Void>empty();
         for (Quiz q : game.getQuizzes()) {
+            Observable<Void> quizPlaybackObservable = Observable.timer(q.getDifficulty().getSongDuration(), TimeUnit.MILLISECONDS)
+                                                                .doOnSubscribe(() -> player.start(q).subscribe())
+                                                                .map(o -> null);
+
+            Observable<Void> quizStopObservable = quizFinishSubject.filter(quiz -> quiz.equals(q))
+                                                                   .delay(1, TimeUnit.SECONDS)
+                                                                   .map(o -> null);
+
             observable = observable.concatWith(
-                    player.start(q)
-                          .delay(q.getDifficulty().getSongDuration(), TimeUnit.MILLISECONDS)
-                          .doOnNext(quiz -> Debug.d("doOnNext: " + quiz))
-                          .doOnUnsubscribe(() -> {
-                              Debug.d("doOnUnsubscribe: " + q);
-                              player.stop(q).subscribe();
-                              goToNextPage();
-                          })
-                          .map(quiz -> game)
-                          .takeUntil(quizFinishSubject.filter(quiz -> quiz.equals(q)))
-                          .ignoreElements()
+                    quizPlaybackObservable.takeUntil(quizStopObservable)
+                                          .doOnNext(quiz -> Debug.d("doOnNext: " + quiz))
+                                          .doOnUnsubscribe(() -> {
+                                              Debug.d("doOnUnsubscribe: " + q);
+                                              player.stop(q).subscribe();
+                                              goToNextPage();
+                                          })
+                                          .observeOn(AndroidSchedulers.mainThread())
             );
         }
-        return observable.concatWith(Observable.just(game));
+
+        return observable.concatWith(Observable.just(null));
     }
 
 //    @Subscribe
@@ -111,6 +109,7 @@ public class GameActivity extends FragmentActivity {
     @Subscribe
     public void onQuizSongChosen(QuizSongChosenEvent event) {
         Debug.d("Quiz song chosen!");
+//        goToNextPage();
         quizFinishSubject.onNext(event.getQuiz());
 //        player.stop();
 
@@ -120,7 +119,7 @@ public class GameActivity extends FragmentActivity {
     }
 
     private void goToNextPage() {
-        new Handler().postDelayed(() -> {
+//        new Handler().postDelayed(() -> {
             if ((pager.getCurrentItem() + 1) == game.getQuizzes().size()) {
                 int score = game.countCorrectQuizzes();
                 Intent intent = new Intent(this, ScoreActivity.class);
@@ -132,7 +131,7 @@ public class GameActivity extends FragmentActivity {
             } else {
                 pager.setCurrentItem(pager.getCurrentItem() + 1);
             }
-        }, 1500);
+//        }, 1500);
     }
 
     @Override
