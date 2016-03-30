@@ -50,4 +50,18 @@ public class GamePlayer extends Daggered {
     public Observable<Quiz> stop(Quiz q) {
         return players.get(q).stop().map(event -> q);
     }
+
+    public Observable<Void> stop() {
+        Observable<Void> observable = Observable.<Void>empty();
+        for (RxExoPlayer p : players.values()) {
+            observable = observable.mergeWith(p.stop().map(event -> null));
+        }
+        return observable;
+    }
+
+    public void release() {
+        for (RxExoPlayer p : players.values()) {
+            p.release();
+        }
+    }
 }

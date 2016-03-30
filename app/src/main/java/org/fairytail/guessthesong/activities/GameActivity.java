@@ -97,25 +97,9 @@ public class GameActivity extends FragmentActivity {
         return observable.concatWith(Observable.just(null));
     }
 
-//    @Subscribe
-//    public void onQuizTimeOver(QuizTimeOverEvent event) {
-////        player.stop();
-//
-//        if (!isMultiplayer && event.getQuiz().equals(game.getQuizzes().get(pager.getCurrentItem()))) {
-//            goToNextPage();
-//        }
-//    }
-
     @Subscribe
     public void onQuizSongChosen(QuizSongChosenEvent event) {
-        Debug.d("Quiz song chosen!");
-//        goToNextPage();
         quizFinishSubject.onNext(event.getQuiz());
-//        player.stop();
-
-//        if (!isMultiplayer) {
-//            goToNextPage();
-//        }
     }
 
     private void goToNextPage() {
@@ -137,7 +121,7 @@ public class GameActivity extends FragmentActivity {
     @Override
     protected void onStop() {
         super.onStop();
-//        player.stop();
+        player.stop().subscribe(aVoid -> player.release());
     }
 
     @Override
