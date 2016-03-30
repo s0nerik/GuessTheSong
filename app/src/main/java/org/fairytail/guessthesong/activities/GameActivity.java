@@ -3,7 +3,9 @@ package org.fairytail.guessthesong.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -43,6 +45,9 @@ public class GameActivity extends FragmentActivity {
     @InjectView(R.id.pager)
     NonSwipeableViewPager pager;
 
+    @InjectView(R.id.progress_bar)
+    CircularProgressView progressBar;
+
     GameAdapter gameAdapter;
 
     private GamePlayer player;
@@ -63,8 +68,12 @@ public class GameActivity extends FragmentActivity {
         gameAdapter = new GameAdapter(getSupportFragmentManager(), game);
 
         player.prepare(true)
+              .doOnSubscribe(() -> {
+                  progressBar.setVisibility(View.VISIBLE);
+              })
               .doOnNext(game1 -> {
                   Debug.d("player.prepare: onNext");
+                  progressBar.setVisibility(View.GONE);
                   pager.setAdapter(gameAdapter);
               })
               .concatMap(this::play)

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg"
     tools:context="org.fairytail.guessthesong.activities.GameActivity">
 
@@ -11,4 +12,15 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progress_bar"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        app:cpv_thickness="4dp"
+        app:cpv_indeterminate="true"
+        app:cpv_animAutostart="true" />
+
 </RelativeLayout>
