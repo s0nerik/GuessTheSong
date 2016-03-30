@@ -38,7 +38,11 @@ public class GamePlayer extends Daggered {
         for (Quiz q : game.getQuizzes()) {
             val player = new BasicRxExoPlayer(context);
             players.put(q, player);
-            observable = observable.concatMap(g -> player.prepare(local ? q.getSongUri() : q.getRemoteSongUri()).map(e -> g));
+
+            val prepareObservable = player.prepare(local ? q.getSongUri() : q.getRemoteSongUri())
+                                          .concatMap(event -> player.seekTo(q.getStartTime()));
+
+            observable = observable.concatMap(g -> prepareObservable.map(e -> g));
         }
         return observable;
     }
